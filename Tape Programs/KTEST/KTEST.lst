@@ -1,0 +1,8 @@
+AS65 Assembler for R6502 [1.42].                                     Page    1
+-- C:\Users\zackary.nelson\Google Drive\Schematics\PAiA 8700\BINs\KTEST.asm --
+
+22 lines read, no errors in pass 1.
+No errors in pass 2.
+Wrote binary from address $0000 through $001b.
+Total size 28 bytes.
+

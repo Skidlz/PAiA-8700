@@ -1,0 +1,224 @@
+;
+;   PINK TUNES
+;
+;   A COMPOSING PROGRAM
+;   FOR FOUR PART HARMONIES
+;
+;   BY JOHN S SIMONTON, JR
+;   (C) 1978 PAIA ELECTRONICS, INC
+;
+        ORG     0000
+BEG     JMP     BRAK    ; BREAK VECTOR
+STAR    JSR     INIT    ; SETUP SYNTH - MUS1
+        LDA     KBD     ; INITIALIZE RANDOM
+        STA     *NTMP+01 ; NUMBER GENERATOR
+LOOP    JSR     SET     ; INIT PINK TUNES
+LP0     JSR     NOTE    ; PLAY NOTE, READ AGO
+;
+; CHECK FOR ADDITION TO CANDIDATE
+; NOTE TABLE
+;
+MAIN    LDA     *KTBL+08 ; ANY KEYS DOWN
+        BEQ     OUT1    ; NO-CHECK FOR TIME OUT
+        CMP     *TEMP   ; YES-A NEW KEY?
+OUT1    STA     *TEMP   ; SAVE FOR NEXT TIME
+        BEQ     OUT     ; BRANCH IS SAME KEY
+;
+        LDX     10      ; IF NEW KEY SHIFT
+LP3     LDY     *NBUF,X ; ALL 16 CANDIDATES
+        STA     *NBUF,X ; DOWN BY ONE
+        TYA
+        DEX
+        BNE     LP3     ; NOT DONE-LOOP
+;
+; NOW CHECK FOR CLOCK TIME OUT
+;
+OUT     LDA     *CLCK   ; GET MASTER CLOCK
+        BNE     TEST    ; AND IF TIMES OUT
+        LDA     *TMPO   ; SET TO TEMPO VALUE
+        STA     *CLCK   ; CALL SUB FOR NEW
+        JSR     ALOC    ; NOTES (IF NEEDED)
+        LDA     *LNTH   ; GET CYCLE STATUS
+        STA     DISP    ; SHOW IT AND IF ZERO
+        BEQ     TEST    ; CYCLE IS COMPLETE
+        DEC     *LNTH   ; IF NOTE DONE, DECREMENT
+        BNE     TEST    ; IF NOTE ZERO NOW LEAVE
+        JSR     SET     ; IF ZERO, RE-INIT
+        JSR     ALOC    ; GET FIRST NOTES AND
+        BEQ     LP0     ; BRANCH ALWAYS TO PLAY
+TEST    JSR     DECD    ; GET A COMMAND - MUS-1
+        BNE     TST2    ; NOT ZERO, NEXT TEST
+        LDX     03      ; COMMAND0, NEW TUNE
+                        ; SET POINTER/COUNTER
+TST1    JSR     RNDM    ; GET RANDOM NUMBER
+        STA     *NTMP,X ; NEW INITIAL RANDOM
+        DEX             ; POINT TO NEXT
+        BNE     TST1    ; NOT DONE - LOOP
+        BEQ     LOOP    ; BRANCH ALWAYS
+TST2    CMP     01      ; COMMAND 1, TUNNING
+        BNE     TST4    ; NOT 1, TEST NEXT
+        LDX     04      ; 4 OUTPUT BUFFERS
+        LDA     5C      ; PUT MIDDLE C IN ALL
+TST3    STA     NT0B,X  ; OUTPUT BUFFERS
+        DEX
+        BNE     TST3    ; NOT DONE-LOOP
+        BEQ     LP0     ; BRANCH ALWAYS
+TST4    CMP     02      ; COMMAND 2 STOP
+        BNE     LP0     ; NO COMMAND - LOOP
+        JSR     SET     ; CALL TO ZERO OUT-BUFFS
+        JSR     NOTE    ; THEN MUTE SYNTHESIZER
+        BRK
+
+        ORG     0088
+TIMED   DB      02      ; 0x0088
+TIMEC   DB      04
+TIMEB   DB      01
+TIMEA   DB      01
+
+MASKD   DB      F2      ; 0x008C
+MASKC   DB      F0
+MASKB   DB      F3
+MASKA   DB      F3
+
+NBUF    DB      5A      ; 0x0090 - CANDIDATE ARRAY
+        DB      5D
+        DB      5F
+        DB      62
+        DB      64
+        DB      62
+        DB      5F
+        DB      5D
+        DB      5A
+        DB      58
+        DB      56
+        DB      53
+        DB      56
+        DB      58
+
+RND0    DB      00      ; 0x00A0 - 5 DICE/RANDOM NUMBERS
+        DB      00
+        DB      00
+        DB      00
+        DB      00
+
+NOIS    DB      00      ; 0x00A5
+        DB      00
+        DB      00
+
+LNTH    DB      00      ; 0x00A8 - Cycle length
+
+TMPO    DB      FA
+
+        ORG     0100
+;
+;       RANDOM NUMBER GENERATOR
+;
+; ESSENTIALLY A 22 BIT LONG SHIFT
+; REGISTER WITH EX-0R TAPS AT
+; STAGES 22 AND 21 FED BACK TO
+; INPUT.
+;
+RNDM    TXA             ; SAVE X
+        PHA
+        LDA     *NOIS+01 ; LAST BYTE S/R
+        ASL             ; ALIGN BITS 22 &
+        EOR     *NOIS+01 ; 21 AND DO EX-OR
+        ASL
+        ASL
+        ASL
+        LDX     03      ; SET UP PNT/CNT
+LP1     ROL     *NOIS,X ; AND SHIFT 3 BYTE
+        DEX             ; SHIFT REGISTER
+        BNE     LP1     ; BY ONE BIT LEFT
+        PLA             ; WHEN DONE RE-
+        TAX             ; X REG
+        LDA     *NOIS+03 ; AND LEAVE WITH
+        RTS             ; WITH NO. IN ACC
+;
+;       NEW NOTE
+;
+; TAKES CARE OF PICKING PINK NOTE
+; FROM CANDIDATE NOTE TABLE AND
+; CALCULATES AND UPDATES NOTE TIMERS
+; NOTE THAT Y POINTS TO CHANNEL FOR
+; UPDATE
+;
+NWNT    LDX     05      ; SET UP PNT/CNT
+        LDA     *OUTS   ; GET COPY OF PINKING
+        DEC     *OUTS   ; COUNTER, DEC ORIGINAL
+        EOR     *OUTS   ; PATTERN OF CHANGED
+        STA     *OUTT   ; BITS - SAVE CHANGES
+        LDA     00      ; PREPARE TO SUM DICE
+NW1     LSR     *OUTT   ; CHECK FOR CHANGED
+        BCC     NW2     ; BIT - IF CHANGED
+        PHA             ; SAVE CURRENT TOTAL
+        JSR     RND     ; GET RANDOM NUBMER
+        AND     03      ; MAKE RANGE FROM 0 T0 3
+        STA     *RAND,X ; SAVE VALUE FOR NEXT
+        PLA             ; RECOVER TOTAL
+        CLC             ; PREPARE ADDITION
+NW2     ADC     *RAND,X ; ADD VALUE OF DIE
+        DEX             ; POINT TO NEXT
+        BNE     NW1     ; LOOP IF NOT DONE
+        TAX             ; USE TOTAL AS POINTER
+        LDA     *NBUF,X ; GET CANDIDATE
+        BEQ     DURA    ; ZERO, DO NOTE CHANGE
+        STA     NTB7,Y  ; PLACE IN TEMP BUFFER
+DURA    LDA     *NOIS+01 ; A CHEAP RANDOM NUMBER
+        CLC             ; PREPARE
+        AND     MASK,Y  ; MASK DURATION VALUE
+        ADC     TIME,Y  ; ADD MINIMUM VALUE
+        AND     0F      ; AND MASK RESULT
+        TAX             ; USE AS COUNTER AND
+        LDA     01      ; DO DURATIONS AS
+NT2     ROL             ; POWERS OF 2. CARRY
+        DEX             ; SET DOTS NOTE
+        BNE     NT2     ; NOT DONE - LOOP
+        STA     NTBB,Y  ; TIMER AND RETURN
+        RET
+;
+;       ALLOCATION 0151
+; SEES IF NEW NOTES ARE NEEDED AND IF
+; SO GETS THEM. ALSO CLEARS TRIGGER
+; OF NOTE OUTPUT ONCE IT HAS PLAYED
+;
+ALOC    LDX     04      ; DO 4 NOTE CHANNELS
+LP6     DEC     *NTBB,X ; DECREMENT NOTE TIMER
+        BNE     LP5     ; AND IF TIME OUT
+        TXA             ; TRANSFER X REG. TO
+        TAY             ; Y REG.
+        JSR     NEW     ; AND GET NEW NOTE
+        TYA             ; AND DURATION AND
+        TAX             ; RESTORE X
+LP5     DEX             ; DECRIMENT COUNTER
+        BNE     LP6     ; IF NOTE DONE - LOOP
+        LDX     04      ; AGAIN, FOUR CHANNELS
+AL1     LDA     *NTB7,X ; GET NOTE FROM TEMP
+        STA     *NT0B,x ; BUFFER, SAVE IN OUT
+        AND     3F      ; BUFFER, CLEAR FLAG
+        STA     *NTB7,X ; PUT BACK IN TEMP.
+        DEX             ; POINT TO NEXT
+        BNE     AL1     ; NOT DONE - LOOP
+        RTS
+;
+;       SET
+; PREPARES KNOWN START POINT FOR
+; CYCLIC TUNES
+;
+SET     LDA     00      ; TO ZERO THINGS WITH
+        LDY     01      ; PRESET FOR NOTE CNTRS
+        LDX     04      ; DO 4 CHANNLES
+LP10    STA     *NT0B,X ; ZERO OUT BUFFERS
+        STA     *RND0,X ; ZERO 4 DICE
+        STY     *NTBB,X ; PRESET NOTE TIMERS
+        PHA             ; SAVE THE ZERO
+        LDA     *NTMP,X ; SET UP RNDM'S S/R
+        STA     *NOIS,X ; AND CYCLE COUNTER
+        PLA             ; RECOVER ZERO
+        DEX             ; POINT TO NEXT
+        BNE     LP10    ; NOT DONE - LOOP
+        STA     *RND0   ; ZERO 5TH DIE
+        STA     *OUTS   ; ZERO PINKING COUNTER
+        RTS             ; AND RETURN
+
+        END
