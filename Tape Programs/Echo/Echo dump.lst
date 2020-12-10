@@ -1,0 +1,265 @@
+					org	$0000
+				;
+0000 : 20 21 0D 	" ! "		jsr	L0D21
+0003				X0003:
+0003 : A2 FF 		"  "		ldx	#$FF
+0005 : 9A 		" "		txs
+0006				L0006:
+0006 : A9 00 		"  "		lda	#$00
+0008				X0008:
+0008 : A2 3F 		" ?"		ldx	#$3F
+000A				L000A:
+000A : 9D 00 02 	"   "		sta	X0200,x
+000D : CA 		" "		dex
+000E : 10 FA 		"  "		bpl	L000A
+0010				L0010:
+0010 : 20 71 0D 	" q "		jsr	L0D71
+0013 : A0 0F 		"  "		ldy	#$0F
+0015 : A6 EA 		"  "		ldx	X00EA
+0017				L0017:
+0017 : 88 		" "		dey
+0018 : CA 		" "		dex
+0019 : D0 FC 		"  "		bne	L0017
+001B : 84 EB 		"  "		sty	X00EB
+001D : A6 BE 		"  "		ldx	X00BE
+001F : C6 EC 		"  "		dec	X00EC
+0021 : D0 09 		"  "		bne	L002C
+0023 : A5 BC 		"  "		lda	X00BC
+0025 : 85 EC 		"  "		sta	X00EC
+0027 : CA 		" "		dex
+0028 : 10 02 		"  "		bpl	L002C
+002A : A2 3F 		" ?"		ldx	#$3F
+002C				L002C:
+002C : 86 BE 		"  "		stx	X00BE
+002E : A5 DF 		"  "		lda	X00DF
+0030 : 9D 00 02 	"   "		sta	X0200,x
+0033 : A5 BB 		"  "		lda	X00BB
+0035 : 85 BA 		"  "		sta	X00BA
+0037				L0037:
+0037 : 8A 		" "		txa
+0038 : 18 		" "		clc
+0039 : 65 BD 		"e "		adc	X00BD
+003B : C9 40 		" @"		cmp	#$40
+003D : 90 03 		"  "		bcc	L0042
+003F : 38 		"8"		sec
+0040 : E9 40 		" @"		sbc	#$40
+0042				L0042:
+0042 : AA 		" "		tax
+0043 : BD 00 02 	"   "		lda	X0200,x
+0046 : 99 D0 00 	"   "		sta	X00D0,y
+0049 : 88 		" "		dey
+004A : C6 BA 		"  "		dec	X00BA
+004C : D0 E9 		"  "		bne	L0037
+004E : 20 2B 0D 	" + "		jsr	L0D2B
+0051 : A4 EB 		"  "		ldy	X00EB
+0053 : A6 BB 		"  "		ldx	X00BB
+0055 : A9 00 		"  "		lda	#$00
+0057				L0057:
+0057 : 99 D0 00 	"   "		sta	X00D0,y
+005A : 88 		" "		dey
+005B : CA 		" "		dex
+005C : D0 F9 		"  "		bne	L0057
+005E : 20 00 0F 	"   "		jsr	L0F00
+0061 : C9 04 		"  "		cmp	#$04
+0063 : 10 1B 		"  "		bpl	L0080
+0065 : 8C 20 08 	"   "		sty	X0820
+0068 : A9 FF 		"  "		lda	#$FF
+006A				L006A:
+006A : 18 		" "		clc
+006B : 69 04 		"i "		adc	#$04
+006D : 88 		" "		dey
+006E : 10 FA 		"  "		bpl	L006A
+0070 : AA 		" "		tax
+0071 : A0 03 		"  "		ldy	#$03
+0073				L0073:
+0073 : B5 9A 		"  "		lda	X009A,x
+0075 : 99 BA 00 	"   "		sta	X00BA,y
+0078 : CA 		" "		dex
+0079 : 88 		" "		dey
+007A : 10 F7 		"  "		bpl	L0073
+007C : 85 EA 		"  "		sta	X00EA
+007E : 30 90 		"0 "		bmi	L0010
+0080				L0080:
+0080 : F0 7E 		" ~"		beq	L0100
+0082 : C9 06 		"  "		cmp	#$06
+0084 : 30 80 		"0 "		bmi	L0006
+0086 : D0 06 		"  "		bne	L008E
+0088 : 20 21 0D 	" ! "		jsr	L0D21
+008B : 4C C0 FF 	"L  "		jmp	LFFC0
+				;
+008E				L008E:
+008E : C9 07 		"  "		cmp	#$07
+0090 : D0 05 		"  "		bne	L0097
+0092 : A0 5C 		" \"		ldy	#$5C
+0094 : 20 52 0D 	" R "		jsr	L0D52
+0097				L0097:
+0097 : 4C 10 10 	"L  "		jmp	L1010
+				;
+009A				X009A:
+009A : 01 07 		"  "		ora	(X0007,x)
+009C : 01 01 		"  "		ora	(X0001,x)
+009E : 01 07 		"  "		ora	(X0007,x)
+00A0 : 01 08 		"  "		ora	(X0008,x)
+00A2 : 01 03 		"  "		ora	(X0003,x)
+				;
+00A4 : 02 		" "		db	$02
+				;
+00A5 : 08 		" "		php
+00A6 : 01 03 		"  "		ora	(X0003,x)
+				;
+00A8 : 02 		" "		db	$02
+				;
+00A9 : 10 00 		"  "		bpl	L00AB
+00AB				L00AB:
+00AB : 00 		" "		brk
+				;
+00AC : FF 		" "		db	$FF
+00AD : FF 		" "		db	$FF
+				;
+00AE : 00 		" "		brk
+00AF : 00 		" "		brk
+				;
+00B0 : FF 		" "		db	$FF
+00B1 : FF 		" "		db	$FF
+				;
+00B2 : 00 		" "		brk
+00B3 : 00 		" "		brk
+				;
+00B4 : FF 		" "		db	$FF
+00B5 : FF 		" "		db	$FF
+				;
+00B6 : 00 		" "		brk
+00B7 : 00 		" "		brk
+				;
+00B8 : FF 		" "		db	$FF
+00B9 : FF 		" "		db	$FF
+				;
+00BA				X00BA:
+00BA : 01 03 		"  "		ora	(X0003,x)
+				;
+00BC				X00BC:
+00BC : 02 		" "		db	$02
+00BD				X00BD:
+00BD : 04 		" "		db	$04
+				;
+00BE				X00BE:
+00BE : 00 		" "		brk
+00BF : 00 		" "		brk
+				;
+00C0 : FF 		" "		db	$FF
+00C1 : FF 		" "		db	$FF
+				;
+00C2 : 00 		" "		brk
+00C3 : 00 		" "		brk
+				;
+00C4 : FF 		" "		db	$FF
+00C5 : FF 		" "		db	$FF
+				;
+00C6 : 00 		" "		brk
+00C7 : 00 		" "		brk
+				;
+00C8 : FF 		" "		db	$FF
+00C9 : FF 		" "		db	$FF
+				;
+00CA : 00 		" "		brk
+00CB : 00 		" "		brk
+				;
+00CC : FF 		" "		db	$FF
+00CD : FC 		" "		db	$FC
+				;
+00CE : 00 		" "		brk
+00CF : 00 		" "		brk
+				;
+00D0				X00D0:
+00D0 : FF 		" "		db	$FF
+00D1 : FF 		" "		db	$FF
+				;
+00D2 : 00 		" "		brk
+00D3 : 00 		" "		brk
+				;
+00D4 : FF 		" "		db	$FF
+00D5 : FF 		" "		db	$FF
+				;
+00D6 : 00 		" "		brk
+00D7 : 00 		" "		brk
+				;
+00D8 : FF 		" "		db	$FF
+00D9 : FF 		" "		db	$FF
+				;
+00DA : 00 		" "		brk
+00DB : 00 		" "		brk
+				;
+00DC : FF 		" "		db	$FF
+00DD : FF 		" "		db	$FF
+				;
+00DE : 00 		" "		brk
+00DF				X00DF:
+00DF : 00 		" "		brk
+				;
+00E0 : FF 		" "		db	$FF
+00E1 : FF 		" "		db	$FF
+				;
+00E2 : 00 		" "		brk
+00E3 : 00 		" "		brk
+				;
+00E4 : FF 		" "		db	$FF
+00E5 : FF 		" "		db	$FF
+				;
+00E6 : 00 		" "		brk
+00E7 : 00 		" "		brk
+00E8 : 40 		"@"		rti
+				;
+00E9 : 20 01 00 	"   "		jsr	X0001
+				;
+00EC				X00EC:
+00EC : FF 		" "		db	$FF
+
+;--------------------------------------------------------------
+Symbol table
+============
+
+Value	Type	Name
+-----	----	----
+0001	 04	X0001
+0003	 04	X0003
+0006	 04	L0006
+0007	 04	X0007
+0008	 04	X0008
+000A	 04	L000A
+0010	 04	L0010
+0017	 04	L0017
+002C	 04	L002C
+0037	 04	L0037
+0042	 04	L0042
+0057	 04	L0057
+006A	 04	L006A
+0073	 04	L0073
+0080	 04	L0080
+008E	 04	L008E
+0097	 04	L0097
+009A	 04	X009A
+00AB	 04	L00AB
+00BA	 04	X00BA
+00BB	 04	X00BB
+00BC	 04	X00BC
+00BD	 04	X00BD
+00BE	 04	X00BE
+00D0	 04	X00D0
+00DF	 04	X00DF
+00EA	 04	X00EA
+00EB	 04	X00EB
+00EC	 04	X00EC
+0100	 04	L0100
+0200	 04	X0200
+0820	 04	X0820
+0D21	 04	L0D21
+0D2B	 04	L0D2B
+0D52	 04	L0D52
+0D71	 04	L0D71
+0F00	 04	L0F00
+1010	 04	L1010
+FFC0	 04	LFFC0
+
+Number of symbols:			39
+
+;--------------------------------------------------------------
