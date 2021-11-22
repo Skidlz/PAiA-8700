@@ -8,6 +8,7 @@ Also includes:</br>
  - **Poly-Split** listing/binary/tape dump
  - **Seque** listing/binary/tape dump
  - **Pink Tunes** source/binary/tape dump
+ - **DrumSys 0.6** listing/source/binary/audio file
  - Test programs source/binary/tape dump
  
  - **PIEBUG** binary/source
@@ -17,6 +18,10 @@ Also includes:</br>
  - memory map
  
  - 600DPI scan on the Seque overlay
+
+.asm files can be assembled with [Frank's Cross Assembler (AS65)](http://www.kingswood-consulting.co.uk/assemblers/).
+
+Note the original code listing for DrumSys contains an error in the code/data alginment. Two versions are included here, and they correct the error in opposite ways. One shift the data, while the other shifts the code.
 
 ![PCB](https://github.com/Skidlz/PAiA-8700/blob/master/PAiA%208700%20Redraw%20white%20PCB.png)
 ![Schematic](https://github.com/Skidlz/PAiA-8700/blob/master/PAiA%208700%20Redraw%20white.png)
