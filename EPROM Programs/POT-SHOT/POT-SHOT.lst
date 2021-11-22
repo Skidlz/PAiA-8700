@@ -1,0 +1,241 @@
+	;
+	;	Disassembled by:
+	;		DASMx object code disassembler
+	;		(c) Copyright 1996-1999   Conquest Consultants
+	;		Version 1.30 (Oct  6 1999)
+	;
+	;	File:		C:\Users\zackary.nelson\Google Drive\Schematics\PAiA 8700\BINs\POT-SHOT.bin
+	;
+	;	Size:		256 bytes
+	;	Checksum:	7848
+	;	CRC-32:		D64544D1
+	;
+	;	Date:		Mon Jun 07 12:45:43 2021
+	;
+	;	CPU:		MOS Technology 6502 (MCS6500 family)
+	;
+	;
+	;
+		org	$0E00
+	;
+0E00 : 20 25 0E 	" % "		jsr	SENDBIT
+0E03 : 8C 20 08 	"   "		sty	DISPLY
+0E06 : A5 F4 		"  "		lda	BEGADR
+0E08 : 85 F6 		"  "		sta	PNTER
+0E0A : A5 F5 		"  "		lda	#BEGADR+1
+0E0C : 85 F7 		"  "		sta	#PNTER+1
+0E0E : A5 F0 		"  "		lda	COMAND
+0E10 : F0 07 		"  "		beq	MANUAL
+0E12 : 20 AA 0E 	"   "		jsr	CASS
+0E15 : 18 			" "			clc
+0E16 : 20 22 0F 	" " "		jsr	BEEP
+0E19				MANUAL:
+0E19 : 4C 52 0F 	"LR "		jmp	PIEBUG
+				;
+0E1C				DELAY:
+0E1C : 8D 00 09 	"   "		sta	PORT
+0E1F : A0 0F 		"  "		ldy	#$0F
+0E21				DLY:
+0E21 : 88 			" "			dey
+0E22 : D0 FD 		"  "		bne	DLY
+0E24 : 60 			"`"			rts
+				;
+0E25				SENDBIT:
+0E25 : 48 			"H"			pha
+0E26 : 8A 			" "			txa
+0E27 : 48 			"H"			pha
+0E28 : A2 10 		"  "		ldx	#$10
+0E2A : B0 02 		"  "		bcs	CYCLE
+0E2C : A2 08 		"  "		ldx	#$08
+0E2E				CYCLE:
+0E2E : A9 B0 		"  "		lda	#$B0
+0E30 : 20 1C 0E 	"   "		jsr	DELAY
+0E33 : A9 80 		"  "		lda	#$80
+0E35 : 20 1C 0E 	"   "		jsr	DELAY
+0E38 : CA 			" "			dex
+0E39 : D0 F3 		"  "		bne	CYCLE
+0E3B : A9 90 		"  "		lda	#$90
+0E3D : A2 10 		"  "		ldx	#$10
+0E3F				GAP:
+0E3F : 20 1C 0E 	"   "		jsr	DELAY
+0E42 : CA 			" "			dex
+0E43 : D0 FA 		"  "		bne	GAP
+0E45 : 68 			"h"			pla
+0E46 : AA 			" "			tax
+0E47 : 68 			"h"			pla
+0E48 : 60 			"`"			rts
+				;
+0E49				DETBIT:
+0E49 : 48 			"H"			pha
+0E4A : 8A 			" "			txa
+0E4B : 48 			"H"			pha
+0E4C				TONE:
+0E4C : AD 00 09 	"   "		lda	PORT
+0E4F : 10 FB 		"  "		bpl	TONE
+0E51 : A2 00 		"  "		ldx	#$00
+0E53				COUNT:
+0E53 : E8 			" "			inx
+0E54 : A0 23 		" #"		ldy	#$23
+0E56 : AD 00 09 	"   "		lda	PORT
+0E59 : 85 EF 		"  "		sta	STATUS
+0E5B				CHECK:
+0E5B : AD 00 09 	"   "		lda	PORT
+0E5E : 45 EF 		"E "		eor	STATUS
+0E60 : 30 F1 		"0 "		bmi	COUNT
+0E62 : 88 			" "			dey
+0E63 : D0 F6 		"  "		bne	CHECK
+0E65 : E0 08 		"  "		cpx	#$08
+0E67 : 90 E3 		"  "		bcc	TONE
+0E69 : E0 18 		"  "		cpx	#$18
+0E6B : 68 			"h"			pla
+0E6C : AA 			" "			tax
+0E6D : 68 			"h"			pla
+0E6E : 60 			"`"			rts
+				;
+0E6F				SNDBYT:
+0E6F : 18 			" "			clc
+0E70 : 20 25 0E 	" % "		jsr	SENDBIT
+0E73 : A2 09 		"  "		ldx	#$09
+0E75 : 38 			"8"			sec
+0E76				NEXT1:
+0E76 : 2A 			"*"			rol	a
+0E77 : 20 25 0E 	" % "		jsr	SENDBIT
+0E7A : CA 			" "			dex
+0E7B : D0 F9 		"  "		bne	NEXT1
+0E7D : 60 			"`"			rts
+				;
+0E7E				GETBYT:
+0E7E : 20 49 0E 	" I "		jsr	DETBIT
+0E81 : B0 FB 		"  "		bcs	GETBYT
+0E83 : A2 09 		"  "		ldx	#$09
+0E85				L0E85:
+0E85 : 2A 			"*"			rol	a
+0E86 : 20 49 0E 	" I "		jsr	DETBIT
+0E89 : CA 			" "			dex
+0E8A : D0 F9 		"  "		bne	L0E85
+0E8C : 60 			"`"			rts
+				;
+0E8D				CHKADD:
+0E8D : D8 			" "			cld
+0E8E : 18 			" "			clc
+0E8F : 65 EE 		"e "		adc	CHKSUM
+0E91 : 85 EE 		"  "		sta	CHKSUM
+0E93 : A5 F6 		"  "		lda	PNTER
+0E95 : 8D 20 08 	"   "		sta	DISPLY
+0E98 : C5 F2 		"  "		cmp	ENDADR
+0E9A : D0 06 		"  "		bne	INCPTR
+0E9C : A5 F7 		"  "		lda	X00F7
+0E9E : C5 F3 		"  "		cmp	X00F3
+0EA0 : F0 07 		"  "		beq	RET
+0EA2				INCPTR:
+0EA2 : E6 F6 		"  "		inc	PNTER
+0EA4 : D0 02 		"  "		bne	SKIP2
+0EA6 : E6 F7 		"  "		inc	X00F7
+0EA8				SKIP2:
+0EA8 : 18 			" "			clc
+0EA9				RET:
+0EA9 : 60 			"`"			rts
+				;
+0EAA				CASS:
+0EAA : 10 21 		" !"		bpl	LOAD
+0EAC : A2 FF 		"  "		ldx	#$FF
+0EAE				DUMP:
+0EAE : 38 			"8"			sec
+0EAF : 20 25 0E 	" % "		jsr	SENDBIT
+0EB2 : CA 			" "			dex
+0EB3 : D0 F9 		"  "		bne	DUMP
+0EB5 : 86 EE 		"  "		stx	CHKSUM
+0EB7 : A5 F1 		"  "		lda	IDENT
+0EB9 : 20 6F 0E 	" o "		jsr	SNDBYT
+0EBC				NEXT4:
+0EBC : A1 F6 		"  "		lda	(PNTER,x)
+0EBE : 20 6F 0E 	" o "		jsr	SNDBYT
+0EC1 : 20 8D 0E 	"   "		jsr	CHKADD
+0EC4 : 90 F6 		"  "		bcc	NEXT4
+0EC6 : A5 EE 		"  "		lda	CHKSUM
+0EC8 : 20 6F 0E 	" o "		jsr	SNDBYT
+0ECB : 8A 			" "			txa
+0ECC : 60 			"`"			rts
+				;
+0ECD				LOAD:
+0ECD : A2 14 		"  "		ldx	#$14
+0ECF				LOOP:
+0ECF : 20 49 0E 	" I "		jsr	DETBIT
+0ED2 : 90 F9 		"  "		bcc	LOAD
+0ED4 : CA 			" "			dex
+0ED5 : D0 F8 		"  "		bne	LOOP
+0ED7 : 20 7E 0E 	" ~ "		jsr	GETBYT
+0EDA : 8D 20 08 	"   "		sta	DISPLY
+0EDD : A4 F1 		"  "		ldy	IDENT
+0EDF : F0 04 		"  "		beq	SKIP3
+0EE1 : C5 F1 		"  "		cmp	IDENT
+0EE3 : D0 E8 		"  "		bne	LOAD
+0EE5				SKIP3:
+0EE5 : 86 EE 		"  "		stx	CHKSUM
+0EE7				NEXT5:
+0EE7 : 20 7E 0E 	" ~ "		jsr	GETBYT
+0EEA : 90 10 		"  "		bcc	ERROR
+0EEC : 81 F6 		"  "		sta	(PNTER,x)
+0EEE : 20 8D 0E 	"   "		jsr	CHKADD
+0EF1 : 90 F4 		"  "		bcc	NEXT5
+0EF3 : 20 7E 0E 	" ~ "		jsr	GETBYT
+0EF6 : A0 AA 		"  "		ldy	#$AA
+0EF8 : C5 EE 		"  "		cmp	CHKSUM
+0EFA : F0 02 		"  "		beq	SKIP4
+0EFC				ERROR:
+0EFC : A0 EE 		"  "		ldy	#$EE
+0EFE				SKIP4:
+0EFE : 98 			" "			tya
+0EFF : 60 			"`"			rts
+
+;--------------------------------------------------------------
+Symbol table
+============
+
+Value	Type	Name
+-----	----	----
+00EE	 04	CHKSUM
+00EF	 04	STATUS
+00F0	 04	COMAND
+00F1	 04	IDENT
+00F2	 04	ENDADR
+00F3	 04	X00F3 ;ENDADR+1
+00F4	 04	BEGADR
+00F5	 04	X00F5 ;BEGADR+1
+00F6	 04	PNTER
+00F7	 04	X00F7 ;PNTR+1
+0820	 04	DISPLY
+0900	 04	PORT
+0E19	 04	MANUAL
+0E1C	 04	DELAY
+0E21	 04	DLY
+0E25	 04	SENDBIT
+0E2E	 04	CYCLE
+0E3F	 04	GAP
+0E49	 04	DETBIT
+0E4C	 04	TONE
+0E53	 04	COUNT
+0E5B	 04	CHECK
+0E6F	 04	SNDBYT
+0E76	 04	NEXT1
+0E7E	 04	GETBYT
+0E85	 04	L0E85
+0E8D	 04	CHKADD
+0EA2	 04	INCPTR
+0EA8	 04	SKIP2
+0EA9	 04	RET
+0EAA	 04	CASS
+0EAE	 04	DUMP
+0EBC	 04	NEXT4
+0ECD	 04	LOAD
+0ECF	 04	LOOP
+0EE5	 04	SKIP3
+0EE7	 04	NEXT5
+0EFC	 04	ERROR
+0EFE	 04	SKIP4
+0F22	 04	BEEP
+0F52	 04	PIEBUG
+
+Number of symbols:			41
+
+;--------------------------------------------------------------

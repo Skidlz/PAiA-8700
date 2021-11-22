@@ -1,0 +1,248 @@
+				;
+				;	Disassembled by:
+				;		DASMx object code disassembler
+				;		(c) Copyright 1996-1999   Conquest Consultants
+				;		Version 1.30 (Oct  6 1999)
+				;
+				;	File:		PIEBUG.bin
+				;
+				;	Size:		256 bytes
+				;	Checksum:	9304
+				;	CRC-32:		525AADC8
+				;
+				;	Date:		Thu Nov 18 14:50:52 2021
+				;
+				;	CPU:		MOS Technology 6502 (MCS6500 family)
+				;
+				;
+				;
+					org	$0F00
+				;
+0F00				DECODE:
+0F00 : A0 00 		"  "		ldy	#$00
+0F02 : A2 21 		" !"		ldx	#$21
+0F04				LOOP:
+0F04 : A9 01 		"  "		lda	#$01
+0F06 : 85 EE 		"  "		sta	TEMP
+0F08				NEXT:
+0F08 : BD 00 08 	"   "		lda	KEY,x
+0F0B : 25 EE 		"% "		and	TEMP
+0F0D : D0 0A 		"  "		bne	RESULT
+0F0F : C8 			" "			iny
+0F10 : 06 EE 		"  "		asl	TEMP
+0F12 : 90 F4 		"  "		bcc	NEXT
+0F14 : 8A 			" "			txa
+0F15 : 0A 			" "			asl	a
+0F16 : AA 			" "			tax
+0F17 : 90 EB 		"  "		bcc	LOOP
+0F19				RESULT:
+0F19 : C4 F8 		"  "		cpy	LASTKE
+0F1B : 84 F8 		"  "		sty	LASTKE
+0F1D : 98 			" "			tya
+0F1E : 60 			"`"			rts
+				;
+0F1F				GETKEY:
+0F1F : 20 00 0F 	"   "		jsr	DECODE
+0F22 : A2 14 		"  "		ldx	#$14
+0F24				NXTX:
+0F24 : A0 3F 		" ?"		ldy	#$3F
+0F26				DELAY:
+0F26 : B0 03 		"  "		bcs	DLY
+0F28 : 8C 00 09 	"   "		sty	CASS
+0F2B				DLY:
+0F2B : 88 			" "			dey
+0F2C : D0 F8 		"  "		bne	DELAY
+0F2E : CA 			" "			dex
+0F2F : D0 F3 		"  "		bne	NXTX
+0F31 : B0 EC 		"  "		bcs	GETKEY
+0F33 : 60 			"`"			rts
+				;
+0F34				SHIFT:
+0F34 : 0A 			" "			asl	a
+0F35 : 0A 			" "			asl	a
+0F36 : 0A 			" "			asl	a
+0F37 : 0A 			" "			asl	a
+0F38 : A0 04 		"  "		ldy	#$04
+0F3A				ROTATE:
+0F3A : 2A 			"*"			rol	a
+0F3B : A2 FA 		"  "		ldx	#$FA
+0F3D				ROTNXT:
+0F3D : 36 F6 		"6 "		rol	PNTER,x
+0F3F : E8 			" "			inx
+0F40 : D0 FB 		"  "		bne	ROTNXT
+0F42 : 88 			" "			dey
+0F43 : D0 F5 		"  "		bne	ROTATE
+0F45 : 60 			"`"			rts
+				;
+0F46 : A9 00 		"  "		lda	#$00
+0F48 : 8D E0 08 	"   "		sta	X08E0
+0F4B : F0 08 		"  "		beq	COMAND
+0F4D				SHFTD:
+0F4D : 20 34 0F 	" 4 "		jsr	SHIFT
+0F50				DSPBUF:
+0F50 : A5 F0 		"  "		lda	BUFFER
+0F52				SEE:
+0F52 : 8D 20 08 	"   "		sta	DISP
+0F55				COMAND:
+0F55 : A6 ED 		"  "		ldx	MSTACK
+0F57 : 9A 			" "			txs
+0F58 : 20 1F 0F 	"   "		jsr	GETKEY
+0F5B : C9 10 		"  "		cmp	#$10
+0F5D : 90 EE 		"  "		bcc	SHFTD
+0F5F : A8 			" "			tay
+0F60 : BE E2 0F 	"   "		ldx	X0FE2,y
+0F63 : 86 EE 		"  "		stx	TEMP
+0F65 : A2 FF 		"  "		ldx	#$FF
+0F67 : 86 EF 		"  "		stx	X00EF
+0F69 : E8 			" "			inx
+0F6A : 6C EE 00 	"l  "		jmp	(TEMP)		;INFO: indirect jump
+				;
+0F6D : 18 			" "			clc
+0F6E : A5 F6 		"  "		lda	PNTER
+0F70 : 85 F0 		"  "		sta	BUFFER
+0F72 : A5 F7 		"  "		lda	X00F7
+0F74 : 85 F1 		"  "		sta	X00F1
+0F76 : B0 D8 		"  "		bcs	DSPBUF
+0F78 : 90 D8 		"  "		bcc	SEE
+0F7A : A5 F0 		"  "		lda	BUFFER
+0F7C : 85 F6 		"  "		sta	PNTER
+0F7E : A5 F1 		"  "		lda	X00F1
+0F80 : 85 F7 		"  "		sta	X00F7
+0F82 : B0 14 		"  "		bcs	LOAD
+0F84 : A5 F6 		"  "		lda	PNTER
+0F86 : D0 02 		"  "		bne	SKIP
+0F88 : C6 F7 		"  "		dec	X00F7
+0F8A				SKIP:
+0F8A : C6 F6 		"  "		dec	PNTER
+0F8C : B0 0A 		"  "		bcs	LOAD
+0F8E : A5 F0 		"  "		lda	BUFFER
+0F90 : 81 F6 		"  "		sta	(PNTER,x)
+0F92 : E6 F6 		"  "		inc	PNTER
+0F94 : D0 02 		"  "		bne	LOAD
+0F96 : E6 F7 		"  "		inc	X00F7
+0F98				LOAD:
+0F98 : A1 F6 		"  "		lda	(PNTER,x)
+0F9A				STABUF:
+0F9A : 85 F0 		"  "		sta	BUFFER
+0F9C : B0 B2 		"  "		bcs	DSPBUF
+0F9E : D8 			" "			cld
+0F9F : 18 			" "			clc
+0FA0 : A5 F0 		"  "		lda	BUFFER
+0FA2 : E5 F6 		"  "		sbc	PNTER
+0FA4 : 85 F0 		"  "		sta	BUFFER
+0FA6 : A5 F1 		"  "		lda	X00F1
+0FA8 : E5 F7 		"  "		sbc	X00F7
+0FAA : A8 			" "			tay
+0FAB : A5 F0 		"  "		lda	BUFFER
+0FAD : B0 08 		"  "		bcs	POS
+0FAF : 10 0A 		"  "		bpl	BAD
+0FB1 : C8 			" "			iny
+0FB2				CHK:
+0FB2 : 98 			" "			tya
+0FB3 : D0 06 		"  "		bne	BAD
+0FB5 : F0 99 		"  "		beq	DSPBUF
+0FB7				POS:
+0FB7 : 30 02 		"0 "		bmi	BAD
+0FB9 : 10 F7 		"  "		bpl	CHK
+0FBB				BAD:
+0FBB : 8A 			" "			txa
+0FBC : 38 			"8"			sec
+0FBD : B0 DB 		"  "		bcs	STABUF
+0FBF : EA 			" "			nop
+0FC0 : 85 F9 		"  "		sta	ACC
+0FC2 : 84 FA 		"  "		sty	YREG
+0FC4 : 86 FB 		"  "		stx	XREG
+0FC6 : 68 			"h"			pla
+0FC7 : 85 FF 		"  "		sta	PREG
+0FC9 : 68 			"h"			pla
+0FCA : D8 			" "			cld
+0FCB : 38 			"8"			sec
+0FCC : E9 02 		"  "		sbc	#$02
+0FCE : 85 FC 		"  "		sta	PC
+0FD0 : 68 			"h"			pla
+0FD1 : E9 00 		"  "		sbc	#$00
+0FD3 : 85 FD 		"  "		sta	X00FD
+0FD5 : BA 			" "			tsx
+0FD6 : 86 FE 		"  "		stx	STACKP
+0FD8 : A9 BB 		"  "		lda	#$BB
+0FDA : B0 BE 		"  "		bcs	STABUF
+0FDC : A6 FE 		"  "		ldx	STACKP
+0FDE : 9A 			" "			txs
+0FDF : A5 F1 		"  "		lda	X00F1
+0FE1 : 48 			"H"			pha
+0FE2				X0FE2:
+0FE2 : A5 F0 		"  "		lda	BUFFER
+0FE4 : 48 			"H"			pha
+0FE5 : A5 FF 		"  "		lda	PREG
+0FE7 : 48 			"H"			pha
+0FE8 : A6 FB 		"  "		ldx	XREG
+0FEA : A4 FA 		"  "		ldy	YREG
+0FEC : A5 F9 		"  "		lda	ACC
+0FEE : 40 			"@"			rti
+0FEF : 4C 00 0E 	"L  "		jmp	TAPE1
+				;
+0FF2 : DC 		" "		db	$DC
+0FF3 : 7A 		"z"		db	$7A
+0FF4 : 84 				db	$84
+0FF5 : 8E 		"  "	db	$8E
+0FF6 : 6D 				db	$6D
+0FF7 : 6E 				db	$6E
+0FF8 : EF  				db	$EF
+0FF9 : 9E 		" "		db	$9E
+
+0FFA : 03 		" "		db	$03
+0FFB : 00 		" "		db	$00
+0FFC : 46 				db	$46
+OFFD : 0F 		"F "	db	$0F
+0FFE : 00 		" "		db	$00
+0FFF : 00 		" "		db	$00
+
+;--------------------------------------------------------------
+Symbol table
+============
+
+Value	Type	Name
+-----	----	----
+0000	 04	L0000
+00ED	 04	MSTACK
+00EE	 04	TEMP
+00EF	 04	X00EF ;TEMP+1
+00F0	 04	BUFFER
+00F1	 04	X00F1 ;BUFFER+1
+00F6	 04	PNTER
+00F7	 04	X00F7 ;PNTR+1
+00F8	 04	LASTKE
+00F9	 04	ACC
+00FA	 04	YREG
+00FB	 04	XREG
+00FC	 04	PC
+00FD	 04	X00FD ;PC+1
+00FE	 04	STACKP
+00FF	 04	PREG
+0800	 04	KEY
+0820	 04	DISP
+08E0	 04	X08E0
+0900	 04	CASS
+0E00	 04	TAPE1
+0F00	 04	DECODE
+0F04	 04	LOOP
+0F08	 04	NEXT
+0F19	 04	RESULT
+0F1F	 04	GETKEY
+0F24	 04	NXTX
+0F26	 04	DELAY
+0F2B	 04	DLY
+0F34	 04	SHIFT
+0F3A	 04	ROTATE
+0F3D	 04	ROTNXT
+0F4D	 04	SHFTD
+0F50	 04	DSPBUF
+0F52	 04	SEE
+0F55	 04	COMAND
+0F8A	 04	SKIP
+0F98	 04	LOAD
+0F9A	 04	STABUF
+0FB2	 04	CHK
+0FB7	 04	POS
+0FBB	 04	BAD
+0FE2	 04	X0FE2 ;TABLE-16
