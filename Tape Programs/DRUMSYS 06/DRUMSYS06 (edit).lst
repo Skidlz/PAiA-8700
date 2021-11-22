@@ -1,0 +1,252 @@
+				;
+				;	Disassembled by:
+				;		DASMx object code disassembler
+				;		(c) Copyright 1996-1999   Conquest Consultants
+				;		Version 1.30 (Oct  6 1999)
+				;
+				;	File:		G:\My Drive\Schematics\PAiA 8700\Tape Programs\DRUMSYS 06\DRUMSYS06 (edit).bin
+				;
+				;	Size:		256 bytes
+				;	Checksum:	85C7
+				;	CRC-32:		9CE2C45B
+				;
+				;	Date:		Thu Nov 18 13:47:02 2021
+				;
+				;	CPU:		MOS Technology 6502 (MCS6500 family)
+				;
+				;
+				;
+					org	$0000
+				;
+0000				L0000:
+0000 : A9 86 		"  "		lda	#$86
+0002 : 85 38 		" 8"		sta	X0038
+0004 : EA 		" "		nop
+0005 : A9 00 		"  "		lda	#$00
+0007 : 85 E9 		"  "		sta	X00E9
+0009 : 8D 20 08 	"   "		sta	X0820
+000C : AA 		" "		tax
+000D				L000D:
+000D : 9D 00 01 	"   "		sta	X0100,x
+0010 : E8 		" "		inx
+0011 : D0 FA 		"  "		bne	L000D
+0013				L0013:
+0013 : 20 52 00 	" R "		jsr	L0052
+0016 : B0 1F 		"  "		bcs	L0037
+0018 : C9 10 		"  "		cmp	#$10
+001A : B0 16 		"  "		bcs	L0032
+001C : C9 08 		"  "		cmp	#$08
+001E : B0 E0 		"  "		bcs	L0000
+0020 : A9 86 		"  "		lda	#$86
+0022 : 85 38 		" 8"		sta	X0038
+0024 : B9 D9 00 	"   "		lda	X00D9,y
+0027 : A6 E9 		"  "		ldx	X00E9
+0029 : 9D 00 01 	"   "		sta	X0100,x
+002C : 20 3D 00 	" = "		jsr	L003D
+002F : 4C 13 00 	"L  "		jmp	L0013
+				;
+0032				L0032:
+0032 : B9 D1 00 	"   "		lda	X00D1,y
+0035 : 85 38 		" 8"		sta	X0038
+0037				L0037:
+0037 : 20 86 00 	"   "		jsr	L0086
+003A : 4C 13 00 	"L  "		jmp	L0013
+				;
+003D				L003D:
+003D : A4 EB 		"  "		ldy	X00EB
+003F : 8D 40 08 	" @ "		sta	X0840
+0042 : 29 7F 		") "		and	#$7F
+0044				L0044:
+0044 : 88 		" "		dey
+0045 : D0 FD 		"  "		bne	L0044
+0047 : 8D 40 08 	" @ "		sta	X0840
+004A : E6 E9 		"  "		inc	X00E9
+004C : A6 E9 		"  "		ldx	X00E9
+004E : 8E 20 08 	"   "		stx	X0820
+0051 : 60 		"`"		rts
+				;
+0052				L0052:
+0052 : 20 00 FF 	"   "		jsr	LFF00
+0055 : B0 05 		"  "		bcs	L005C
+0057 : A2 00 		"  "		ldx	#$00
+0059 : 86 EC 		"  "		stx	X00EC
+005B : 60 		"`"		rts
+				;
+005C				L005C:
+005C : A2 20 		"  "		ldx	#$20
+005E				L005E:
+005E : A0 3F 		" ?"		ldy	#$3F
+0060				L0060:
+0060 : 88 		" "		dey
+0061 : D0 FD 		"  "		bne	L0060
+0063 : CA 		" "		dex
+0064 : D0 F8 		"  "		bne	L005E
+0066 : E6 EC 		"  "		inc	X00EC
+0068 : 60 		"`"		rts
+				;
+0069 : A5 7B 		" {"		lda	X007B
+006B : 85 38 		" 8"		sta	X0038
+006D				L006D:
+006D : A9 00 		"  "		lda	#$00
+006F : 85 E9 		"  "		sta	X00E9
+0071				L0071:
+0071 : A6 E9 		"  "		ldx	X00E9
+0073 : BD 00 01 	"   "		lda	X0100,x
+0076 : F0 F5 		"  "		beq	L006D
+0078 : 20 3D 00 	" = "		jsr	L003D
+007B				X007B:
+007B : A5 EC 		"  "		lda	X00EC
+007D : 45 EA 		"E "		eor	X00EA
+007F : D0 04 		"  "		bne	L0085
+0081 : 85 EC 		"  "		sta	X00EC
+0083 : F0 EC 		"  "		beq	L0071
+0085				L0085:
+0085 : 60 		"`"		rts
+				;
+0086				L0086:
+0086 : A5 85 		"  "		lda	L0085
+0088 : 85 38 		" 8"		sta	X0038
+008A : D0 E5 		"  "		bne	L0071
+008C : A5 95 		"  "		lda	X0095
+008E : 85 38 		" 8"		sta	X0038
+0090 : C6 E9 		"  "		dec	X00E9
+0092 : D0 DD 		"  "		bne	L0071
+0094 : 60 		"`"		rts
+				;
+0095				X0095:
+0095 : A5 85 		"  "		lda	L0085
+0097 : 85 38 		" 8"		sta	X0038
+0099 : C6 E9 		"  "		dec	X00E9
+009B : 60 		"`"		rts
+				;
+009C : A5 A4 		"  "		lda	X00A4
+009E : 85 38 		" 8"		sta	X0038
+00A0 : A9 00 		"  "		lda	#$00
+00A2 : 85 EA 		"  "		sta	X00EA
+00A4				X00A4:
+00A4 : E6 EA 		"  "		inc	X00EA
+00A6 : 60 		"`"		rts
+				;
+00A7				L00A7:
+00A7 : A2 07 		"  "		ldx	#$07
+00A9				L00A9:
+00A9 : B5 D1 		"  "		lda	X00D1,x
+00AB : 95 F0 		"  "		sta	X00F0,x
+00AD : CA 		" "		dex
+00AE : D0 F9 		"  "		bne	L00A9
+00B0 : 60 		"`"		rts
+				;
+00B1 : 20 A7 00 	"   "		jsr	L00A7
+00B4 : A9 DD 		"  "		lda	#$DD
+00B6 : D0 05 		"  "		bne	L00BD
+00B8				X00B8:
+00B8 : 20 A7 00 	"   "		jsr	L00A7
+00BB : A9 11 		"  "		lda	#$11
+00BD				L00BD:
+00BD : 20 25 0E 	" % "		jsr	L0E25
+00C0 : 20 AA 0E 	"   "		jsr	L0EAA
+00C3 : A5 85 		"  "		lda	L0085
+00C5 : 85 38 		" 8"		sta	X0038
+00C7 : 18 		" "		clc
+00C8 : 20 22 0F 	" " "		jsr	L0F22
+00CB : 60 		"`"		rts
+				;
+00CC : C6 E9 		"  "		dec	X00E9
+00CE : 4C 71 00 	"Lq "		jmp	L0071
+				;
+00D1				X00D1:
+00D1 : FF 		" "		db	$FF
+				;
+00D2 : 00 		" "		brk
+				;
+00D3 : 80 		" "		db	$80
+				;
+00D4 : 01 00 		"  "		ora	(L0000,x)
+00D6 : 01 00 		"  "		ora	(L0000,x)
+00D8 : 01 FF 		"  "		ora	(X00FF,x)
+00DA : FE FD F3 	"   "		inc	XF3FD,x
+				;
+00DD : F7 		" "		db	$F7
+00DE : EF 		" "		db	$EF
+00DF : DF 		" "		db	$DF
+00E0 : BF 		" "		db	$BF
+				;
+00E1 : 69 9C 		"i "		adc	#$9C
+00E3 : 8C 86 7B 	"  {"		sty	X7B86
+00E6 : B1 B8 		"  "		lda	(X00B8),y
+00E8 : CC 00 08 	"   "		cpy	X0800
+00EB				X00EB:
+00EB : 20 FF FF 	"   "		jsr	LFFFF
+				;
+00EE : FF 		" "		db	$FF
+00EF : FF 		" "		db	$FF
+00F0				X00F0:
+00F0 : FF 		" "		db	$FF
+00F1 : FF 		" "		db	$FF
+00F2 : FF 		" "		db	$FF
+00F3 : FF 		" "		db	$FF
+00F4 : FF 		" "		db	$FF
+00F5 : FF 		" "		db	$FF
+				;
+00F6 : F6 F7 		"  "		inc	X00F7,x
+00F8 : F8 		" "		sed
+00F9 : F9 FA FB 	"   "		sbc	XFBFA,y
+				;
+00FC : FC 		" "		db	$FC
+				;
+00FD : FD FF 00 	"   "		sbc	X00FF,x
+
+;--------------------------------------------------------------
+Symbol table
+============
+
+Value	Type	Name
+-----	----	----
+0000	 04	L0000
+000D	 04	L000D
+0013	 04	L0013
+0032	 04	L0032
+0037	 04	L0037
+0038	 04	X0038
+003D	 04	L003D
+0044	 04	L0044
+0052	 04	L0052
+005C	 04	L005C
+005E	 04	L005E
+0060	 04	L0060
+006D	 04	L006D
+0071	 04	L0071
+007B	 04	X007B
+0085	 04	L0085
+0086	 04	L0086
+0095	 04	X0095
+00A4	 04	X00A4
+00A7	 04	L00A7
+00A9	 04	L00A9
+00B8	 04	X00B8
+00BD	 04	L00BD
+00D1	 04	X00D1
+00D9	 04	X00D9
+00E9	 04	X00E9
+00EA	 04	X00EA
+00EB	 04	X00EB
+00EC	 04	X00EC
+00F0	 04	X00F0
+00F7	 04	X00F7
+00FF	 04	X00FF
+0100	 04	X0100
+0800	 04	X0800
+0820	 04	X0820
+0840	 04	X0840
+0E25	 04	L0E25
+0EAA	 04	L0EAA
+0F22	 04	L0F22
+7B86	 04	X7B86
+F3FD	 04	XF3FD
+FBFA	 04	XFBFA
+FF00	 04	LFF00
+FFFF	 04	LFFFF
+
+Number of symbols:			44
+
+;--------------------------------------------------------------
