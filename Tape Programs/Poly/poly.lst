@@ -1,0 +1,186 @@
+				;
+				;	Disassembled by:
+				;		DASMx object code disassembler
+				;		(c) Copyright 1996-1999   Conquest Consultants
+				;		Version 1.30 (Oct  6 1999)
+				;
+				;	File:		poly.bin
+				;
+				;	Size:		197 bytes
+				;	Checksum:	6C75
+				;	CRC-32:		F75C9DF8
+				;
+				;	Date:		Thu Mar 03 21:55:20 2022
+				;
+				;	CPU:		MOS Technology 6502 (MCS6500 family)
+				;
+				;
+				;
+					org	$0006
+				;
+0006				L0006:
+0006 : A9 00 		"  "		lda	#$00
+0008				L0008:
+0008 : A2 18 		"  "		ldx	#$18
+000A				L000A:
+000A : 95 CF 		"  "		sta	X00CF,x
+000C : CA 		" "		dex
+000D : D0 FB 		"  "		bne	L000A
+000F				L000F:
+000F : A2 08 		"  "		ldx	#$08
+0011				L0011:
+0011 : B5 D7 		"  "		lda	X00D7,x
+0013 : 18 		" "		clc
+0014 : 75 DF 		"u "		adc	X00DF,x
+0016 : 8D 00 09 	"   "		sta	X0900
+0019 : 9D F7 09 	"   "		sta	X09F7,x
+001C : A0 04 		"  "		ldy	#$04
+001E				L001E:
+001E : 88 		" "		dey
+001F : D0 FD 		"  "		bne	L001E
+0021 : CA 		" "		dex
+0022 : D0 ED 		"  "		bne	L0011
+0024 : A2 08 		"  "		ldx	#$08
+0026 : A9 00 		"  "		lda	#$00
+0028				L0028:
+0028 : 95 CF 		"  "		sta	X00CF,x
+002A : CA 		" "		dex
+002B : D0 FB 		"  "		bne	L0028
+002D : A2 08 		"  "		ldx	#$08
+002F				L002F:
+002F : 2C 10 08 	",  "		bit	X0810
+0032 : 30 FB 		"0 "		bmi	L002F
+0034				L0034:
+0034 : 2C 10 08 	",  "		bit	X0810
+0037 : 30 0F 		"0 "		bmi	L0048
+0039 : 50 F9 		"P "		bvc	L0034
+003B : AD 10 08 	"   "		lda	X0810
+003E : 95 CF 		"  "		sta	X00CF,x
+0040				L0040:
+0040 : CD 10 08 	"   "		cmp	X0810
+0043 : F0 FB 		"  "		beq	L0040
+0045 : CA 		" "		dex
+0046 : D0 EC 		"  "		bne	L0034
+0048				L0048:
+0048 : E6 E8 		"  "		inc	X00E8
+004A : A5 E8 		"  "		lda	X00E8
+004C : 8D 20 08 	"   "		sta	X0820
+004F : EA 		" "		nop
+0050 : EA 		" "		nop
+0051 : EA 		" "		nop
+0052 : A5 EA 		"  "		lda	X00EA
+0054 : 85 EB 		"  "		sta	X00EB
+0056 : A2 08 		"  "		ldx	#$08
+0058				L0058:
+0058 : A9 BF 		"  "		lda	#$BF
+005A : 35 D7 		"5 "		and	X00D7,x
+005C : 95 D7 		"  "		sta	X00D7,x
+005E : CA 		" "		dex
+005F : D0 F7 		"  "		bne	L0058
+0061 : A9 09 		"  "		lda	#$09
+0063 : 85 E9 		"  "		sta	X00E9
+0065				L0065:
+0065 : C6 E9 		"  "		dec	X00E9
+0067 : F0 23 		" #"		beq	L008C
+0069 : A6 E9 		"  "		ldx	X00E9
+006B : B4 CF 		"  "		ldy	X00CF,x
+006D : F0 1D 		"  "		beq	L008C
+006F : A2 09 		"  "		ldx	#$09
+0071				L0071:
+0071 : CA 		" "		dex
+0072 : F0 F1 		"  "		beq	L0065
+0074 : 98 		" "		tya
+0075 : 55 D7 		"U "		eor	X00D7,x
+0077 : 0A 		" "		asl	a
+0078 : 0A 		" "		asl	a
+0079 : D0 F6 		"  "		bne	L0071
+007B : 98 		" "		tya
+007C : 15 D7 		"  "		ora	X00D7,x
+007E : 95 D7 		"  "		sta	X00D7,x
+0080 : C6 EB 		"  "		dec	X00EB
+0082 : F0 31 		" 1"		beq	L00B5
+0084 : A6 E9 		"  "		ldx	X00E9
+0086 : A9 00 		"  "		lda	#$00
+0088 : 95 CF 		"  "		sta	X00CF,x
+008A : F0 D9 		"  "		beq	L0065
+008C				L008C:
+008C : A9 00 		"  "		lda	#$00
+008E : A2 09 		"  "		ldx	#$09
+0090				L0090:
+0090 : CA 		" "		dex
+0091 : F0 22 		" ""		beq	L00B5
+0093 : B4 CF 		"  "		ldy	X00CF,x
+0095 : F0 F9 		"  "		beq	L0090
+0097 : 95 CF 		"  "		sta	X00CF,x
+0099 : A2 09 		"  "		ldx	#$09
+009B				L009B:
+009B : CA 		" "		dex
+009C : F0 17 		"  "		beq	L00B5
+009E : A9 40 		" @"		lda	#$40
+00A0 : 35 D7 		"5 "		and	X00D7,x
+00A2 : D0 F7 		"  "		bne	L009B
+00A4 : A9 80 		"  "		lda	#$80
+00A6 : 35 D7 		"5 "		and	X00D7,x
+00A8 : 95 D7 		"  "		sta	X00D7,x
+00AA : 98 		" "		tya
+00AB : 15 D7 		"  "		ora	X00D7,x
+00AD : 95 D7 		"  "		sta	X00D7,x
+00AF : C6 EB 		"  "		dec	X00EB
+00B1 : F0 02 		"  "		beq	L00B5
+00B3 : D0 D7 		"  "		bne	L008C
+00B5				L00B5:
+00B5 : 20 00 FF 	"   "		jsr	LFF00
+00B8 : C9 04 		"  "		cmp	#$04
+00BA : B0 03 		"  "		bcs	L00BF
+00BC : 4C 06 00 	"L  "		jmp	L0006
+				;
+00BF				L00BF:
+00BF : C9 08 		"  "		cmp	#$08
+00C1 : B0 05 		"  "		bcs	L00C8
+00C3 : A9 2E 		" ."		lda	#$2E
+00C5 : 4C 08 00 	"L  "		jmp	L0008
+00C8				L00C8:
+00C8 : 4C 0F 00 	"L  "		jmp	L000F
+
+;--------------------------------------------------------------
+Symbol table
+============
+
+Value	Type	Name
+-----	----	----
+0006	 04	L0006
+0008	 04	L0008
+000A	 04	L000A
+000F	 04	L000F
+0011	 04	L0011
+001E	 04	L001E
+0028	 04	L0028
+002F	 04	L002F
+0034	 04	L0034
+0040	 04	L0040
+0048	 04	L0048
+0058	 04	L0058
+0065	 04	L0065
+0071	 04	L0071
+008C	 04	L008C
+0090	 04	L0090
+009B	 04	L009B
+00B5	 04	L00B5
+00BF	 04	L00BF
+00C8	 04	L00C8
+00CF	 04	X00CF
+00D7	 04	X00D7
+00DF	 04	X00DF
+00E8	 04	X00E8
+00E9	 04	X00E9
+00EA	 04	X00EA
+00EB	 04	X00EB
+0810	 04	X0810
+0820	 04	X0820
+0900	 04	X0900
+09F7	 04	X09F7
+FF00	 04	LFF00
+
+Number of symbols:			32
+
+;--------------------------------------------------------------
