@@ -1,0 +1,148 @@
+					org	$0000
+				;
+0000 : 4C 03 00 	"L  "		jmp	PINK
+				;
+0003				PINK:
+0003 : A2 FF 		"  "		ldx	#$FF
+0005 : 9A 			" "			txs
+0006 : D8 			" "			cld
+0007 : 86 B1 		"  "		stx	KEY
+0009				KEYLOOP:
+0009 : A5 B1 		"  "		lda	KEY
+000B : 8D 20 08 	"   "		sta	DISP
+000E : E6 B1 		"  "		inc	KEY
+0010 : 45 B1 		"E "		eor	KEY
+0012 : 85 B2 		"  "		sta	DELTA
+0014 : A2 04 		"  "		ldx	#$04
+0016 : A0 00 		"  "		ldy	#$00
+0018				VOXLOOP:
+0018 : A9 00 		"  "		lda	#$00
+001A : 95 B4 		"  "		sta	NOTESTAT,x
+001C : A9 08 		"  "		lda	#$08
+001E : 85 B3 		"  "		sta	NUMBIT
+0020 : A5 B2 		"  "		lda	DELTA
+0022				RNDLOOP:
+0022 : 2A 			"*"			rol	a
+0023 : 48 			"H"			pha
+0024 : 90 0C 		"  "		bcc	ADDEM
+0026				PICK:
+0026 : 20 83 00 	"   "		jsr	L0083
+0029 : 29 07 		") "		and	#$07
+002B : C9 05 		"  "		cmp	#$05
+002D : B0 F7 		"  "		bcs	PICK
+002F : 99 00 01 	"   "		sta	RANDOM,y
+0032				ADDEM:
+0032 : B9 00 01 	"   "		lda	RANDOM,y
+0035 : 18 			" "			clc
+0036 : 75 B4 		"u "		adc	NOTESTAT,x
+0038 : 95 B4 		"  "		sta	NOTESTAT,x
+003A : C8 			" "			iny
+003B : 68 			"h"			pla
+003C : C6 B3 		"  "		dec	NUMBIT
+003E : D0 E2 		"  "		bne	RNDLOOP
+0040 : CA 			" "			dex
+0041 : D0 D5 		"  "		bne	VOXLOOP
+0043 : A9 C0 		"  "		lda	#$C0
+0045 : 20 5B 00 	" [ "		jsr	PLAY
+0048 : A9 00 		"  "		lda	#$00
+004A : 20 5B 00 	" [ "		jsr	PLAY
+004D : A2 04 		"  "		ldx	#$04
+004F				SCALOOP:
+004F : B4 B4 		"  "		ldy	NOTESTAT,x
+0051 : B9 BD 00 	"   "		lda	SCALE,y
+0054 : 95 B8 		"  "		sta	X00B8,x
+0056 : CA 			" "			dex
+0057 : D0 F6 		"  "		bne	SCALOOP
+0059 : F0 AE 		"  "		beq	KEYLOOP
+005B				PLAY:
+005B : 85 B4 		"  "		sta	NOTESTAT
+005D : A9 20 		"  "		lda	#$20
+005F : 85 DD 		"  "		sta	COUNTEMP
+0061				TEMPLOOP:
+0061 : A2 04 		"  "		ldx	#$04
+0063				UPDATE:
+0063 : B5 B8 		"  "		lda	X00B8,x
+0065 : B4 B4 		"  "		ldy	NOTESTAT,x
+0067 : D9 BD 00 	"   "		cmp	SCALE,y
+006A : D0 02 		"  "		bne	CHOP
+006C : 09 C0 		"  "		ora	#$C0
+006E				CHOP:
+006E : 05 B4 		"  "		ora	NOTESTAT
+0070 : 8D 00 09 	"   "		sta	DAC
+0073 : 9D FB 09 	"   "		sta	QUASH,x
+0076 : A0 25 		" %"		ldy	#$25
+0078				SETTLE:
+0078 : 88 			" "			dey
+0079 : D0 FD 		"  "		bne	SETTLE
+007B : CA 			" "			dex
+007C : D0 E5 		"  "		bne	UPDATE
+007E : C6 DD 		"  "		dec	COUNTEMP
+0080 : D0 DF 		"  "		bne	TEMPLOOP
+0082 : 60 			"`"			rts
+					;
+0083				L0083:
+0083 : 98 			" "			tya
+0084 : 48 			"H"			pha
+0085 : A4 AC 		"  "		ldy	BYT1
+0087 : A5 AD 		"  "		lda	BYT2
+0089 : 84 AD 		"  "		sty	BYT2
+008B : A4 AE 		"  "		ldy	BYT3
+008D : 85 AE 		"  "		sta	BYT3
+008F : A5 AF 		"  "		lda	BYT4
+0091 : 84 AF 		"  "		sty	BYT4
+0093 : 84 B0 		"  "		sty	SHREG
+0095 : 06 B0 		"  "		asl	SHREG
+0097 : 2A 			"*"			rol	a
+0098 : 85 AC 		"  "		sta	BYT1
+009A : 06 B0 		"  "		asl	SHREG
+009C : 2A 			"*"			rol	a
+009D : 06 B0 		"  "		asl	SHREG
+009F : 2A 			"*"			rol	a
+00A0 : 06 B0 		"  "		asl	SHREG
+00A2 : 2A 			"*"			rol	a
+00A3 : 45 AC 		"E "		eor	BYT1
+00A5 : 85 AC 		"  "		sta	BYT1
+00A7 : 68 			"h"			pla
+00A8 : A8 			" "			tay
+00A9 : A5 AC 		"  "		lda	BYT1
+00AB : 60 			"`"			rts
+
+;--------------------------------------------------------------
+Symbol table
+============
+
+Value	Type	Name
+-----	----	----
+0003	 04	PINK
+0009	 04	KEYLOOP
+0018	 04	VOXLOOP
+0022	 04	RNDLOOP
+0026	 04	PICK
+0032	 04	ADDEM
+004F	 04	SCALOOP
+005B	 04	PLAY
+0061	 04	TEMPLOOP
+0063	 04	UPDATE
+006E	 04	CHOP
+0078	 04	SETTLE
+0082	 04	DELTA
+0083	 04	L0083
+00AC	 04	BYT1
+00AD	 04	BYT2
+00AE	 04	BYT3
+00AF	 04	BYT4
+00B0	 04	SHREG
+00B1	 04	KEY
+00B3	 04	NUMBIT
+00B4	 04	NOTESTAT
+00B8	 04	X00B8	;OLD-1
+00BD	 04	SCALE
+00DD	 04	COUNTEMP
+0100	 04	RANDOM
+0820	 04	DISP
+0900	 04	DAC
+09FB	 04	QUASH
+
+Number of symbols:			29
+
+;--------------------------------------------------------------
