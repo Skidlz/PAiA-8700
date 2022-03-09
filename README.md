@@ -18,7 +18,7 @@ Also includes:</br>
 ###### EPROM PROGRAMS ######
  - [**PIEBUG**](EPROM%20Programs/PIEBUG) binary/source
  - [**POT-SHOT**](EPROM%20Programs/POT-SHOT) binary
- - [**MUS-1**](EPROM%20Programs/MUS-1) binary
+ - [**MUS-1**](EPROM%20Programs/MUS-1) listing/source/binary
  
 ###### EXTRAS ######
  - memory map
