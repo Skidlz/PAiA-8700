@@ -42,13 +42,13 @@ next    lda key,x		;read current key port
         and temp		;use mask to select key
         bne result		;branch if key down
         iny				;set result to next key
-result  asl temp		;shift mask to next key
+		asl temp		;shift mask to next key
         bcc next		;br if more keys on port
         txa
         asl a			;select next port
         tax
-        bcc loop		;branch if not last port
-        cpy lastke		;clear carry if new key
+		bcc loop		;branch if not last port
+result	cpy lastke		;clear carry if new key
         sty lastke		;update lastkey
         tya				;move key to acc
         rts				;return
