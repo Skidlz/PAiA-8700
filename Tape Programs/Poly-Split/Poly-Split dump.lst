@@ -1,120 +1,208 @@
+				;*******************************
+				;*                             *
+				;*         POLY-SPLIT          *
+				;*                             *
+				;*  A PROGRAM FOR POLYPHONIC   *
+				;*      SPLIT KEYBOARD         *				
+				;*                             *
+				;*            BY               *				
+				;*      JOHN SIMONTON          *				
+				;*                             *
+				;* (C) 1979 - PAIA ELECTRONICS *				
+				;*                             *
+				;*******************************
+				
+				;FIRST, SYSTEM THINGS ARE DISPOSED OF.  THE SYSTEM IS
+				;INITIALIZED USING MUS 1.0'S "INIT" ROUTINE, THEN THE
+				;QUASH CHANNELS ARE REFRESHED AND THE AGO KEYBOARD
+				;SCANNED ALSO USING ROUTINES FROM MUS 1.0
+				;FINNALLY, THE PIEBUG ROUTINE "DECODE" IS USED TO READ THE
+				;COMMAND KEYBOARD AND ANY COMMANDS ARE EXECUTED.
+				;0-SYSTEM CLEAR AND RE-INIT; 1-TUNE ALL CHANNELS;
+				;2-SET SPLIT POINT, AND AGO KEY PRESSES BECOMES SPLIT
+				;
 					org	$0000
 				;
-0000 : A5 EB 		"  "		lda	X00EB
-0002 : 85 EC 		"  "		sta	X00EC
-0004				L0004:
-0004 : A2 07 		"  "		ldx	#$07
-0006				L0006:
-0006 : A9 00 		"  "		lda	#$00
-0008 : 95 A2 		"  "		sta	X00A2,x
-000A : CA 		" "		dex
-000B : 10 F9 		"  "		bpl	L0006
-000D : 20 21 0D 	" ! "		jsr	L0D21
-0010				L0010:
-0010 : 20 2B 0D 	" + "		jsr	L0D2B
-0013 : 20 00 0F 	"   "		jsr	L0F00
-0016 : F0 EC 		"  "		beq	L0004
-0018 : C9 01 		"  "		cmp	#$01
-001A : D0 07 		"  "		bne	L0023
-001C : A9 2E 		" ."		lda	#$2E
-001E : 20 23 0D 	" # "		jsr	L0D23
-0021 : F0 ED 		"  "		beq	L0010
-0023				L0023:
-0023 : C9 02 		"  "		cmp	#$02
-0025 : D0 08 		"  "		bne	L002F
-0027 : A5 E7 		"  "		lda	X00E7
-0029 : F0 E5 		"  "		beq	L0010
-002B : 85 A1 		"  "		sta	X00A1
-002D : D0 E1 		"  "		bne	L0010
-002F				L002F:
-002F : A0 07 		"  "		ldy	#$07
-0031 : A2 07 		"  "		ldx	#$07
-0033				L0033:
-0033 : B5 E0 		"  "		lda	X00E0,x
-0035 : F0 0F 		"  "		beq	L0046
-0037 : C5 A1 		"  "		cmp	X00A1
-0039 : 90 08 		"  "		bcc	L0043
-003B : 99 A2 00 	"   "		sta	X00A2,y
-003E : 88 		" "		dey
-003F : A9 00 		"  "		lda	#$00
-0041 : 95 E0 		"  "		sta	X00E0,x
-0043				L0043:
-0043 : CA 		" "		dex
-0044 : 10 ED 		"  "		bpl	L0033
-0046				L0046:
-0046 : A5 EC 		"  "		lda	X00EC
-0048 : 85 EB 		"  "		sta	X00EB
-004A : 20 75 0D 	" u "		jsr	L0D75
-004D : A4 EC 		"  "		ldy	X00EC
-004F : A2 07 		"  "		ldx	#$07
-0051				L0051:
-0051 : B5 A2 		"  "		lda	X00A2,x
-0053 : 95 E0 		"  "		sta	X00E0,x
-0055 : 88 		" "		dey
-0056 : 30 08 		"0 "		bmi	L0060
-0058 : B5 D8 		"  "		lda	X00D8,x
-005A : 95 A2 		"  "		sta	X00A2,x
-005C : 09 40 		" @"		ora	#$40
-005E : 95 D8 		"  "		sta	X00D8,x
-0060				L0060:
-0060 : CA 		" "		dex
-0061 : 10 EE 		"  "		bpl	L0051
-0063 : 38 		"8"		sec
-0064 : A9 10 		"  "		lda	#$10
-0066 : E5 EC 		"  "		sbc	X00EC
-0068 : AA 		" "		tax
-0069 : 38 		"8"		sec
-006A : A5 EA 		"  "		lda	X00EA
-006C : E5 EC 		"  "		sbc	X00EC
-006E : 85 EB 		"  "		sta	X00EB
-0070 : 20 77 0D 	" w "		jsr	L0D77
-0073 : A4 EC 		"  "		ldy	X00EC
-0075 : A2 07 		"  "		ldx	#$07
-0077				L0077:
-0077 : 88 		" "		dey
-0078 : 30 04 		"0 "		bmi	L007E
-007A : B5 A2 		"  "		lda	X00A2,x
-007C : 95 D8 		"  "		sta	X00D8,x
-007E				L007E:
-007E : A9 00 		"  "		lda	#$00
-0080 : 95 A2 		"  "		sta	X00A2,x
-0082 : CA 		" "		dex
-0083 : 10 F2 		"  "		bpl	L0077
-0085 : 30 89 		"0 "		bmi	L0010
-
+				STAR:
+0000 : A5 EB 		"  "		lda	OUTT	;GET THE # OF RESERVED LOW CHANS
+0002 : 85 EC 		"  "		sta	OUT2	;SAVE PERMANENTLY
+0004				POSP:
+0004 : A2 07 		"  "		ldx	#$07	;SET UP A POINTER/COUNTER
+0006				SLP9:
+0006 : A9 00 		"  "		lda	#$00	;AND GET READY TO ZERO STUFF
+0008 : 95 A2 		"  "		sta	HKEY,x	;ZERO THE TEMPORARY BUFFER
+000A : CA 		" "		dex		;AND POINT TO THE NEXT
+000B : 10 F9 		"  "		bpl	SLP9	;IF SOME ARE LEFT, LOOP
+000D : 20 21 0D 	" ! "		jsr	INIT	;MUS 1.0 - INITIALIZE SYSTEM
+0010				SLP6:
+0010 : 20 2B 0D 	" + "		jsr	NOTE	;MUS 1.0 - REFRESH AND READ AGO KBD
+0013 : 20 00 0F 	"   "		jsr	DECD	;PIEBUG - READ COMMAND KEYBOARD
+0016 : F0 EC 		"  "		beq	POSP	;IF COMMAND = 0, BRANCH TO RE-INIT
+0018 : C9 01 		"  "		cmp	#$01	;IS COMMAND = 1?
+001A : D0 07 		"  "		bne	NTST	;NO, BRANCH TO NEXT TEST
+001C : A9 2E 		" ."		lda	#$2E	;WILL BECOME MIDDLE C
+001E : 20 23 0D 	" # "		jsr	INIT+2	;USE PART OF MUS 1.0 INITIALIZE
+0021 : F0 ED 		"  "		beq	SLP6	;BRANCH ALWAYS
+0023				NTST:
+0023 : C9 02 		"  "		cmp	#$02	;IS COMMAND = 2?
+0025 : D0 08 		"  "		bne	SPLI	;NO, BRANCH TO POLY-SPLIT PROGRAM
+0027 : A5 E7 		"  "		lda	KTBL+7	;GET THE LOWEST KEY DOWN
+0029 : F0 E5 		"  "		beq	SLP6	;IF NONE ARE DOWN, LOOP
+002B : 85 A1 		"  "		sta	SPLT	;SAVE THE KEY AS THE SPLIT POINT
+002D : D0 E1 		"  "		bne	SLP6	;BRANCH ALWAYS
+				;
+				;NOW THE SPLIT PROGRAM. AT THIS POINT A LIST OF THE
+				;AGO KEYS WHICH THE MUS 1.0 SUBROUTINE "LOOK" FOUND TO
+				;BE PRESSED HAS BEEN COMPILED AND SAVED IN THE INPUT BUFFER
+				;AREA "KTBL".  WE BEGIN BY REMOVING FROM THE INPUT BUFFER
+				;ALL THOSE KEYS WHICH ARE ABOVE THE SPLIT POINT AND
+				;TRANSFERING THEM TO THE TEMPORARY BUFFER AREA "HKEY"
+				;
+002F				SPLI:
+002F : A0 07 		"  "		ldy	#$07	;SET UP POINTER TO HIGH BUFFER
+0031 : A2 07 		"  "		ldx	#$07	;AND ONE TO INPUT BY
+0033				SLP0:
+0033 : B5 E0 		"  "		lda	KTBL,x	;GET THE KEY
+0035 : F0 0F 		"  "		beq	SNX1	;IF ZERO, GO TO NEXT
+0037 : C5 A1 		"  "		cmp	SPLT	;GREATER THAN SPLIT POINT?
+0039 : 90 08 		"  "		bcc	SNX0	;IF NOT GREATER, BRANCH
+003B : 99 A2 00 	"   "		sta	HKEY,y	;GREATER, SAVE IN HIGH BUFFER
+003E : 88 		" "		dey		;POINT TO NEXT HIGH KEY BUFFER
+003F : A9 00 		"  "		lda	#$00	;PREPARE AND
+0041 : 95 E0 		"  "		sta	KTBL,x	;ZERO THIS KEY
+0043				SNX0:
+0043 : CA 		" "		dex		;POINT TO NEXT KEY
+0044 : 10 ED 		"  "		bpl	SLP0	;IF SOME LEFT, LOOP
+				;
+				;NEXT THE NUMBER OF CHANNELS AVAILABLE FOR LOW KEY USE
+				;IS TRANSFERED TO THE TEMPORARY COUNTER "OUTT" AND THE
+				;MUS 1.0 ALLOCATION PROGRAM POLY IS CALLED TO ASSIGN LOW
+				;KEYS TO LOW CHANNELS
+				;
+0046				SNX1:
+0046 : A5 EC 		"  "		lda	OUT2	;GET THE NUMBER OF LOW CHANS AVAILABLE
+0048 : 85 EB 		"  "		sta	OUTT	;AND PUT IT IN THE TEMPORARY COUNTER
+004A : 20 75 0D 	" u "		jsr	POLY+4	;AND CALL THE MAIN PORTION OF POLY
+				;
+				;NOW THAT THE LOW KEYS HAVE BEEN ALLOCATED TO LOW CHANNELS,
+				;THE HIGH KEYS ARE TAKEN FROM "HKEY" AND PLACED BACK IN THE
+				;INPUT BUFFER (KEYS ALREADY ALLOCATED ARE REMOVED FROM THE
+				;INPUT BUFFER). SIMULTANEOUSLY THE LOW CHANNELS ARE MOVED
+				;TO HKEY AND ALL LOW CHANNELS IN THE OUTPUT BUFFER
+				;ARE MARKED AS "IN USE" SO THAT THEY WILL BE IGNORED
+				;WHEN HIGH KEYS ARE ALLOCATED.
+				;
+004D : A4 EC 		"  "		ldy	OUT2	;A COUNTER TO MOVE ONLY THE LOW CHANNELS
+004F : A2 07 		"  "		ldx	#$07	;AND A POINTER/COUNTER
+0051				SPL1:
+0051 : B5 A2 		"  "		lda	HKEY,x	;GET THE HIGH KEY FROM TEMP BUFFER
+0053 : 95 E0 		"  "		sta	KTBL,x	;PUT IT IN THE INPUT BUFFER
+0055 : 88 		" "		dey		;ONE LESS LOW CHANNEL  TO DO
+0056 : 30 08 		"0 "		bmi	SNX2	;ALL LOW CHANNELS DONE, BRANCH
+0058 : B5 D8 		"  "		lda	NTBL,x	;GET THE LOW NOTE
+005A : 95 A2 		"  "		sta	HKEY,x	;PUT IT IN TEMPORARY BUFFER
+005C : 09 40 		" @"		ora	#$40	;THEN SET THE TRIGGER TO MARK NOTE
+005E : 95 D8 		"  "		sta	NTBL,x	;AND REPLACE THE NOTE
+0060				SNX2:
+0060 : CA 		" "		dex		;ONE LESS CHANNEL, POINT TO NEXT
+0061 : 10 EE 		"  "		bpl	SPL1	;IF SOME LEFT, LOOP
+				;
+				;NOW POLY IS CALLED AGAIN, THIS TIME TO ALLOCATE HIGH CHANNELS
+				;
+0063 : 38 		"8"		sec		;PREPARE FOR SUBTRACTION
+0064 : A9 10 		"  "		lda	#$10	;16 CHANNELS SUPPORTED BY MUS1
+0066 : E5 EC 		"  "		sbc	OUT2	;LESS THE LOW RESERVED CHANNELS
+0068 : AA 		" "		tax		;RESULT IS POINTER
+0069 : 38 		"8"		sec		;ANOTHER SUBTRACTION - PREPARE
+006A : A5 EA 		"  "		lda	OUTS	;TOTAL HARDWARE CHANNELS
+006C : E5 EC 		"  "		sbc	OUT2	;LESS LOW RESERVED CHANNELS
+006E : 85 EB 		"  "		sta	OUTT	;BECOMES CHANNELS LEFT TO ALLOCATE
+0070 : 20 77 0D 	" w "		jsr	POLY+6	;CALL MAJOR PORTION OF POLY
+				;
+				;FINALLY, THE REAL STATE OF THE LOW CHANNELS IS RESPORED
+				;TO THE OUTPUT BUFFER. SIMULTANEOUSLY THE TEMPORARY BUFFER
+				;IS ZERO'D FOR THE NEXT PASS.
+				;
+0073 : A4 EC 		"  "		ldy	OUT2	;NUMBER OF LOW CHANNELS FOR COUNTER
+0075 : A2 07 		"  "		ldx	#$07	;POINTER/COUNTER
+0077				SLP2:
+0077 : 88 		" "		dey		;ONE LESS LOW CHANNEL
+0078 : 30 04 		"0 "		bmi	SNX3	;AND IF ALL DONE, SKIP NEXT TRANSFER
+007A : B5 A2 		"  "		lda	HKEY,x	;GET THE REAL CHANNEL STATE
+007C : 95 D8 		"  "		sta	NTBL,x	;PLACE IN OUTPUT BUFFER
+007E				SNX3:
+007E : A9 00 		"  "		lda	#$00	;NOW GET READY AND
+0080 : 95 A2 		"  "		sta	HKEY,x	;ZERO THIS TEMPORARY BUFFER LOCATION
+0082 : CA 		" "		dex		;ONE LESS TEMP BUFFER LOCATION
+0083 : 10 F2 		"  "		bpl	SLP2	;IF SOME REMAIN. LOOP
+0085 : 30 89 		"0 "		bmi	SLP6	;BRANCH ALWAYS TO CONTINUE
+				;*******************************
+				;*            NOTES:            *
+				;*  DUMP PROGRAM FROM 0000-0090 *
+				;*                              *
+				;*  SET THESE LOCATION:         *
+				;*                              *
+				;*     $0E8 CTRL $40 DYNAMIC    *
+				;*     $0E9 ODLY $20 DELAY      *
+				;*     $0EA OUTS $XX TOT CHANS  *
+				;*     $0EB OUTT $XX LOW CHANS  *
+				;*                              *
+				;*  COLD START - $0000          *
+				;*  WARM START = $0004          *
+				;*                              *
+				;*  NOTE THE FOLLOWING THINGS:  *
+				;*                              *
+				;*1) THE PROGRAM IS RELOCATABLE;*
+				;*   IT MAY BE LOADED AND RUN IN*
+				;*   ANY NON-CONFLICTING MEMRORY*
+				;*   SPACE                      *
+				;*                              *
+				;*2) CALLING POLY TWICE IS NOT  *
+				;*   EXTRA EFFICIENT.  TIME RE- *
+				;*   QUIREMENTS DICTATE MEDIUM  *
+				;*   TEMP KNOB SETTING - ABOUT  *
+				;*   10 MS/SCAN                 *
+				;*                              *
+				;*3) AS SOON AS THE PROGRAM IS  *
+				;*   RUNNING, TOUCH COMMAND PAD *
+				;*   2 AND THE KEY WHICH IS TO  *
+				;*   BE THE SPLIT POINT. THEN 1 *
+				;*   TO TUNE AND FINALLY 0      *
+				;*   BEFORE PLAYING             *
+				;*                              *
+				;********************************
+				;POLY-SPLIT 8.8
+				
 ;--------------------------------------------------------------
 Symbol table
 ============
 
 Value	Type	Name
 -----	----	----
-0004	 04	L0004
-0006	 04	L0006
-0010	 04	L0010
-0023	 04	L0023
-002F	 04	L002F
-0033	 04	L0033
-0043	 04	L0043
-0046	 04	L0046
-0051	 04	L0051
-0060	 04	L0060
-0077	 04	L0077
-007E	 04	L007E
-00A1	 04	X00A1
-00A2	 04	X00A2
-00D8	 04	X00D8
-00E0	 04	X00E0
-00E7	 04	X00E7
-00EA	 04	X00EA
-00EB	 04	X00EB
-00EC	 04	X00EC
-0D21	 04	L0D21
-0D23	 04	L0D23
-0D2B	 04	L0D2B
-0D75	 04	L0D75
-0D77	 04	L0D77
-0F00	 04	L0F00
+0004	 04	POSP
+0006	 04	SLP9
+0010	 04	SLP6
+0023	 04	NTST
+002F	 04	SPLI
+0033	 04	SLP0
+0043	 04	SNX0
+0046	 04	SNX1
+0051	 04	SPL1
+0060	 04	SNX2
+0077	 04	SLP2
+007E	 04	SNX3
+00A1	 04	SPLT
+00A2	 04	HKEY
+00D8	 04	NTBL
+00E0	 04	KTBL
+00EA	 04	OUTS
+00EB	 04	OUTT
+00EC	 04	OUT2
+0D21	 04	INIT
+0D2B	 04	NOTE
+0D71	 04	POLY
+0F00	 04	DECD
 
-Number of symbols:			26
+Number of symbols:			23
 
 ;--------------------------------------------------------------
