@@ -13,6 +13,7 @@ Also includes:</br>
  - [**Pink Music**](Tape%20Programs/Pink%20Music/) listing/source/binary/audio file
  - [**DrumSys 0.6**](Tape%20Programs/DRUMSYS%2006/) listing/source/binary/audio file
  - [**Shazam 0.1**](Tape%20Programs/SHAZAM/) listing/source/binary/audio file
+ - [**Micro-Drums 2.1**](Tape%20Programs/Micro-Drums/) listing/source/binary/audio file
  - Test programs source/binary/tape dump
 
 ###### EPROM PROGRAMS ######
