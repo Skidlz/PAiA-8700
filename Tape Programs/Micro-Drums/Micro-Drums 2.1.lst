@@ -1,0 +1,262 @@
+AS65 Assembler for R6502 [1.42].                                     Page    1
+---------------------------- Micro-Drums 2.1.asm -----------------------------
+
+253 lines read, no errors in pass 1.
+                        ;****************************************
+                        ;*                                      *
+                        ;*            MICRO_DRUMS               *
+                        ;*  MICROCOMPUTER CONTROLLED DRUM UNIT  *
+                        ;*                                      *
+                        ;*       (C) 1983  THOMAS HENRY         *
+                        ;*    VERSION 2.1  FEBRUARY 5, 1983     *
+                        ;*                                      *
+                        ;****************************************
+                        ;
+                        ;
+0000 =                  IRQVEC	= $0000			;IRQ VECTOR.
+0003 =                  PATTER	= $0003			;PATTERN POINTER BASE.
+0005 =                  SELECT	= $0005			;DRUM SELECT BIT PATTERNS.
+000d =                  PARAMS	= $000D			;TAPE PARAMETERS.
+0014 =                  BEAT	= $0014			;CURRENT BEAT POINTER.
+0015 =                  SPOINT	= $0015			;CURRENT EVENT SELECTED.
+0016 =                  REPEAT	= $0016			;CURRENT REPEAT COUNTER.
+00f0 =                  BUFFER	= $00F0			;KEYBOARD BUFFER.
+0280 =                  SCORE	= $0280			;DRUM SCORE AREA.
+0820 =                  DISPLA	= $0820			;DISPLAY ADDRESS.
+0880 =                  DRUMS	= $0880			;DRUM OUTPUT ADDRESS.
+0e25 =                  RELAYS	= $0E25			;TURN ON TAPE RELAYS.
+0eaa =                  CASS	= $0EAA			;PERFORM CASSETTE OPERATION.
+0f00 =                  DECODE	= $0F00			;INPUT A BYTE.
+0f1f =                  GETKEY	= $0F1f			;GET A BYTE.
+0f22 =                  BEEP	= $0F22			;BEEP THE BEEPER.
+0f24 =                  LBEEP	= $0F24			;WITH SETUP, GIVES LONG BEEP.
+0f34 =                  SHIFT	= $0F34			;SHIFT BUFFER BY ONE DIGIT.
+                        ;
+                        ;
+                        ;*** MAIN LOOP ***
+                        ;
+                        ;
+0120 =                  		org $0120
+                        ;
+0120 : 20340f           NUMBER	jsr	SHIFT		;SHIFT IN NEW DIGIT.
+0123 : a5f0             		lda BUFFER		;FETCH PACKED ENTRY.
+0125 : 8d2008           		sta DISPLA		;THEN UPDATE THE DISPLAY.
+0128 : 4c3101           		jmp INPUT		;GO GET NEXT INPUT.
+012b : a2ff             MAIN	ldx #$FF		;GET READY FOR LONG BEEP.
+012d : 18               		clc
+012e : 20240f           		jsr LBEEP		;DO LONG BEEP.
+0131 : 201f0f           INPUT	jsr GETKEY		;WAIT FOR KEYSTROKE.
+0134 : c910             		cmp #$10		;IS IT A NUMBER?
+0136 : 90e8             		bcc NUMBER		;YES, BRANCH BACK AND GET
+0138 : c910             FIND	cmp #$10		;IS IT 'PLAY'?
+013a : f00f             		beq PCMD
+013c : c914             		cmp #$14		;IS IT 'COARSE'?
+013e : f052             		beq COARSE
+0140 : c915             		cmp #$15		;IS IT 'FINE'?
+0142 : f00a             		beq FINE
+0144 : c916             		cmp #$16		;IS IT 'TAPE'?
+0146 : d0e3             		bne MAIN		;RAN OUT OF COMMANDS.
+0148 : 4c3702           		jmp TAPE
+014b : 4ce301           PCMD	jmp PLAY
+                        ;
+                        ;
+                        ;** FINE EDIT COMMAND **
+                        ;
+                        ;
+014e : a5f0             FINE	lda BUFFER		;GET PATTERN NUMBER.
+0150 : 205702           		jsr OFFSET		;GET PATTERN OFFSET.
+0153 : a000             		ldy #$00		;ZERO OUT THE BEAT POINTER.
+0155 : c8               SHOWIT	iny
+0156 : 88               BACKUP	dey
+0157 : 8c2008           		sty DISPLA		;DISPLAY IT.
+015a : b103             		lda (PATTER),y	;GET SELECTED BEAT,
+015c : 8d8008           		sta DRUMS		;AND PLAY IT.
+015f : 204f02           FEDIT	jsr FETCH		;GET EDIT KEYSTROKE.
+0162 : c912             		cmp #$12		;IS IT A 'BACK'?
+0164 : f0f0             		beq BACKUP		;YES, BACKSPACE ONCE.
+0166 : c911             		cmp #$11		;IS IT A 'DISP'?
+0168 : f0eb             		beq SHOWIT		;YES, PLAY CURRENT BEAT.
+016a : c90a             		cmp #$0A		;IS IT A DRUM NUMBER (0-9)?
+016c : 9008             		bcc DENTER		;YES, GO ENTER DRUM BEAT.
+016e : c913             		cmp #$13		;IS IT AN 'ENTER'?
+0170 : d0ed             		bne FEDIT		;NO, RAN OUT OF COMMANDS.
+0172 : c8               		iny				;YES, ADVANCE TO NEXT BEAT.
+0173 : 4c5501           		jmp SHOWIT
+0176 : c909             DENTER	cmp #$09		;#$09 MEANS END OF PATTERN.
+0178 : d006             		bne NEXT1
+017a : a9ff             		lda #$FF		;END OF PATTERN MARKER.
+017c : 9103             		sta (PATTER),y
+017e : d0ab             		bne MAIN		;BRANCH ALWAYS
+0180 : c908             NEXT1	cmp #$08		;#$08 MEANS 'REST'
+0182 : d004             		bne NEXT2
+0184 : a900             		lda #$00
+0186 : f005             		beq STORE		;BRANCH ALWAYS
+0188 : aa               NEXT2	tax				;INDEX INTO BIT PATTERN.
+0189 : b505             		lda SELECT,x	;GET PROPER BIT PATTERN.
+018b : 5103             		eor (PATTER),y	;ADD IN NEW BEAT.
+018d : 9103             STORE	sta (PATTER),y	;AND SAVE IT.
+018f : 4c5501           		jmp SHOWIT		;SOUND THE DRUM BEAT.
+                        ;
+                        ;
+                        ;*** COARSE EDIT COMMAND ***
+                        ;
+                        ;
+0192 : a6f0             COARSE	ldx BUFFER		;GET DESIRED EVENT NUMBER.
+0194 : 8615             		stx SPOINT		;STORE AT CURRENT EVENT.
+0196 : a615             REVEAL	ldx SPOINT
+0198 : bd8002           		lda SCORE,x		;GET CONTENTS OF EVENT.
+019b : 85f0             		sta BUFFER		;PUT IN BUFFER AND
+019d : 8d2008           VIEW	sta DISPLA		;SHOW IT TOO.
+01a0 : 201f0f           LOOP	jsr GETKEY		;GET KEYSTROKE.
+01a3 : c910             		cmp #$10		;CHECK FOR NUMBER.
+01a5 : b008             		bcs NONUM		;NOT A NUMBER, BRANCH.
+01a7 : 20340f           		jsr SHIFT		;SHIFT IN NEW DIGIT.
+01aa : a5f0             		lda BUFFER		;FETCH PACKED ENTRY.
+01ac : 4c9d01           		jmp VIEW		;AND UPDATE DISPLAY.
+01af : c913             NONUM	cmp #$13		;IS IT AND 'ENTER'?
+01b1 : d00c             		bne NEXT3		;NO, GO ON.
+01b3 : a615             		ldx SPOINT		;RE-GET EVENT NUMBER.
+01b5 : a5f0             		lda BUFFER		;FETCH INPUT NUMBER.
+01b7 : 9d8002           		sta SCORE,x		;STORE IN SCORE.
+01ba : e615             		inc SPOINT		;UPDATE EVENT NUMBER.
+01bc : 4c9601           		jmp REVEAL		;UPDATE DISPALY.
+01bf : c912             NEXT3	cmp #$12		;IS IT A BACKSPACE?
+01c1 : d005             		bne NEXT4		;NO, BRANCH ON.
+01c3 : c615             		dec SPOINT		;DECREMENT EVENT COUNTER.
+01c5 : 4c9601           		jmp REVEAL		;SHOW CONTENTS OF EVENT.
+01c8 : c914             NEXT4	cmp #$14		;IS IT A 'PCH'?
+01ca : d005             		bne NEXT5		;NO, BRANCH ON.
+01cc : a515             		lda SPOINT		;GET CURRENT EVENT NUMBER.
+01ce : 4c9d01           		jmp VIEW		;AND SHOW IT.
+01d1 : c911             NEXT5	cmp #$11		;IS IT A 'DISP'?
+01d3 : f0c1             		beq REVEAL		;IF SO, SHOW CONTENTS.
+01d5 : c917             		cmp #$17		;'REL' STANDS FOR ALL DONE.
+01d7 : d0c7             		bne LOOP		;RAN OUT OF COMMANDS.
+01d9 : a615             		ldx SPOINT		;RE-GET EVENT NUMBER.
+01db : a900             		lda #$00		;END OF SCORE MARKER.
+01dd : 9d8002           		sta SCORE,x
+01e0 : 4c2b01           		jmp MAIN		;RETURN TO MAIN LOOP.
+                        ;
+                        ;
+                        ;*** 'PLAY' COMMAND ENTRY ***
+                        ;
+                        ;
+01e3 : a900             PLAY	lda #$00		;ZERO OUT REPEAT AND
+01e5 : 8516             		sta REPEAT		;SCORE POINTER.
+01e7 : a9ff             		lda #$FF
+01e9 : 8515             		sta SPOINT
+01eb : 58               		cli				;PREPARE FOR IRQ.
+01ec : c9ff             TIGHT	cmp #$FF		;#$FF MEANS KEEP PLAYING.
+01ee : f0fc             		beq TIGHT		;STAY IN TIGHT LOOP.
+01f0 : 4c2b01           		jmp MAIN		;ABORT 'PLAY' NOW.
+                        ;
+                        ;
+01f3 : 20000f           IRQRTN	jsr DECODE		;SEE IF ZERO KEY IS PUSHED
+01f6 : c900             		cmp #$00
+01f8 : d004             		bne PLAMOR		;IT ISN'T, SO PLAY MORE.
+01fa : 28               FINISH	plp				;SET INTERRUPT FLAG
+01fb : 78               		sei				;SO NO MORE OCCUR.
+01fc : 08               		php
+01fd : 40               RETURN	rti
+                        ;
+                        ;
+01fe : a516             PLAMOR	lda REPEAT		;REPEAT OLD PATTERN ENOUGH?
+0200 : d019             		bne MORE		;NO, KEEP GOING WITH OLD ONE.
+0202 : e615             		inc SPOINT		;YES, UPDATE SCORE POINTER.
+0204 : a615             		ldx SPOINT
+0206 : bd8002           		lda SCORE,x		;GET REPEAT TIME DATA.
+0209 : f0ef             		beq FINISH		;DONE PLAYING WHOLE SCORE.
+020b : 8516             		sta REPEAT		;CONTAINS NUMBER OF REPEATS.
+020d : e615             		inc SPOINT		;UPDATE SCORE POINTER.
+020f : a615             		ldx SPOINT
+0211 : bd8002           		lda SCORE,x		;GET PATTERN NAME DATA.
+0214 : 205702           		jsr OFFSET		;GET PATTERN ADDRESS OFFSET.
+0217 : a900             		lda #$00
+0219 : 8514             		sta BEAT		;ZERO OUT BEAT POINTER.
+021b : a414             MORE	ldy BEAT		;Y INDEXES TO PROPER BEAT.
+021d : b103             		lda (PATTER),y	;GET OUTPUT DATA.
+021f : c9ff             		cmp #$FF		;END OF PATTERN?
+0221 : d008             		bne	OKAY		;NO, GO PLAY THE BEAT.
+0223 : c616             		dec	REPEAT		;DECREMENT REPEAT TIME.
+0225 : a900             		lda #$00		;YES, RESET BEAT COUNTER.
+0227 : 8514             		sta BEAT		;THEN TRy AGAIN.
+0229 : f0c8             		beq IRQRTN		;BRANCH ALWAYS.
+022b : 8d8008           OKAY	sta DRUMS
+022e : 8c2008           		sty DISPLA
+0231 : e614             		inc BEAT		;UPDATE BEAT POINTER.
+0233 : a9ff             		lda #$FF
+0235 : d0c6             		bne RETURN		;BRANCH ALWAYS.
+                        ;
+                        ;
+                        ; *** 'LOAD' AND 'SAVE' COMMAND ***
+                        ;
+                        ;
+0237 : a207             TAPE	ldx #$07		;PREPARE TAPE PARAMETERS.
+0239 : b50c             SETFIL	lda PARAMS-1,x	;GET PARAMETERS.
+023b : 95f0             		sta BUFFER,x	;AND STUFF IN PLACE.
+023d : ca               		dex
+023e : d0f9             		bne SETFIL		;KEEP STUFFING IF NEEDED.
+0240 : a5f0             		lda BUFFER		;GET LOAD/SAVE TOKEN.
+0242 : 20250e           		jsr RELAYS		;TURN ON RELAYS.
+0245 : 20aa0e           		jsr CASS		;PERFORM LOAD OR SAVE.
+0248 : 18               		clc
+0249 : 20220f           		jsr BEEP		;TURN OFF RELAYS AND BEEP.
+024c : 4c2b01           		jmp MAIN		;ALL DONE!
+                        ;
+                        ;
+024f : 8414             FETCH	sty BEAT		;GET A KEY, BUT SAVE
+0251 : 201f0f           		jsr GETKEY		;CURRENT Y-REGISTER.
+0254 : a414             		ldy BEAT
+0256 : 60               		rts
+                        ;
+                        ;
+0257 : 0a               OFFSET	asl a			;FIND OFFSET BY
+0258 : 0a               		asl a			;MULTIPLYING ACCUMULATOR
+0259 : 0a               		asl a			;BY SIXTEEN.
+025a : 0a               		asl a
+025b : 0a               		asl a
+025c : 8503             		sta PATTER		;OFFSET ADDRESS IS HERE
+025e : 60               		rts
+                        ;
+                        ;
+                        ;** INITIALIZATION ROUTINE ***
+                        ;
+                        ;
+025f : 78               		sei
+0260 : a200             		ldx #$00
+0262 : bd7802           MOVE	lda DATA,x		;GET DATA BYTE.
+0265 : 9500             		sta IRQVEC,x	;STUFF IT INTO 0-PAGE
+0267 : e8               		inx
+0268 : e014             		cpx #$14		;NUMBER OF BYTES+1.
+026a : d0f6             		bne MOVE
+026c : a000             		ldy #$00		;CLEAR PATTERN AREA.
+026e : a900             		lda #$00
+0270 : 9103             CLEAR	sta (PATTER),y
+0272 : 88               		dey
+0273 : d0fb             		bne CLEAR
+0275 : 4c2b01           		jmp MAIN		;GO START UP MICRO-DRUMS.
+                        ;
+                        ;
+                        ;*** DATA AND ADDRESS TABLES ***
+                        ;
+                        ;
+0278 : 4c               DATA	db $4C			;OPCODE FOR 'JMP'
+0279 : f301             		dw IRQRTN		;START OF IRQ ROUTINE.
+027b : 0003             		dw $0300		;PATTERN BASE ADDRESS.
+027d : 0102             		db $01, $02		;DRUM SELECT BIT PATTERNS.
+                        		
+027f : 0408             		db $04, $08
+                        		
+0281 : 1020             		db $10, $20
+                        		
+0283 : 4080             		db $40, $80
+                        		
+0285 : 00               		db $00			;FILE PARAMETER.
+0286 : ff03             		dw $03FF		;TAPE END ADDRESS.
+0288 : 8002             		dw $0280		;TAPE START ADDRESS.
+028a : 8002             		dw $0280		;TAPE POINTER
+                        		
+No errors in pass 2.
+Wrote binary from address $0120 through $028b.
+Total size 364 bytes.
+
