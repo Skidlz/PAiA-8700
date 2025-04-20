@@ -1,248 +1,305 @@
-				;
-				;	Disassembled by:
-				;		DASMx object code disassembler
-				;		(c) Copyright 1996-1999   Conquest Consultants
-				;		Version 1.30 (Oct  6 1999)
-				;
-				;	File:		PIEBUG.bin
-				;
-				;	Size:		256 bytes
-				;	Checksum:	9304
-				;	CRC-32:		525AADC8
-				;
-				;	Date:		Thu Nov 18 14:50:52 2021
-				;
-				;	CPU:		MOS Technology 6502 (MCS6500 family)
-				;
-				;
-				;
-					org	$0F00
-				;
-0F00				DECODE:
-0F00 : A0 00 		"  "		ldy	#$00
-0F02 : A2 21 		" !"		ldx	#$21
-0F04				LOOP:
-0F04 : A9 01 		"  "		lda	#$01
-0F06 : 85 EE 		"  "		sta	TEMP
-0F08				NEXT:
-0F08 : BD 00 08 	"   "		lda	KEY,x
-0F0B : 25 EE 		"% "		and	TEMP
-0F0D : D0 0A 		"  "		bne	RESULT
-0F0F : C8 			" "			iny
-0F10 : 06 EE 		"  "		asl	TEMP
-0F12 : 90 F4 		"  "		bcc	NEXT
-0F14 : 8A 			" "			txa
-0F15 : 0A 			" "			asl	a
-0F16 : AA 			" "			tax
-0F17 : 90 EB 		"  "		bcc	LOOP
-0F19				RESULT:
-0F19 : C4 F8 		"  "		cpy	LASTKE
-0F1B : 84 F8 		"  "		sty	LASTKE
-0F1D : 98 			" "			tya
-0F1E : 60 			"`"			rts
-				;
-0F1F				GETKEY:
-0F1F : 20 00 0F 	"   "		jsr	DECODE
-0F22 : A2 14 		"  "		ldx	#$14
-0F24				NXTX:
-0F24 : A0 3F 		" ?"		ldy	#$3F
-0F26				DELAY:
-0F26 : B0 03 		"  "		bcs	DLY
-0F28 : 8C 00 09 	"   "		sty	CASS
-0F2B				DLY:
-0F2B : 88 			" "			dey
-0F2C : D0 F8 		"  "		bne	DELAY
-0F2E : CA 			" "			dex
-0F2F : D0 F3 		"  "		bne	NXTX
-0F31 : B0 EC 		"  "		bcs	GETKEY
-0F33 : 60 			"`"			rts
-				;
-0F34				SHIFT:
-0F34 : 0A 			" "			asl	a
-0F35 : 0A 			" "			asl	a
-0F36 : 0A 			" "			asl	a
-0F37 : 0A 			" "			asl	a
-0F38 : A0 04 		"  "		ldy	#$04
-0F3A				ROTATE:
-0F3A : 2A 			"*"			rol	a
-0F3B : A2 FA 		"  "		ldx	#$FA
-0F3D				ROTNXT:
-0F3D : 36 F6 		"6 "		rol	PNTER,x
-0F3F : E8 			" "			inx
-0F40 : D0 FB 		"  "		bne	ROTNXT
-0F42 : 88 			" "			dey
-0F43 : D0 F5 		"  "		bne	ROTATE
-0F45 : 60 			"`"			rts
-				;
-0F46 : A9 00 		"  "		lda	#$00
-0F48 : 8D E0 08 	"   "		sta	X08E0
-0F4B : F0 08 		"  "		beq	COMAND
-0F4D				SHFTD:
-0F4D : 20 34 0F 	" 4 "		jsr	SHIFT
-0F50				DSPBUF:
-0F50 : A5 F0 		"  "		lda	BUFFER
-0F52				SEE:
-0F52 : 8D 20 08 	"   "		sta	DISP
-0F55				COMAND:
-0F55 : A6 ED 		"  "		ldx	MSTACK
-0F57 : 9A 			" "			txs
-0F58 : 20 1F 0F 	"   "		jsr	GETKEY
-0F5B : C9 10 		"  "		cmp	#$10
-0F5D : 90 EE 		"  "		bcc	SHFTD
-0F5F : A8 			" "			tay
-0F60 : BE E2 0F 	"   "		ldx	X0FE2,y
-0F63 : 86 EE 		"  "		stx	TEMP
-0F65 : A2 FF 		"  "		ldx	#$FF
-0F67 : 86 EF 		"  "		stx	X00EF
-0F69 : E8 			" "			inx
-0F6A : 6C EE 00 	"l  "		jmp	(TEMP)		;INFO: indirect jump
-				;
-0F6D : 18 			" "			clc
-0F6E : A5 F6 		"  "		lda	PNTER
-0F70 : 85 F0 		"  "		sta	BUFFER
-0F72 : A5 F7 		"  "		lda	X00F7
-0F74 : 85 F1 		"  "		sta	X00F1
-0F76 : B0 D8 		"  "		bcs	DSPBUF
-0F78 : 90 D8 		"  "		bcc	SEE
-0F7A : A5 F0 		"  "		lda	BUFFER
-0F7C : 85 F6 		"  "		sta	PNTER
-0F7E : A5 F1 		"  "		lda	X00F1
-0F80 : 85 F7 		"  "		sta	X00F7
-0F82 : B0 14 		"  "		bcs	LOAD
-0F84 : A5 F6 		"  "		lda	PNTER
-0F86 : D0 02 		"  "		bne	SKIP
-0F88 : C6 F7 		"  "		dec	X00F7
-0F8A				SKIP:
-0F8A : C6 F6 		"  "		dec	PNTER
-0F8C : B0 0A 		"  "		bcs	LOAD
-0F8E : A5 F0 		"  "		lda	BUFFER
-0F90 : 81 F6 		"  "		sta	(PNTER,x)
-0F92 : E6 F6 		"  "		inc	PNTER
-0F94 : D0 02 		"  "		bne	LOAD
-0F96 : E6 F7 		"  "		inc	X00F7
-0F98				LOAD:
-0F98 : A1 F6 		"  "		lda	(PNTER,x)
-0F9A				STABUF:
-0F9A : 85 F0 		"  "		sta	BUFFER
-0F9C : B0 B2 		"  "		bcs	DSPBUF
-0F9E : D8 			" "			cld
-0F9F : 18 			" "			clc
-0FA0 : A5 F0 		"  "		lda	BUFFER
-0FA2 : E5 F6 		"  "		sbc	PNTER
-0FA4 : 85 F0 		"  "		sta	BUFFER
-0FA6 : A5 F1 		"  "		lda	X00F1
-0FA8 : E5 F7 		"  "		sbc	X00F7
-0FAA : A8 			" "			tay
-0FAB : A5 F0 		"  "		lda	BUFFER
-0FAD : B0 08 		"  "		bcs	POS
-0FAF : 10 0A 		"  "		bpl	BAD
-0FB1 : C8 			" "			iny
-0FB2				CHK:
-0FB2 : 98 			" "			tya
-0FB3 : D0 06 		"  "		bne	BAD
-0FB5 : F0 99 		"  "		beq	DSPBUF
-0FB7				POS:
-0FB7 : 30 02 		"0 "		bmi	BAD
-0FB9 : 10 F7 		"  "		bpl	CHK
-0FBB				BAD:
-0FBB : 8A 			" "			txa
-0FBC : 38 			"8"			sec
-0FBD : B0 DB 		"  "		bcs	STABUF
-0FBF : EA 			" "			nop
-0FC0 : 85 F9 		"  "		sta	ACC
-0FC2 : 84 FA 		"  "		sty	YREG
-0FC4 : 86 FB 		"  "		stx	XREG
-0FC6 : 68 			"h"			pla
-0FC7 : 85 FF 		"  "		sta	PREG
-0FC9 : 68 			"h"			pla
-0FCA : D8 			" "			cld
-0FCB : 38 			"8"			sec
-0FCC : E9 02 		"  "		sbc	#$02
-0FCE : 85 FC 		"  "		sta	PC
-0FD0 : 68 			"h"			pla
-0FD1 : E9 00 		"  "		sbc	#$00
-0FD3 : 85 FD 		"  "		sta	X00FD
-0FD5 : BA 			" "			tsx
-0FD6 : 86 FE 		"  "		stx	STACKP
-0FD8 : A9 BB 		"  "		lda	#$BB
-0FDA : B0 BE 		"  "		bcs	STABUF
-0FDC : A6 FE 		"  "		ldx	STACKP
-0FDE : 9A 			" "			txs
-0FDF : A5 F1 		"  "		lda	X00F1
-0FE1 : 48 			"H"			pha
-0FE2				X0FE2:
-0FE2 : A5 F0 		"  "		lda	BUFFER
-0FE4 : 48 			"H"			pha
-0FE5 : A5 FF 		"  "		lda	PREG
-0FE7 : 48 			"H"			pha
-0FE8 : A6 FB 		"  "		ldx	XREG
-0FEA : A4 FA 		"  "		ldy	YREG
-0FEC : A5 F9 		"  "		lda	ACC
-0FEE : 40 			"@"			rti
-0FEF : 4C 00 0E 	"L  "		jmp	TAPE1
-				;
-0FF2 : DC 		" "		db	$DC
-0FF3 : 7A 		"z"		db	$7A
-0FF4 : 84 				db	$84
-0FF5 : 8E 		"  "	db	$8E
-0FF6 : 6D 				db	$6D
-0FF7 : 6E 				db	$6E
-0FF8 : EF  				db	$EF
-0FF9 : 9E 		" "		db	$9E
+                        ;
+                        ;	**************************************
+                        ;	*  PIEBUG			  VERSION 1.0	 *
+                        ;	*  PAIA INTERACTIVE EDITOR-DEBUGGER  *
+                        ;	*  WRITTEN BY ROGER WALTON			 *
+                        ;	*  COPYRIGHT 1977 BY PAIA			 *
+                        ;	*  ELECTRONICS, INC.				 *
+                        ;	**************************************
+                        ;
+                        ;
+                        ;
+0f00 =                  	org $0F00
+                        ;
+0800 =                  KEY		=$0800			;BASE ADDR OF KEY PORTS
+00ee =                  TEMP	=$EE			;TEMPORARY STORAGE
+00f8 =                  LASTKE	=$F8			;PREVIOUS KEY DECODED
+00f0 =                  BUFFER	=$F0			;KEY ENTRY BUFFER
+0820 =                  DISP	=$0820			;LED DISPLAY
+00ed =                  MSTACK	=$ED			;MONITOR STACK POINTER
+00f6 =                  PNTER	=$F6			;16 BIT ADDR POINTER
+0e00 =                  TAPE1	=$0E00			;START OF TAPE SYSTEM
+0900 =                  CASS	=$0900			;CASSETTE PORT
+                        ;
+00f9 =                  ACC		=$F9			;REG STORAGE
+00fa =                  YREG	=$FA
+00fb =                  XREG	=$FB
+00fc =                  PC		=$FC
+00fe =                  STACKP	=$FE
+00ff =                  PREG	=$FF			;REG STORAGE
+                        ;
+                        ;	DECODE KEY SUBROUTINE
+                        ;	THIS SUB SCANS THE ENTIRE KEYBAORD AND
+                        ;	RETURNS WITH DECODED KEY VALUE IN A AND Y.
+                        ;	CARRY IS CLEAR IF NEW KEY. X IS
+                        ;	DESTROYED. $18 IS "NO KEY" CODE.
+                        ;
+0f00 : a000             DECODE  ldy #0			;CLEAR RESULT REG
+0f02 : a221                     ldx #$21		;X IS PORT REG
+0f04 : a901             LOOP	lda #1
+0f06 : 85ee                     sta TEMP		;SET UP MASK
+0f08 : bd0008           NEXT    lda KEY,x		;READ CURRENT KEY PORT
+0f0b : 25ee                     and TEMP		;USE MASK TO SELECT KEY
+0f0d : d00a                     bne RESULT		;BRANCH IF KEY DOWN
+0f0f : c8                       iny				;SET RESULT TO NEXT KEY
+0f10 : 06ee             		asl TEMP		;SHIFT MASK TO NEXT KEY
+0f12 : 90f4                     bcc NEXT		;BR IF MORE KEYS ON PORT
+0f14 : 8a                       txa
+0f15 : 0a                       asl a			;SELECT NEXT PORT
+0f16 : aa                       tax
+0f17 : 90eb             		bcc LOOP		;BRANCH IF NOT LAST PORT
+0f19 : c4f8             RESULT	cpy LASTKE		;CLEAR CARRY IF NEW KEY
+0f1b : 84f8                     sty LASTKE		;UPDATE LASTKEY
+0f1d : 98                       tya				;MOVE KEY TO ACC
+0f1e : 60                       rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;	GETKEY SUBROUTINE
+                        ;	THIS SUB WAITS FOR A NEW KEY TO BE
+                        ;	TOUCHED AND THEN RETURNS WITH THE
+                        ;	KEY VALUE IN THE ACCUMULATOR.   
+                        ;	X AND Y ARE CLEARED.
+                        ;
+                        ;	BEEP SUBROUTINE (EMBEDDED IN GET KEY SUB)
+                        ;	THIS SUB PRODUCES A SHORT BEEP AT
+                        ;	THE CASSETTE PORT. CARRY MUST BE
+                        ;	CLEAR BEFORE ENTERING. X AND Y
+                        ;	ARE CLEAR.
+                        ;
+0f1f : 20000f           GETKEY	jsr DECODE		;GET A KEY
+0f22 : a214             BEEP	ldx #20			;ENTER HERE FOR BEEP SUB
+0f24 : a03f             NXTX	ldy #$3F
+0f26 : b003             DELAY	bcs DLY			;SKIP TONE IF CARRY SET
+0f28 : 8c0009                   sty CASS		;GENERATE TONE
+0f2b : 88               DLY		dey				;DELAY
+0f2c : d0f8                     bne DELAY
+0f2e : ca                       dex				;DELAY SOME MORE
+0f2f : d0f3                     bne NXTX		;NEXT X
+0f31 : b0ec                     bcs GETKEY		;BRANCH IF NOT NEW KEY
+0f33 : 60                       rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;
+                        ;	SHIFT BUFFER SUBROUTINE
+                        ;	THIS SUB SHIFTS THE LOWER 4 BITS OF
+                        ;	THE ACCUMLATOR INTO THE LEAST
+                        ;	SIGNIFICANT POSITION OF BUFFER. THE
+                        ;	ENTIRE BUFFER IS SHIFTED 4 TIMES AND
+                        ;	THE MOST SIGNIFICANT 4 BITS ARE LOST.
+                        ;	X AND Y ARE CLEARED. IF ON RETURN,
+                        ;	A SINGLE "ROL A" IS PERFORMED,
+                        ;	THE LOWER 4 BITS OF THE ACCUMULATOR
+                        ;	WILL CONTAIN THE 4 BITS THAT WERE
+                        ;	SHIFTED OUT OF BUFFER
+                        ;
+0f34 : 0a               SHIFT   asl a			;SHIFT KEY INFORMATION
+0f35 : 0a                       asl a			;TO UPPER 4 BITS OF ACC
+0f36 : 0a                       asl a
+0f37 : 0a                       asl a
+0f38 : a004                     ldy #4
+0f3a : 2a               ROTATE  rol a			;SHIFT BIT TO CARRY
+0f3b : a2fa                     ldx #$FA		;WRAP AROUND TO $FO
+0f3d : 36f6             ROTNXT  rol BUFFER+6,x	;CARRY TO BUFFER TO CARRY
+0f3f : e8                       inx				;AND SO ON
+0f40 : d0fb                     bne ROTNXT		;UNTIL END OF BUFFER
+0f42 : 88                       dey				;DONE 4 BITS?
+0f43 : d0f5                     bne ROTATE		;BRANCH IF NOT
+0f45 : 60                       rts				;RETURN
+                        ;
+                        ;	RESET ENTRY POINT
+                        ;
+0f46 : a900             RESET   lda #0
+0f48 : 8de008                   sta $08E0		;CLEAR DISPLAY AND PORTS
+0f4b : f008                     beq COMAND		;BRANCH ALWAYS
+                        ;
+                        ;
+                        ;
+0f4d : 20340f           SHFTD   jsr SHIFT		;SHIFT KEY INTO BUFFER
+0f50 : a5f0             DSPBUF  lda BUFFER		;GET BUFFER
+0f52 : 8d2008           SEE     sta DISP		;UPDATE DISPLAY
+                        ;
+0f55 : a6ed             COMAND  ldx MSTACK
+0f57 : 9a                       txs				;SET MONITOR STACK
+0f58 : 201f0f                   jsr GETKEY		;WAIT FOR KEY
+0f5b : c910                     cmp #$10		;IS IT CONTROL KEY
+0f5d : 90ee                     bcc SHFTD		;BRANCH IF NOT
+0f5f : a8                       tay				;CONTROL KEY INTO Y
+0f60 : bee20f                   ldx TABLE-16,y	;GET COMMAND ADDR LOW
+0f63 : 86ee                     stx TEMP		;SAVE IT
+0f65 : a2ff                     ldx #$FF		;GET COMMAND ADDR HIGH
+0f67 : 86ef                     stx TEMP+1		;ASSEMBLE COMMAND ADDR
+0f69 : e8                       inx				;CLR X
+0f6a : 6cee00                   jmp (TEMP)		;EXECUTE COMMAND
+                        ;
+                        ;
+                                
+0f6d : 18               PHIGH   clc
+0f6e : a5f6             PLOW	lda PNTER		;MOVE POINTER TO BUFFER
+0f70 : 85f0                     sta BUFFER
+0f72 : a5f7                     lda PNTER+1
+0f74 : 85f1                     sta BUFFER+1
+0f76 : b0d8                     bcs DSPBUF		;BRANCH IF POINTER LOW
+0f78 : 90d8                     bcc SEE			;BRANCH IF POINTER HIGH
+                        ;
+                        ;
+0f7a : a5f0             DISPLA  lda BUFFER		;MOVE BUFFER TO POINTER
+0f7c : 85f6                     sta PNTER
+0f7e : a5f1                     lda BUFFER+1
+0f80 : 85f7                     sta PNTER+1
+0f82 : b014                     bcs LOAD		;BRANCH ALWAYS
+                        ;
+                        ;
+0f84 : a5f6             BACKSP  lda PNTER		;DEC 16 BIT POINTER
+0f86 : d002                     bne SKIP		;BRANCH IF NO BORROW
+0f88 : c6f7                     dec PNTER+1
+0f8a : c6f6             SKIP    dec PNTER
+0f8c : b00a                     bcs LOAD		;BRANCH ALWAYS
+                        ;
+                        ;
+0f8e : a5f0             ENTER	lda BUFFER		;GET BYTE IN BUFFER
+0f90 : 81f6                     sta (PNTER,x)	;STORE IT IN ACTIVE CELL
+0f92 : e6f6                     inc PNTER		;INC 16 BIT POINTER
+0f94 : d002                     bne LOAD		;BRANCH IF NO CARRY
+0f96 : e6f7                     inc PNTER+1
+0f98 : a1f6             LOAD    lda (PNTER,x)	;GET BYTE IN ACTIVE CELL
+0f9a : 85f0             STABUF  sta BUFFER		;STORE IT IN BUFFER
+0f9c : b0b2                     bcs DSPBUF		;BRANCH ALWAYS
+                        ;
+                        ;
+0f9e : d8               RELADR  cld
+0f9f : 18                       clc				;THIS ADDS 1 TO POINTER
+0fa0 : a5f0                     lda BUFFER		;GET BUFFER LOW
+0fa2 : e5f6                     sbc PNTER		;SUBTRACT POINTER LOW + 1
+0fa4 : 85f0                     sta BUFFER		;SAVE RESULTS
+0fa6 : a5f1                     lda BUFFER+1	;GET BUFFER HIGH
+0fa8 : e5f7                     sbc PNTER+1		;SUBTRACT POINTER HIGH
+0faa : a8                       tay				;SAVE RESULTS IN Y
+0fab : a5f0                     lda BUFFER		;GET RESULTS LOW
+0fad : b008                     bcs POS			;BR IF TOTAL RESULT POS
+0faf : 100a                     bpl BAD			;BR IF RESULT LOW POS
+0fb1 : c8                       iny				;INC RESULT HIGH
+0fb2 : 98               CHK     tya				;CHECK RESULT HIGH
+0fb3 : d006                     bne BAD			;BR IF NOT ZERO
+0fb5 : f099                     beq DSPBUF		;BR ALWAYS, DISP REL ADDR
+0fb7 : 3002             POS     bmi BAD			;BR IF RESULT LOW NEG
+0fb9 : 10f7                     bpl CHK			;BR ALWAYS
+0fbb : 8a               BAD     txa				;CLEAR ACC
+0fbc : 38                       sec
+0fbd : b0db                     bcs STABUF		;BRANCH ALWAYS
+                        ;
+                        ;
+0fbf : ea                       nop
+                        ;
+                        ;
+                        ;
+                        ;	BREAK ROUTINE ENTRY POINT
+                        ;
+0fc0 : 85f9             BREAK   sta ACC			;SAVE ACCUMULATOR
+0fc2 : 84fa                     sty YREG		;SAVE Y
+0fc4 : 86fb                     stx XREG		;SAVE X
+0fc6 : 68                       pla				;GET STATUS REG
+0fc7 : 85ff                     sta PREG		;SAVE IT
+0fc9 : 68                       pla				;GET PC LOW
+0fca : d8                       cld
+0fcb : 38                       sec
+0fcc : e902                     sbc #2			;CORRECT PC LOW
+0fce : 85fc                     sta PC			;SAVE IT
+0fd0 : 68                       pla				;GET PC HIGH
+0fd1 : e900                     sbc #0			;SUBTRACT CARRY
+0fd3 : 85fd                     sta PC+1		;SAVE IT
+0fd5 : ba                       tsx				;GET USER STACK POINTER
+0fd6 : 86fe                     stx STACKP		;SAVE IT
+0fd8 : a9bb                     lda #$BB		;BREAK INDICATION
+0fda : b0be                     bcs STABUF		;BRANCH ALWAYS
+                        ;
+                        ;
+0fdc : a6fe             RUN     ldx STACKP		;GET USER STACK POINTER
+0fde : 9a                       txs				;INIT STACK
+0fdf : a5f1                     lda BUFFER+1	;GET PC HIGH
+0fe1 : 48                       pha				;PUT IT ON STACK
+0fe2 : a5f0                     lda BUFFER		;GET PC LOW
+0fe4 : 48                       pha				;PUT IT ON STACK
+0fe5 : a5ff                     lda PREG		;GET STATUS REG
+0fe7 : 48                       pha				;PUT IT ON STACK
+0fe8 : a6fb                     ldx XREG		;RESTORE X
+0fea : a4fa                     ldy YREG		;RESTORE Y
+0fec : a5f9                     lda ACC			;RESTORE ACCUMULATOR
+0fee : 40                       rti				;RESTORE PC & STATUS REG
+                        ;						FROM STACK AND EXECUTE
+                        ;						USER'S PROGRAM
+                        ;
+                        ;
+0fef : 4c000e           TAPE    jmp TAPE1		;EXECUTE TAPE OPTION
+                        ;
+                        ;
+                        ;				COMMAND ADDRESS TABLE
+                        ;				STORES LOW BYTE ONLY OF ENTRY
+                        ;				ADDRESS FOR EACH COMMAND
+                        ;
+0ff2 : dc               TABLE	db lo RUN
+0ff3 : 7a               		db lo DISPLA
+0ff4 : 84               		db lo BACKSP
+0ff5 : 8e               		db lo ENTER
+0ff6 : 6d               		db lo PHIGH
+0ff7 : 6e               		db lo PLOW
+0ff8 : ef               		db lo TAPE
+0ff9 : 9e               		db lo RELADR
+0ffa : 0300             		dw $003 				;NMI VECTOR
+0ffc : 460f             		dw RESET 				;RESET VECTOR
+0ffe : 0000             		dw $0000				;IRQ VECTOR
+                        	
 
-0FFA : 03 		" "		db	$03
-0FFB : 00 		" "		db	$00
-0FFC : 46 				db	$46
-OFFD : 0F 		"F "	db	$0F
-0FFE : 00 		" "		db	$00
-0FFF : 00 		" "		db	$00
+-------------------------------- Symbol Table --------------------------------
 
-;--------------------------------------------------------------
-Symbol table
-============
+              Symbol   Value        Decimal
 
-Value	Type	Name
------	----	----
-0000	 04	L0000
-00ED	 04	MSTACK
-00EE	 04	TEMP
-00EF	 04	X00EF ;TEMP+1
-00F0	 04	BUFFER
-00F1	 04	X00F1 ;BUFFER+1
-00F6	 04	PNTER
-00F7	 04	X00F7 ;PNTR+1
-00F8	 04	LASTKE
-00F9	 04	ACC
-00FA	 04	YREG
-00FB	 04	XREG
-00FC	 04	PC
-00FD	 04	X00FD ;PC+1
-00FE	 04	STACKP
-00FF	 04	PREG
-0800	 04	KEY
-0820	 04	DISP
-08E0	 04	X08E0
-0900	 04	CASS
-0E00	 04	TAPE1
-0F00	 04	DECODE
-0F04	 04	LOOP
-0F08	 04	NEXT
-0F19	 04	RESULT
-0F1F	 04	GETKEY
-0F24	 04	NXTX
-0F26	 04	DELAY
-0F2B	 04	DLY
-0F34	 04	SHIFT
-0F3A	 04	ROTATE
-0F3D	 04	ROTNXT
-0F4D	 04	SHFTD
-0F50	 04	DSPBUF
-0F52	 04	SEE
-0F55	 04	COMAND
-0F8A	 04	SKIP
-0F98	 04	LOAD
-0F9A	 04	STABUF
-0FB2	 04	CHK
-0FB7	 04	POS
-0FBB	 04	BAD
-0FE2	 04	X0FE2 ;TABLE-16
+                 ACC : $00f9            249   *
+              BACKSP : $0f84           3972
+                 BAD : $0fbb           4027
+                BEEP : $0f22           3874
+               BREAK : $0fc0           4032
+              BUFFER : $00f0            240   *
+                CASS : $0900           2304   *
+                 CHK : $0fb2           4018
+              COMAND : $0f55           3925
+              DECODE : $0f00           3840
+               DELAY : $0f26           3878
+                DISP : $0820           2080   *
+              DISPLA : $0f7a           3962
+                 DLY : $0f2b           3883
+              DSPBUF : $0f50           3920
+               ENTER : $0f8e           3982
+              GETKEY : $0f1f           3871
+                 KEY : $0800           2048   *
+              LASTKE : $00f8            248   *
+                LOAD : $0f98           3992
+                LOOP : $0f04           3844
+              MSTACK : $00ed            237   *
+                NEXT : $0f08           3848
+                NXTX : $0f24           3876
+                  PC : $00fc            252   *
+               PHIGH : $0f6d           3949
+                PLOW : $0f6e           3950
+               PNTER : $00f6            246   *
+                 POS : $0fb7           4023
+                PREG : $00ff            255   *
+              RELADR : $0f9e           3998
+               RESET : $0f46           3910
+              RESULT : $0f19           3865
+              ROTATE : $0f3a           3898
+              ROTNXT : $0f3d           3901
+                 RUN : $0fdc           4060
+                 SEE : $0f52           3922
+               SHFTD : $0f4d           3917
+               SHIFT : $0f34           3892
+                SKIP : $0f8a           3978
+              STABUF : $0f9a           3994
+              STACKP : $00fe            254   *
+               TABLE : $0ff2           4082
+                TAPE : $0fef           4079
+               TAPE1 : $0e00           3584   *
+                TEMP : $00ee            238   *
+                XREG : $00fb            251   *
+                YREG : $00fa            250   *
