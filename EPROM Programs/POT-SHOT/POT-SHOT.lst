@@ -1,241 +1,312 @@
-	;
-	;	Disassembled by:
-	;		DASMx object code disassembler
-	;		(c) Copyright 1996-1999   Conquest Consultants
-	;		Version 1.30 (Oct  6 1999)
-	;
-	;	File:		C:\Users\zackary.nelson\Google Drive\Schematics\PAiA 8700\BINs\POT-SHOT.bin
-	;
-	;	Size:		256 bytes
-	;	Checksum:	7848
-	;	CRC-32:		D64544D1
-	;
-	;	Date:		Mon Jun 07 12:45:43 2021
-	;
-	;	CPU:		MOS Technology 6502 (MCS6500 family)
-	;
-	;
-	;
-		org	$0E00
-	;
-0E00 : 20 25 0E 	" % "		jsr	SENDBIT
-0E03 : 8C 20 08 	"   "		sty	DISPLY
-0E06 : A5 F4 		"  "		lda	BEGADR
-0E08 : 85 F6 		"  "		sta	PNTER
-0E0A : A5 F5 		"  "		lda	#BEGADR+1
-0E0C : 85 F7 		"  "		sta	#PNTER+1
-0E0E : A5 F0 		"  "		lda	COMAND
-0E10 : F0 07 		"  "		beq	MANUAL
-0E12 : 20 AA 0E 	"   "		jsr	CASS
-0E15 : 18 			" "			clc
-0E16 : 20 22 0F 	" " "		jsr	BEEP
-0E19				MANUAL:
-0E19 : 4C 52 0F 	"LR "		jmp	PIEBUG
-				;
-0E1C				DELAY:
-0E1C : 8D 00 09 	"   "		sta	PORT
-0E1F : A0 0F 		"  "		ldy	#$0F
-0E21				DLY:
-0E21 : 88 			" "			dey
-0E22 : D0 FD 		"  "		bne	DLY
-0E24 : 60 			"`"			rts
-				;
-0E25				SENDBIT:
-0E25 : 48 			"H"			pha
-0E26 : 8A 			" "			txa
-0E27 : 48 			"H"			pha
-0E28 : A2 10 		"  "		ldx	#$10
-0E2A : B0 02 		"  "		bcs	CYCLE
-0E2C : A2 08 		"  "		ldx	#$08
-0E2E				CYCLE:
-0E2E : A9 B0 		"  "		lda	#$B0
-0E30 : 20 1C 0E 	"   "		jsr	DELAY
-0E33 : A9 80 		"  "		lda	#$80
-0E35 : 20 1C 0E 	"   "		jsr	DELAY
-0E38 : CA 			" "			dex
-0E39 : D0 F3 		"  "		bne	CYCLE
-0E3B : A9 90 		"  "		lda	#$90
-0E3D : A2 10 		"  "		ldx	#$10
-0E3F				GAP:
-0E3F : 20 1C 0E 	"   "		jsr	DELAY
-0E42 : CA 			" "			dex
-0E43 : D0 FA 		"  "		bne	GAP
-0E45 : 68 			"h"			pla
-0E46 : AA 			" "			tax
-0E47 : 68 			"h"			pla
-0E48 : 60 			"`"			rts
-				;
-0E49				DETBIT:
-0E49 : 48 			"H"			pha
-0E4A : 8A 			" "			txa
-0E4B : 48 			"H"			pha
-0E4C				TONE:
-0E4C : AD 00 09 	"   "		lda	PORT
-0E4F : 10 FB 		"  "		bpl	TONE
-0E51 : A2 00 		"  "		ldx	#$00
-0E53				COUNT:
-0E53 : E8 			" "			inx
-0E54 : A0 23 		" #"		ldy	#$23
-0E56 : AD 00 09 	"   "		lda	PORT
-0E59 : 85 EF 		"  "		sta	STATUS
-0E5B				CHECK:
-0E5B : AD 00 09 	"   "		lda	PORT
-0E5E : 45 EF 		"E "		eor	STATUS
-0E60 : 30 F1 		"0 "		bmi	COUNT
-0E62 : 88 			" "			dey
-0E63 : D0 F6 		"  "		bne	CHECK
-0E65 : E0 08 		"  "		cpx	#$08
-0E67 : 90 E3 		"  "		bcc	TONE
-0E69 : E0 18 		"  "		cpx	#$18
-0E6B : 68 			"h"			pla
-0E6C : AA 			" "			tax
-0E6D : 68 			"h"			pla
-0E6E : 60 			"`"			rts
-				;
-0E6F				SNDBYT:
-0E6F : 18 			" "			clc
-0E70 : 20 25 0E 	" % "		jsr	SENDBIT
-0E73 : A2 09 		"  "		ldx	#$09
-0E75 : 38 			"8"			sec
-0E76				NEXT1:
-0E76 : 2A 			"*"			rol	a
-0E77 : 20 25 0E 	" % "		jsr	SENDBIT
-0E7A : CA 			" "			dex
-0E7B : D0 F9 		"  "		bne	NEXT1
-0E7D : 60 			"`"			rts
-				;
-0E7E				GETBYT:
-0E7E : 20 49 0E 	" I "		jsr	DETBIT
-0E81 : B0 FB 		"  "		bcs	GETBYT
-0E83 : A2 09 		"  "		ldx	#$09
-0E85				L0E85:
-0E85 : 2A 			"*"			rol	a
-0E86 : 20 49 0E 	" I "		jsr	DETBIT
-0E89 : CA 			" "			dex
-0E8A : D0 F9 		"  "		bne	L0E85
-0E8C : 60 			"`"			rts
-				;
-0E8D				CHKADD:
-0E8D : D8 			" "			cld
-0E8E : 18 			" "			clc
-0E8F : 65 EE 		"e "		adc	CHKSUM
-0E91 : 85 EE 		"  "		sta	CHKSUM
-0E93 : A5 F6 		"  "		lda	PNTER
-0E95 : 8D 20 08 	"   "		sta	DISPLY
-0E98 : C5 F2 		"  "		cmp	ENDADR
-0E9A : D0 06 		"  "		bne	INCPTR
-0E9C : A5 F7 		"  "		lda	X00F7
-0E9E : C5 F3 		"  "		cmp	X00F3
-0EA0 : F0 07 		"  "		beq	RET
-0EA2				INCPTR:
-0EA2 : E6 F6 		"  "		inc	PNTER
-0EA4 : D0 02 		"  "		bne	SKIP2
-0EA6 : E6 F7 		"  "		inc	X00F7
-0EA8				SKIP2:
-0EA8 : 18 			" "			clc
-0EA9				RET:
-0EA9 : 60 			"`"			rts
-				;
-0EAA				CASS:
-0EAA : 10 21 		" !"		bpl	LOAD
-0EAC : A2 FF 		"  "		ldx	#$FF
-0EAE				DUMP:
-0EAE : 38 			"8"			sec
-0EAF : 20 25 0E 	" % "		jsr	SENDBIT
-0EB2 : CA 			" "			dex
-0EB3 : D0 F9 		"  "		bne	DUMP
-0EB5 : 86 EE 		"  "		stx	CHKSUM
-0EB7 : A5 F1 		"  "		lda	IDENT
-0EB9 : 20 6F 0E 	" o "		jsr	SNDBYT
-0EBC				NEXT4:
-0EBC : A1 F6 		"  "		lda	(PNTER,x)
-0EBE : 20 6F 0E 	" o "		jsr	SNDBYT
-0EC1 : 20 8D 0E 	"   "		jsr	CHKADD
-0EC4 : 90 F6 		"  "		bcc	NEXT4
-0EC6 : A5 EE 		"  "		lda	CHKSUM
-0EC8 : 20 6F 0E 	" o "		jsr	SNDBYT
-0ECB : 8A 			" "			txa
-0ECC : 60 			"`"			rts
-				;
-0ECD				LOAD:
-0ECD : A2 14 		"  "		ldx	#$14
-0ECF				LOOP:
-0ECF : 20 49 0E 	" I "		jsr	DETBIT
-0ED2 : 90 F9 		"  "		bcc	LOAD
-0ED4 : CA 			" "			dex
-0ED5 : D0 F8 		"  "		bne	LOOP
-0ED7 : 20 7E 0E 	" ~ "		jsr	GETBYT
-0EDA : 8D 20 08 	"   "		sta	DISPLY
-0EDD : A4 F1 		"  "		ldy	IDENT
-0EDF : F0 04 		"  "		beq	SKIP3
-0EE1 : C5 F1 		"  "		cmp	IDENT
-0EE3 : D0 E8 		"  "		bne	LOAD
-0EE5				SKIP3:
-0EE5 : 86 EE 		"  "		stx	CHKSUM
-0EE7				NEXT5:
-0EE7 : 20 7E 0E 	" ~ "		jsr	GETBYT
-0EEA : 90 10 		"  "		bcc	ERROR
-0EEC : 81 F6 		"  "		sta	(PNTER,x)
-0EEE : 20 8D 0E 	"   "		jsr	CHKADD
-0EF1 : 90 F4 		"  "		bcc	NEXT5
-0EF3 : 20 7E 0E 	" ~ "		jsr	GETBYT
-0EF6 : A0 AA 		"  "		ldy	#$AA
-0EF8 : C5 EE 		"  "		cmp	CHKSUM
-0EFA : F0 02 		"  "		beq	SKIP4
-0EFC				ERROR:
-0EFC : A0 EE 		"  "		ldy	#$EE
-0EFE				SKIP4:
-0EFE : 98 			" "			tya
-0EFF : 60 			"`"			rts
+                        ;
+                        ;
+                        ;
+                        ;  ********************************
+                        ;  *  POT-SHOT CASSETTE SYSTEM    *
+                        ;  *  WRITTEN BY ROGER WALKTON    *
+                        ;  *  COPYRIGHT 1977 BY PAIA      *
+                        ;  *    ELECTRONICS, INC.         *
+                        ;  *  VERSION 1.0                 *
+                        ;  ********************************
+                        ;
+0900 =                  PORT	=$0900			;CASSETTE I/O PORT
+0820 =                  DISPLY	=$0820			;LED DISPLAY
+0f52 =                  PIEBUG	=$0F52			;DISP ACC; GOTO PIEBUG
+0f22 =                  BEEP	=$0F22			;BEEP SUB IN PIEBUG
+                        ;
+00ef =                  STATUS	=$EF			;INPUT BIT STATUS
+00ee =                  CHKSUM	=$EE			;CHECKSUM
+00f6 =                  PNTER	=$F6			;16 BIT ADDR POINTER
+00f0 =                  COMAND	=$F0			;LOAD/DUMP COMMAND
+00f1 =                  IDENT	=$F1			;FILE IDENTIFIER
+00f2 =                  ENDADR	=$F2			;END ADDR
+00f4 =                  BEGADR	=$F4			;BEGINNING ADDR
+                        ;
+0e00 =                  	org	$0E00
+                        ;
+0e00 : 20250e           START:	jsr	SNDBIT		;START TAPE
+0e03 : 8c2008           		sty	DISPLY		;CLEAR DISPLAY
+0e06 : a5f4             		lda	BEGADR		;MOVE BEGINNING
+0e08 : 85f6             		sta	PNTER		;  ADDR TO POINTER
+0e0a : a5f5             		lda	BEGADR+1
+0e0c : 85f7             		sta	PNTER+1
+0e0e : a5f0             		lda	COMAND		;GET COMMAND
+0e10 : f007             		beq	MANUAL		;BR IF COMMAND= "00"
+0e12 : 20aa0e           		jsr	CASS		;DUMP OR LOAD BLOCK
+0e15 : 18               		clc
+0e16 : 20220f           		jsr	BEEP		;STOP TAPE AND BEEP
+0e19 : 4c520f           MANUAL: jmp	PIEBUG		;RETURN TO MONITOR
+                        ;
+                        ;
+                        ;
+                        ;		DELAY SUBROUTINE
+                        ;		THIS SUB DELAYS FOR ONE HALF CYCLE
+                        ;		(2000 HZ).  Y IS CLEARED, X, A, AND
+                        ;		CARRY ARE PRESERVED.
+                        ;
+0e1c : 8d0009           DELAY:	sta	PORT		;UPDATE TONE
+0e1f : a00f             		ldy	#$0F
+0e21 : 88               DLY:	dey
+0e22 : d0fd             		bne	DLY			;BR UNTIL DELAY FINISHED
+0e24 : 60               		rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;		SEND BIT SUBROUTINE
+                        ;		THIS SUB SENDS THE CARRY BIT TO THE TAPE.
+                        ;		AND "1" BIT CONSISTS OF 16 CYCLES OF 2000 HZ
+                        ;		AND A "0" BIT CONSISTS OF 8.  THIS SUB
+                        ;		TURNS RELAYS 1 ON AND RELAY 2 OFF.  Y IS
+                        ;		CLEARED, X, A, AND CARRY ARE PRESERVED.
+                        ;
+0e25 : 48               SNDBIT:	pha				;SAVE A
+0e26 : 8a               		txa
+0e27 : 48               		pha				;SAVE X
+0e28 : a210             		ldx	#$10		;NO. OF CYCLES FOR A "1"
+0e2a : b002             		bcs	CYCLE		;BRANCH IF "1" BIT
+0e2c : a208             		ldx	#$08		;NO. OF CYCLES FOR A "0"
+0e2e : a9b0             CYCLE:	lda	#%10110000	;TAPE ON; OUTPUT HIGH
+0e30 : 201c0e           		jsr	DELAY		;UPDATE PORT AND DELAY
+0e33 : a980             		lda	#%10000000	;TAPE ON; OUTPUT LOW	
+0e35 : 201c0e           		jsr	DELAY		;UPDATE PORT AND DELAY
+0e38 : ca               		dex				;LAST CYCLE?
+0e39 : d0f3             		bne	CYCLE		;BRANCH IF NOT
+0e3b : a990             		lda	#%10010000	;TAPE ON; OUTPUT NEUTRAL	
+0e3d : a210             		ldx	#$10		;DELAY COUNTER
+0e3f : 201c0e           GAP:	jsr	DELAY		;PRODUCE A GAP
+0e42 : ca               		dex				;DELAY FINISHED?
+0e43 : d0fa             		bne	GAP			;BRANCH IF NOT
+0e45 : 68               		pla
+0e46 : aa               		tax				;RESTORE X
+0e47 : 68               		pla				;RESTORE A
+0e48 : 60               		rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;		DETECT BIT SUBROUTINE
+                        ;		THIS SUB WILL PICK UP ONE BIT FROM
+                        ;		THE TAPE AND RETURN WITH IT IN THE
+                        ;		CARRY FLAG.  Y IS CLOBBERED, X AND A
+                        ;		ARE PRESERVED.  RELAYS ARE NOT AFFECTED.
+                        ;
+0e49 : 48               DETBIT:	pha				;SAVE A
+0e4a : 8a               		txa
+0e4b : 48               		pha				;SAVE X
+0e4c : ad0009           TONE:	lda PORT		;LOOK FOR START OF TONE
+0e4f : 10fb             		bpl	TONE		;BRANCH UNTIL FOUND
+0e51 : a200             		ldx	#$00		;CLEAR COUNTER
+0e53 : e8               COUNT:	inx				;COUNT TRANSISTIONS
+0e54 : a023             		ldy	#$23		;TIME LIMIT
+0e56 : ad0009           		lda	PORT		;CHECK INPUT
+0e59 : 85ef             		sta	STATUS		;SAVE INPUT STATUS
+0e5b : ad0009           CHECK:	lda PORT		;CHECK INPUT
+0e5e : 45ef             		eor	STATUS		;HAS IT SWITCHED?
+0e60 : 30f1             		bmi	COUNT		;IF SO, BRANCH
+0e62 : 88               		dey				;TIME UP?
+0e63 : d0f6             		bne	CHECK		;IF NOT, BRANCH
+0e65 : e008             		cpx	#$08		;DOES TONE BURST QUALIFY?
+0e67 : 90e3             		bcc	TONE		;BRANCH IF NOT
+0e69 : e018             		cpx	#$18		;SEC IF "1"; CLC IF "0"
+0e6b : 68               		pla
+0e6c : aa               		tax				;RESTORE X
+0e6d : 68               		pla				;RESTORE A
+0e6e : 60               		rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;		SEND BYTE SUBROUTINE
+                        ;		THIS SUB SENDS THE BYTE CONTAINED
+                        ;		IN THE ACC TO THE TAPE ALONG WITH
+                        ;		A START BIT AND ONE STOP BIT.  X AND
+                        ;		Y ARE CLEARED, A IS PRESERVED.
+                        ;		CARRY IS SET.  RELAY 1 IS TURNED ON,
+                        ;		RELAY 2 IS TURNED OFF.
+                        ;
+0e6f : 18               SNDBYT:	clc
+0e70 : 20250e           		jsr	SNDBIT		;SEND START BIT
+0e73 : a209             		ldx	#$09		;SET BIT COUNTER TO 9
+0e75 : 38               		sec				;SET STOP BIT
+0e76 : 2a               NEXT1:	rol	a			;MOVE BIT TO CARRY
+0e77 : 20250e           		jsr	SNDBIT		;SEND IT
+0e7a : ca               		dex				;LAST BIT?
+0e7b : d0f9             		bne	NEXT1		;BRANCH IF NOT
+0e7d : 60               		rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;		GET BYTE SUBROUTINE
+                        ;		THIS SUB WILL PICK UP A  BYTE FROM
+                        ;		TAPE AND RETURN IT IN THE ACC.
+                        ;		X AND Y ARE CLEARED, CARRY CONTAINS
+                        ;		THE STOP BIT.  RELAYS ARE NOT AFFECTED.
+                        ;
+0e7e : 20490e           GETBYT:	jsr	DETBIT		;LOOK FOR START BIT
+0e81 : b0fb             		bcs	GETBYT		;BRANCH UNTIL FOUND
+0e83 : a209             		ldx	#$09		;SET BIT COUNTER TO 9
+0e85 : 2a               NEXT2:	rol	a			;MOVE BIT TO ACC
+0e86 : 20490e           		jsr	DETBIT		;GET NEXT BIT
+0e89 : ca               		dex				;LAST BIT?
+0e8a : d0f9             		bne	NEXT2		;BRANCH IF NOT
+0e8c : 60               		rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;		CHECK ADDRESS SUBROUTINE
+                        ;		THIS SUB COMPARES THE POINTER TO
+                        ;		THE END ADDRESS AND SETS THE CARRY
+                        ;		IF THEY ARE THE SAME.  IF THEY ARE
+                        ;		NOT, THE CARRY IS CLEARED AND POINTER
+                        ;		IS INCREMENTED.  IT ALSO ADDS THE
+                        ;		CONTENTS OF THE ACC TO THE CHECKSUM
+                        ;		AND DISPLAYS THE LOW BYTE OF POINTER.
+                        ;		A IS MUTILATED, X AND Y ARE PRESERVED
+                        ;		RELAYS ARE NOT AFFECTED.
+                        ;
+0e8d : d8               CHKADD:	cld
+0e8e : 18               		clc
+0e8f : 65ee             		adc	CHKSUM		;UPDATE CHECKSUM
+0e91 : 85ee             		sta	CHKSUM		;SAVE IT
+0e93 : a5f6             		lda	PNTER		;GET POINTER LOW
+0e95 : 8d2008           		sta	DISPLY		;DISPLAY IT
+0e98 : c5f2             		cmp	ENDADR		;CMP WITH END ADDR LOW
+0e9a : d006             		bne	INCPTR		;BRANCH IF NOT EQUAL
+0e9c : a5f7             		lda	PNTER+1		;GET POINTER HIGH
+0e9e : c5f3             		cmp	ENDADR+1	;CMP WITH END ADDR HIGH
+0ea0 : f007             		beq	RET			;BRANCH AND SEC IF SAME
+0ea2 : e6f6             INCPTR:	inc	PNTER		;INC LOW BYTE
+0ea4 : d002             		bne	SKIP2		;BRANCH IF NO CARRY
+0ea6 : e6f7             		inc	PNTER+1		;INC HIGH BYTE
+0ea8 : 18               SKIP2:	clc
+0ea9 : 60               RET:	rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;
+0eaa : 1021             CASS:	bpl	LOAD		;BR IF COMMAND= "LOAD"
+                        ;
+                        ;
+                        ;
+                        ;		DUMP BLOCK SUBROUTINE
+                        ;		THIS SUB TRANSFERS A BLOCK OF MEMORY
+                        ;		TO TAPE.  BEGINNING OF THE BLOCK IS
+                        ;		SPECIFIED WITH "PNTER", END OF THE
+                        ;		BLOCK WITH "ENDADR", AND BLOCK
+                        ;		INDENTIFICATION WITH "IDENT".  AA
+                        ;		CHECKSUM IS SENT AT THE END OF
+                        ;		THE BLOCK.  A, X, AND Y ARE CLEARED,
+                        ;		CARRY IS SET.  RELAY 1 IS TURNED ON,
+                        ;		RELAY 2 IS TURNED OFF.
+                        ;
+                        
+0eac : a2ff             DUMP:	ldx	#255		;SET UP BIT COUNTER
+0eae : 38               NEXT3:	sec				;"1" BIT
+0eaf : 20250e           		jsr	SNDBIT		;SEND LEADER
+0eb2 : ca               		dex				;FINISHED?
+0eb3 : d0f9             		bne	NEXT3		;BRANCH IF NOT
+                        ;
+0eb5 : 86ee             		stx	CHKSUM		;CLEAR CHECKSUM
+0eb7 : a5f1             		lda	IDENT		;GET IDENTIFIER
+0eb9 : 206f0e           		jsr	SNDBYT		;SEND IT
+                        ;
+0ebc : a1f6             NEXT4:	lda	(PNTER,x)	;GET BYTE
+0ebe : 206f0e           		jsr	SNDBYT		;SEND IT
+0ec1 : 208d0e           		jsr	CHKADD		;LAST BYTE
+0ec4 : 90f6             		bcc	NEXT4		;BRANCH IF NOT
+                        ;
+0ec6 : a5ee             		lda	CHKSUM		;GET CHECKSUM
+0ec8 : 206f0e           		jsr	SNDBYT		;SEND IT
+0ecb : 8a               		txa				;CLEAR ACC
+0ecc : 60               		rts				;RETURN
+                        ;
+                        ;
+                        ;
+                        ;		LOAD BLOCK SUBROUTINE
+                        ;		THIS SUB WILL SEARCH FOR A BLOCK ON
+                        ;		TAPE WITH AN IDENTIFIER THAT MATCHES
+                        ;		"IDENT".  WHEN FOUND, IT WILL TRANSFERS
+                        ;		THE BLOCK FROM TAPE TO MEMORY.
+                        ;		BEGINNING OF THE DESTINATION IS
+                        ;		SPECIFIED WITH "PNTER" AND END WITH
+                        ;		"ENDADR".  FOR THIS REASON THE SIZE
+                        ;		OF THE BLOCK MUST BE KNOWN.  ACC IS
+                        ;		RETURNED WITH "AA" FOR SUCCESSFUL LOAD
+                        ;		AND "EE" FOR ERROR.  X IS CLEARED,
+                        ;		Y IS SMACHES.  RELAYS ARE NOT AFFECTED.
+                        ;
+0ecd : a214             LOAD:	ldx	#20			;SEARCH FOR LEADER
+0ecf : 20490e           LOOP:	jsr	DETBIT		;GET A BIT
+0ed2 : 90f9             		bcc	LOAD		;START OVER IF "0" BIT
+0ed4 : ca               		dex				;20 BITS YET?
+0ed5 : d0f8             		bne	LOOP		;BRANCH IF NOT
+0ed7 : 207e0e           		jsr	GETBYT		;GET IDENTIFIER FROM TAPE
+0eda : 8d2008           		sta	DISPLY		;DISPLAY IT
+0edd : a4f1             		ldy	IDENT		;GET DESIRED ID
+0edf : f004             		beq	SKIP3		;SKIP COMPARISON IF ID=00
+0ee1 : c5f1             		cmp	IDENT		;CORRECT ID?
+0ee3 : d0e8             		bne	LOAD		;START OVER IF NOT
+0ee5 : 86ee             SKIP3:	stx	CHKSUM		;CLEAR CHECKSUM
+                        ;
+0ee7 : 207e0e           NEXT5:	jsr	GETBYT		;GET A BYTE
+0eea : 9010             		bcc	ERROR		;BRANCH IF STOP BIT=0
+0eec : 81f6             		sta	(PNTER,x)	;STORE BYTE BY POINTER
+0eee : 208d0e           		jsr	CHKADD		;LAST BYTE?
+0ef1 : 90f4             		bcc	NEXT5		;IF NOT, GET NEXT BYTE
+                        ;
+0ef3 : 207e0e           		jsr	GETBYT		;GET CHECKSUM
+0ef6 : a0aa             		ldy	#$AA		;A-OK MESSAGE
+0ef8 : c5ee             		cmp	CHKSUM		;IS CHECKSUM OK?
+0efa : f002             		beq	SKIP4		;SKIP ERROR MESSAGE IF SO
+0efc : a0ee             ERROR:	ldy	#$EE		;ERROR MESSAGE
+0efe : 98               SKIP4:	tya				;XFER MESSAGE TO ACC
+0eff : 60               		rts				;RETURN
+                        ;
+                        ;
+0f00 :                  END
+                        		end
 
-;--------------------------------------------------------------
-Symbol table
-============
+-------------------------------- Symbol Table --------------------------------
 
-Value	Type	Name
------	----	----
-00EE	 04	CHKSUM
-00EF	 04	STATUS
-00F0	 04	COMAND
-00F1	 04	IDENT
-00F2	 04	ENDADR
-00F3	 04	X00F3 ;ENDADR+1
-00F4	 04	BEGADR
-00F5	 04	X00F5 ;BEGADR+1
-00F6	 04	PNTER
-00F7	 04	X00F7 ;PNTR+1
-0820	 04	DISPLY
-0900	 04	PORT
-0E19	 04	MANUAL
-0E1C	 04	DELAY
-0E21	 04	DLY
-0E25	 04	SENDBIT
-0E2E	 04	CYCLE
-0E3F	 04	GAP
-0E49	 04	DETBIT
-0E4C	 04	TONE
-0E53	 04	COUNT
-0E5B	 04	CHECK
-0E6F	 04	SNDBYT
-0E76	 04	NEXT1
-0E7E	 04	GETBYT
-0E85	 04	L0E85
-0E8D	 04	CHKADD
-0EA2	 04	INCPTR
-0EA8	 04	SKIP2
-0EA9	 04	RET
-0EAA	 04	CASS
-0EAE	 04	DUMP
-0EBC	 04	NEXT4
-0ECD	 04	LOAD
-0ECF	 04	LOOP
-0EE5	 04	SKIP3
-0EE7	 04	NEXT5
-0EFC	 04	ERROR
-0EFE	 04	SKIP4
-0F22	 04	BEEP
-0F52	 04	PIEBUG
+              Symbol   Value        Decimal
 
-Number of symbols:			41
-
-;--------------------------------------------------------------
+                BEEP : $0f22           3874   *
+              BEGADR : $00f4            244   *
+                CASS : $0eaa           3754
+               CHECK : $0e5b           3675
+              CHKADD : $0e8d           3725
+              CHKSUM : $00ee            238   *
+              COMAND : $00f0            240   *
+               COUNT : $0e53           3667
+               CYCLE : $0e2e           3630
+               DELAY : $0e1c           3612
+              DETBIT : $0e49           3657
+              DISPLY : $0820           2080   *
+                 DLY : $0e21           3617
+                DUMP : $0eac           3756
+                 END : $0f00           3840
+              ENDADR : $00f2            242   *
+               ERROR : $0efc           3836
+                 GAP : $0e3f           3647
+              GETBYT : $0e7e           3710
+               IDENT : $00f1            241   *
+              INCPTR : $0ea2           3746
+                LOAD : $0ecd           3789
+                LOOP : $0ecf           3791
+              MANUAL : $0e19           3609
+               NEXT1 : $0e76           3702
+               NEXT2 : $0e85           3717
+               NEXT3 : $0eae           3758
+               NEXT4 : $0ebc           3772
+               NEXT5 : $0ee7           3815
+              PIEBUG : $0f52           3922   *
+               PNTER : $00f6            246   *
+                PORT : $0900           2304   *
+                 RET : $0ea9           3753
+               SKIP2 : $0ea8           3752
+               SKIP3 : $0ee5           3813
+               SKIP4 : $0efe           3838
+              SNDBIT : $0e25           3621
+              SNDBYT : $0e6f           3695
+               START : $0e00           3584
+              STATUS : $00ef            239   *
+                TONE : $0e4c           3660
+				
