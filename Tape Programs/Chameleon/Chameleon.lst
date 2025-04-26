@@ -1,0 +1,126 @@
+                        ; CHAMELEON 0.25
+                        ; Control System For 8700 Based Synthesizers
+                        ; By Jon Ballera
+                        ; July 1979
+                        
+0200 =                  	org $0200
+00cf =                  KTBL	=$CF	;MUS1 NTBL variable
+00ea =                  OUTS	=$EA	;MUS1 variable
+0820 =                  DSPY	=$0820	;LED DISPLAY
+                        
+0d71 =                  POLY	=$0D71	;MUS1 function
+0d21 =                  INIT	=$0D21	;MUS1 function
+0dc3 =                  TRNGN	=$0DC3	;MUS1 TRGN function
+0d2b =                  NOTES	=$0D2B	;MUS1 NOTE function
+0d52 =                  FILL	=$0D52	;MUS1 function
+0f00 =                  DECD	=$0F00	;PIEBUG DECODE function
+                        
+                        
+0200 : 20210d           INIT0	jsr INIT	;CLEAR KTBL,NTBL,TTBL
+0203 : 900a             		bcc POLY1	;BRANCH ALWAYS POLY
+0205 : a900             INIT1	lda #$00	;PREP TO ZERO
+0207 : a210             		ldx #$10	;SET POINTER
+0209 : 95cf             ZBUF	sta KTBL,x	;ZERO BUFFER
+020b : ca               		dex			;POINT TO NEXT
+020c : d0fb             		bne ZBUF	;LOOP IF NOT DONE
+020e : 60               		rts			;BACK TO VOXTS
+                        		
+020f : 20710d           POLY1	jsr POLY	;ASSIGN NOTES
+0212 : 20c30d           		jsr TRNGN	;CALL STG's, IF ON
+0215 : 202b0d           		jsr NOTES	;PLAY NOTES
+0218 : 20000f           		jsr DECD	;READ 8700 KBD
+021b : c901             		cmp #$01	;IT TUNE DOWN?
+021d : 90e1             		bcc INIT0	;NO,IT'S LESS,GO CLEAR
+021f : d007             		bne VOXT1	;GO TO VOXT 1
+0221 : a05c             		ldy #$5C	;PREP FOR TUNE
+0223 : 20520d           		jsr FILL	;PUT NOTE IN ALL VOXT
+0226 : f0e7             		beq POLY1	;PLAY TUNING NOTE
+0228 : c904             VOXT1	cmp #$04	;IS $04 DOWN?
+022a : d00a             		bne VOXT2	;NO, GO TO VOXT 2
+022c : a901             		lda #$01	;YES, PREP 1 VOXT
+022e : 85ea             		sta OUTS	;PUT IN OUTS
+0230 : 8d2008           		sta DSPY	;SHOW VOX NUMBER
+0233 : 200502           		jsr INIT1	;CLEAR NTBL
+0236 : c905             VOXT2	cmp #$05	;IS $05 DOWN?
+0238 : d00a             		bne VOXT3	;NO,TO VOXT 3
+023a : a902             		lda #$02	;YES, PREP 2 VOX
+023c : 85ea             		sta OUTS	;PUT IN OUTS
+023e : 8d2008           		sta DSPY	;SHOW VOX NUMBER
+0241 : 200502           		jsr INIT1	;CLEAR NTBL
+0244 : c906             VOXT3	cmp #$06	;IS $06 DOWN?
+0246 : d00a             		bne VOXT4	;NO, TO VOXT 4
+0248 : a903             		lda #$03	;YES, PREP 3 VOX
+024a : 85ea             		sta OUTS	;PUT IN OUTS
+024c : 8d2008           		sta DSPY	;SHOW VOX NUMBER
+024f : 200502           		jsr INIT1	;CLEAR NTBL
+0252 : c907             VOXT4	cmp #$07	;IS $07 DOWN?
+0254 : d00a             		bne GLDT1	;NO, TO GLDT 1
+0256 : a904             		lda #$04	;YES, PREP 4 VOX
+0258 : 85ea             		sta OUTS	;PUT IN OUTS
+025a : 8d2008           		sta DSPY	;SHOW VOX NUMBER
+025d : 200502           		jsr INIT1	;CLEAR NTBL
+0260 : c908             GLDT1	cmp #$08	;IS $08 DOWN?
+0262 : d004             		bne GLDT2	;NO, TO GLDT 2
+0264 : a980             		lda #$80	;YES, PREP GLIDE
+0266 : 85cf             		sta $CF		;PUT IN XPOSE CH 1
+0268 : c909             GLDT2	cmp #$09	;IS $09 DOWN?
+026a : d004             		bne GLDT3	;NO, TO GLDT 3
+026c : a980             		lda #$80	;YES, PREP GLIDE
+026e : 85ce             		sta $CE		;PUT IN XPOSE CH 2
+0270 : c90a             GLDT3	cmp #$0A	;IS $0A DOWN?
+0272 : d004             		bne GLDT4	;NO, TO GLDT 4
+0274 : a980             		lda #$80	;YES, PREP GLIDE
+0276 : 85cd             		sta $CD		;PUT IN XPOSE CH 3
+0278 : c90b             GLDT4	cmp #$0B	;IS $0B DOWN?
+027a : d004             		bne TTST1	;NO, TO TTST 1
+027c : a980             		lda #$80	;YES, PREP GLIDE
+027e : 85cc             		sta $CC		;PUT IN XPOSE CH 4
+0280 : c90c             TTST1	cmp #$0C	;IS $0C DOWN?
+0282 : d004             		bne TTST2	;NO, TO TTST 2
+0284 : a90c             		lda #$0C	;YES, PREP XPOSE
+0286 : 85cf             		sta $CF		;PUT IN XPOSE CH 1
+0288 : c90d             TTST2	cmp #$0D	;IS $0D DOWN?
+028a : d004             		bne TTST3	;NO, TO TTST 3
+028c : a90c             		lda #$0C	;YES, PREP XPOSE
+028e : 85ce             		sta $CE		;PUT IN XPOSE CH 2
+0290 : c90e             TTST3	cmp #$0E	;IS $0E DOWN?
+0292 : d004             		bne TTST4	;NO, TO TTST 4
+0294 : a90c             		lda #$0C	;YES, PREP XPOSE
+0296 : 85cd             		sta $CD		;PUT IN XPOSE CH 3
+0298 : c90f             TTST4	cmp #$0F	;IS $0F DOWN?
+029a : d004             		bne RETURN	;NO, TO RETURN
+029c : a90c             		lda #$0C	;YES, PREP XPOSE
+029e : 85cc             		sta $CC		;PUT IN XPOSE CH 4
+02a0 : 4c0f02           RETURN	jmp POLY1	;DO IT AGAIN
+
+
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                DECD : $0f00           3840   *
+                DSPY : $0820           2080   *
+                FILL : $0d52           3410   *
+               GLDT1 : $0260            608
+               GLDT2 : $0268            616
+               GLDT3 : $0270            624
+               GLDT4 : $0278            632
+                INIT : $0d21           3361   *
+               INIT0 : $0200            512
+               INIT1 : $0205            517
+                KTBL : $00cf            207   *
+               NOTES : $0d2b           3371   *
+                OUTS : $00ea            234   *
+                POLY : $0d71           3441   *
+               POLY1 : $020f            527
+              RETURN : $02a0            672
+               TRNGN : $0dc3           3523   *
+               TTST1 : $0280            640
+               TTST2 : $0288            648
+               TTST3 : $0290            656
+               TTST4 : $0298            664
+               VOXT1 : $0228            552
+               VOXT2 : $0236            566
+               VOXT3 : $0244            580
+               VOXT4 : $0252            594
+                ZBUF : $0209            521
