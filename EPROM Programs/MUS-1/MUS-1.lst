@@ -1,266 +1,386 @@
-					KBD		=$0810
-					DISP	=$0820
-					D/A		=$0900
-					S/H		=$09EF
-					DECD	=$0F00
+                        ;*********************************
+                        ;*                               *
+                        ;*              MUS1             *
+                        ;*                               *
+                        ;*        BY JOHN SIMONTON       *
+                        ;*(C) 1978 - PAIA ELECTRONICS,INC*
+                        ;*     ALL RIGHTS RESERVED       *
+                        ;*                               *
+                        ;*                               *
+                        ;*    SYNTHESIZER SUBROUTINES    *
+                        ;*          ++ AND ++            *
+                        ;*   MULTIPLE OPTION POLYPHONIC  *
+                        ;*    ALLOCATION PROGRAM WITH    *
+                        ;*      SOFTWARE TRANSIENT       *
+                        ;*          GENERATION           *
+                        ;*                               *
+                        ;*********************************
+                        ;           OPTN
+                        ;POLYPHONIC SYNTHESIZER / OPTION
+                        ;        SELECTION
+                        ;*********************************
+                        ;
+                        ;
+                        ;INIT 	=$0D21
+                        ;POLY	=$0D71
+                        ;TRGN	=$0DC3
+                        ;NOTE	=$0D2B
+0f00 =                  DECD	=$0F00
+                        ;FILL	=$0D52
+0820 =                  DISP	=$0820
+00bf =                  CLCK	=$00BF
+                        ;
+                        ;OPTION TIES MUS1 FIRMWARE
+                        ;TOGETHER INTO A POLYPHONIC SYNTH
+                        ;WITH OR WITHOUT TRANSIENT GENER-
+                        ;TION, W/WO DYNAMIC QUASH DRIVERS
+                        ;
+                        ;ALSO USES PIEBUG DECODE AND
+                        ;ASSIGNS KEY #0 AS SYSTEM CLEAR
+                        ;AND #1 AS TUNE - EQUIVALENT TO
+                        ;ALL CHANNELS 2ND "C" on KBD DOWN
+                        ;
+0d00 =                  	org	$0D00
+0d00 : 20210d           OPTN	jsr	INIT	;ZERO ALL BUFFS
+0d03 : 20710d           LOOP	jsr	POLY	;ALLOCATE CHANS
+0d06 : 20c30d           		jsr	TRGN	;NEW TRANSIENTS
+0d09 : 202b0d           		jsr	NOTE	;OUTPUT-READ AGO
+0d0c : a5bf             		lda	CLCK	;GET CLOCK VALUE
+0d0e : 8d2008           		sta	DISP	;RAZZ-MA-TAZZ
+0d11 : 20000f           		jsr	DECD	;CHECK COMMANDS
+0d14 : c901             		cmp	#$01	;0? 1? >1?
+0d16 : 30e8             		bmi	OPTN	;0 CLEAR ALL
+0d18 : d0e9             		bne	LOOP	;>1 KEEP ON
+0d1a : a05c             		ldy	#$5C	;1 TUNE 2ND C
+0d1c : 20520d           		jsr	FILL	;KEYS ALL DOWN
+0d1f : f0e2             		beq	LOOP	;BRANCH ALWAYS
+                        ;
+                        ;         INIT
+                        ;  INITIALIZATION ROUTINE
+                        ;******************************
+                        ;
+00e8 =                  CTRL	=$00E8
+00bf =                  TBEG	=$00BF
+                        ;INIT CLEARS INPUT BUFFER (KTBL)
+                        ;OUTPUT BUFFER (NTBL) AND TRANS-
+                        ;POSE BUFFER/CONTROL WORDS (TTBL)
+                        ;HEXADECIMAN MODE IS SELECTED
+                        ;
+                        ;ENTER AT INT0 TO FILL TABLES
+                        ;WITH CHARACTER FROM ACCUMULATOR
+                        ;
+0d21 : a900             INIT	lda	#$00	;PREPARE TO ZERO
+0d23 : a228             INT0	ldx	#$28	;SET POINT/COUNT
+0d25 : d8               		cld			;SET HEX MODE
+0d26 : 95bf             INT1	sta	TBEG,x	;ZERO BUFFER
+0d28 : ca               		dex			;POINT TO NEXT
+0d29 : d0fb             		bne	INT1	;SOME LEFT -LOOP
+                        ;
+                        ;       NOTEOUT/LOOK
+                        ;16 CHANNEL QUASH DRIVERS AND AGO
+                        ;   KEYBOARD READING ROUTINE
+                        ;
+                        ;********************************
+                        ;
+                        ;CTRL	=$00E8
+00e9 =                  ODLY	=$00E9
+00df =                  KTBL	=$00DF
+00cf =                  NTBL	=$00CF
+00bf =                  TTBL	=$00BF	;ALSO CLCK
+00a9 =                  LAST	=$00A9
+09ef =                  SH	=$09EF
+0900 =                  DA	=$0900
+0810 =                  KBD	=$0810
+                        ;
+                        ;       *** NOTEOUT ***
+                        ;    DYNAMIC QUASH DRIVER
+                        ;GETS NOTES TO BE PLAYED FROM THE
+                        ;OUTPUT BUFFER (NTBL) AND ADDS
+                        ;TRANSPOSING VALUE FROM TRANSPOSE
+                        ;BUFFER (TTBL) OUTPUTS RESULT
+                        ;
+0d2b : a210             NOTE	ldx	#$10	;SET POINTER
+0d2d : b5cf             NO0		lda	NTBL,x	;GET NOTE
+0d2f : 18               		clc			;PREPARE AND
+0d30 : 75bf             		adc	TTBL,x	;ADD TRANSPOSE
+0d32 : 8d0009           		sta	DA		;LET D/A SETTLE
+0d35 : 9def09           		sta	SH,x	;WRITE TO S/H
+                        ;
+                        ;NOW THE DYNAMIC PART, IF GLIDE
+                        ;IS ON, DELAY IS SKIPPED. IF NOTE
+                        ;IS SAME AS LAST PLAYED (IGNORING
+                        ;CONTROL BITS D6 D7) DELAY IS
+                        ;SKIPPED.  IF NOT IN DYNAMIC MODE
+                        ;AND NO GLIDE, DELAY ALWAYS TAKEN
+                        ;
+0d38 : 300f             		bmi	NO2		;GLIDE? NO DELAY
+0d3a : 0980             		ora	#$80	;IGNORE FLAGS
+0d3c : 24e8             		bit	CTRL	;DYNAMIC MODE ?
+0d3e : 5004             		bvc	DLAY	;NO, JMP TO DELAY
+0d40 : d5a9             		cmp	LAST,x	;COMPARE TO LAST
+0d42 : f005             		beq	NO2		;SAME:SKIP DELAY
+0d44 : a4e9             DLAY	ldy	ODLY	;GET DELAY VALUE
+0d46 : 88               NO1		dey			;DECREMENT DELAY
+0d47 : d0fd             		bne	NO1		;LOOP TIL DONE
+0d49 : 95a9             NO2		sta	LAST,x	;FOR NEXT TIME
+0d4b : ca               		dex			;POINT TO NEXT
+0d4c : d0df             		bne	NO0		;SOME LEFT -LOOP
+                        ;
+                        ;LOOK WAITS FOR THE BEGINNING OF
+                        ;AN "ACTIVE" SCAN-BEGINS PUTTING
+                        ;THE NUMBERS OF KEYS DOWN IN SE-
+                        ;QUENTIAL IN-BUFF WORDS.  WHEN
+                        ;SCAN DONE REMAINING IN-BUFF IS
+                        ;ZERO'D
+                        ;
+0d4e : e6bf             LOOK	inc	TTBL	;INCREMENT CLOCK
+0d50 : a000             		ldy	#$00	;PREPARE FOR CLR
+0d52 : a208             FILL	ldx	#$08	;SET UP POINTER
+0d54 : ad1008           LK2		lda	KBD		;WAIT FOR
+0d57 : 30fb             		bmi	LK2		;"ACTIVE" SCAN
+0d59 : ad1008           LK3		lda	KBD		;GET KEY
+0d5c : 300f             		bmi	DONE	;END SCAN? -CLR
+0d5e : 2a               		rol	a		;STROBE TO D7
+0d5f : 10f8             		bpl	LK3		;D7=0, NO STROBE
+0d61 : 6a               		ror	a		;RESTORE DATA
+0d62 : 95df             		sta	KTBL,x	;TO IN BUFFER
+0d64 : cd1008           LK4		cmp	KBD		;NOW WAIT FOR
+0d67 : f0fb             		beq	LK4		;NEXT KEY
+0d69 : ca               LK0		dex			;PNT TO NEXT BUF
+0d6a : d0ed             		bne	LK3		;SOME LEFT -LOOP
+0d6c : 60               		rts			;LEAVE
+0d6d : 94df             DONE	sty	KTBL,x	;ZERO IN-BUFFER
+0d6f : 30f8             		bmi	LK0		;BRANCH ALWAYS
+                        ;
+                        ;          POLY
+                        ; A LIMITED RESOURCE ALLOCATION
+                        ;        ALGORYTHM
+                        ;********************************
+                        ;
+00eb =                  OUTT	=$00EB
+00ea =                  OUTS	=$00EA
+                        ;CTRL	=$00E8
+                        ;KTBL	=$00DF
+                        ;NTBL	=$00CF
+                        ;
+                        ;POLY-FIRST HALF OF ALGORHYTHM
+                        ;IN THIS BLOCK DE-ACTIVATED CHANS
+                        ;ARE REACTIVATED IF THE DATA THEY
+                        ;CONTAIN APPEARS IN THE IN BUFFER
+                        ;
+                        ;D7 IN CTRL SET - ALTERNATE MODE
+                        ;D7 "   "   CLR - SEQUENTIAL MODE
+                        ;
+0d71 : a5ea             POLY	lda	OUTS	;# OD OUT CHANS
+0d73 : 85eb             		sta	OUTT	;USE AS COUNTER
+0d75 : a210             		ldx	#$10	;PREPARE PNT/CNT
+0d77 : b5cf             POL0	lda	NTBL,x	;GET NOTE
+0d79 : f027             		beq	NWKY	;0-OLD KEYS DONE
+0d7b : 297f             		and	#$7F	;CLEAR D7
+0d7d : 0940             		ora	#$40	;SET D6
+0d7f : a009             		ldy	#$09	;PREPARE PNT/CNT
+0d81 : 88               LP0		dey			;POINT NEXT KEY
+0d82 : f012             		beq	NEXT1	;DONE -NEXT NOTE
+0d84 : d9df00           		cmp	KTBL,y	;SAME AS KEY?
+0d87 : d0f8             		bne	LP0		;NO -NEXT KEY
+0d89 : 95cf             		sta	NTBL,x	;SAVE NOTE D6=1
+0d8b : c6eb             		dec	OUTT	;ONE LESS OUTPUT
+0d8d : f033             		beq	OUT		;NONE LEFT-LEAVE
+0d8f : a900             		lda	#$00	;OR PREPARE AND
+0d91 : 99df00           		sta	KTBL,y	;ELIMINATE KEY
+0d94 : f004             		beq	LP1		;& BRANCH ALWAYS
+0d96 : 29bf             NEXT1	and	#$BF	;CLEAR TRIG (DG6)
+0d98 : 95cf             		sta	NTBL,x	;& RESTORE NOTE
+0d9a : 24e8             LP1		bit	CTRL	;ALTERNATE MODE?
+0d9c : 1001             		bpl	SKP1	;NO -DEC ONCE
+0d9e : ca               		dex			;YES-DEC TWICE
+0d9f : ca               SKP1	dex			;POINT NEXT NOTE
+0da0 : d0d5             		bne	POL0	;SOME LEFT -LOOP
+                        ;
+                        ;NEWKEY - SECOND HALF. KEYS DOWN
+                        ;ARE ASSIGNED TO OUTPUT BUFFER
+                        ;LOCATIONS WICH ARE STILL DE-
+                        ;ACTIVATED
+                        ;
+0da2 : a210             NWKY	ldx	#$10	;NTABLE PNT/CNT
+0da4 : a009             		ldy	#$09	;KTABLE PNT/CNT
+0da6 : a940             NK1		lda	#$40	;PREPARE MASK
+0da8 : 35cf             		and	NTBL,x	;NOTE TRIGGERED?
+0daa : d00e             		bne	NK3		;YES -GO TO NEXT
+0dac : 88               NK2		dey			;POINT NEXT KEY
+0dad : f013             		beq	OUT		;NONE LEFT-LEAVE
+0daf : b9df00           		lda	KTBL,y	;KEY NEEDS HOME?
+0db2 : f0f8             		beq	NK2		;NO -GET NEXT
+0db4 : 95cf             		sta	NTBL,x	;YES-PUT IN NOTE
+0db6 : c6eb             		dec	OUTT	;ONE LESS OUTPUT
+0db8 : f008             		beq	OUT		;NONE LEFT-LEAVE
+0dba : 24e8             NK3		bit	CTRL	;ALTERNATE MODE?
+0dbc : 1001             		bpl	SKP2	;NO -DEC ONCE
+0dbe : ca               		dex			;YES-DEC TWICE
+0dbf : ca               SKP2	dex			;POINT NEXT NOTE
+0dc0 : d0e4             		bne	NK1		;SOME LEFT -LOOP
+0dc2 : 60               OUT		rts			;RETURN
+                        ;
+                        ;       TRGN
+                        ;TRANSIENT GENERATOR PROGRAM
+                        
+                        ;********************************
+                        ;
+                        ;
+                        ;CTRL	=$00E8
+00ba =                  ATCK	=$00BA
+00bb =                  DCY		=$00BB
+00bc =                  SUST	=$00BC
+00bd =                  RLS		=$00BD
+00be =                  PEAK	=$00BE
+                        ;NTBL	=$00CF
+00ce =                  PARM	=$00CE
+                        ;TTBL	=$00BF
+00be =                  CWRD	=$00BE
+                        ;
+                        ;       NTBL 00D0-00DF
+                        ;       TTBL 00C0-00CF
+                        ;
+0dc3 : a5e8             TRGN	lda	CTRL	;DO TRANSIENTS?
+0dc5 : 1038             		bpl	RTN1	;NO  -RETURN
+0dc7 : a210             		ldx	#$10	;NTABLE PNT/CNT
+                        ;
+                        ;   A/D/S/R DETERMINATION
+                        ;ROUTINE PREPARES Y TO USE AS
+                        ;CONTROL WORD. GETS NOTE AND
+                        ;SHIFTS TRIG.  TO CARRY.  GETS
+                        ;CURRENT STATE (CS) PARAMETER.
+                        ;IF NOTE TRIG.  NOT SET STATE IS
+                        ;RELEASE.  IF CS PARA IS POSI-
+                        ;TIVE STATE IS DECAY. SUSTAIN
+                        ;OTHERWISE, STATE IS ATTACK
+                        ;
+0dc9 : a040             ADSR	ldy	#$40	;PREPARE CWRD
+0dcb : b5cf             		lda	NTBL,x	;GET NOTE AND
+0dcd : 2a               		rol	a		;ROTATE TRIGGER
+0dce : 2a               		rol	a		;TO CARRY BIT
+0dcf : b5ce             		lda	PARM,x	;NO TRIG? -RLS
+0dd1 : 9019             		bcc	RELS	;CS>0? -DECAY/S
+0dd3 : 100b             		bpl	DS
+                        ;
+                        ;   ATTACK ROUTINE
+                        ;ADDS ATTACK PARAMETER TO CS PARA
+                        ;AND IF GREATER THAN PEAK
+                        ;SUBSTITUTES $#F AND SETS CONTROL
+                        ;WORD TO $40 (D6 SET - NO GLIDE).
+                        ;NOTE THAT CS PARA WILL BE >0
+                        ;WHEN NEXT CHECKED.
+                        ;
+0dd5 : 18               ATTK	clc			;PREPARE
+0dd6 : 65ba             		adc	ATCK	;ADD ATTACK PARA
+0dd8 : c9bf             		cmp	#$BF	; >PEAK
+0dda : 901b             		bcc	NEXT2	;NO -PLACE PARA.
+0ddc : a5be             		lda	PEAK	;YES-PEAK VALUE
+0dde : d017             		bne	NEXT2	;BRANCH ALWAYS
+                        ;
+                        ;   DECAY AND SUSTAIN ROUTINE
+                        ;NOTE THAT CARRY IS SET.  DECAY
+                        ;PARAMETER IS SUBTRACTED FROM
+                        ;CURRENT STAT PARAMETER.  IF
+                        ;RESULT IS LASS THAN SUSAIN
+                        ;PARAMERE THEN SUST.  PARA.
+                        ;BECOMES CURRENT STATE PARA.
+                        ;D6 & D7 OF CONTROL WORD SET
+                        ;
+0de0 : a0c0             DS		ldy	#$C0	;PREPARE CWRD
+0de2 : e5bb             		sbc	DCY		;SUBTRACT DCY
+0de4 : c5bc             		cmp	SUST	;>SUSATIN?
+0de6 : 100f             		bpl	NEXT2	;PLACE PARA
+0de8 : a5bc             		lda	SUST	;CS PARA=SUST
+0dea : 100b             		bpl	NEXT2	;PLACE PARA
+                        ;
+                        ;   RELEASE ROUTINE
+                        ;MAKE SURE THAT CURRENT STATE
+                        ;GLIDE BIT IS SET (NOTE-MAKES
+                        ;CS NEGATIVE). SUBTRACTS RELEASE
+                        ;PARA. FROM CURRENT STATE.  IF
+                        ;RESULT >0. MAKES CS & CWRD =80
+                        ;
+0dec : 38               RELS	sec			;PREPARE
+0ded : 0980             		ora	#$80	;SET CS GLIDE
+0def : e5bd             		sbc	RLS		;SUBTRACT RLS
+0df1 : 3004             		bmi	NEXT2	;CS<0 -PLACE CS
+0df3 : a000             		ldy	#$00	;CS>0 -DONE MAKE
+0df5 : a980             		lda	#$80	;CS=80; CWRD=0
+                        ;
+                        ;   NEXT
+                        ;PLAVES CS PARA AND CWRD IN
+                        ;PROPER CONTROL CHANNEL OUTPUTS
+                        ;DECREMENTS POINTER (TWICE) AND
+                        ;IF NOT YET DONE LOOPS FOR MORE
+                        ;
+0df7 : 94be             NEXT2	sty	CWRD,x	;PLACE CONTROL
+0df9 : 95ce             		sta	PARM,x	;PLACE CS PARA
+0dfb : ca               		dex			;DECREMENT POINT
+0dfc : ca               		dex			;AND AGAIN
+0dfd : d0ca             		bne	ADSR	;SOME LEFT -LOOP
+0dff : 60               RTN1	rts			;RETURN
+                        
 
-					CTRL	=$00E8
-					ODLY	=$00E9
-					OUTS	=$00EA
-					OUTT	=$00EB
-					
-					ATCK	=$00BA
-					DCY		=$00BB
-					SUST	=$00BC
-					RLS		=$00BD
-					PEAK	=$00BE
-					CWRD	=$00BE
-					TBEG	=$00BF
-					CLCK	=$00BF
-					TTBL	=$00BF	;also clck C0-CF
-					
-					PARM	=$00CE
-					NTBL	=$00CF	;NTBL D0-DF?
-					
-					KTBL	=$00DF
+-------------------------------- Symbol Table --------------------------------
 
-					LAST	=$00A9
+              Symbol   Value        Decimal
 
-					org	$0D00
-				;
-0D00				OPTN:
-0D00 : 20 21 0D 		jsr	INIT
-0D03				LOOP:
-0D03 : 20 71 0D 		jsr	POLY
-0D06 : 20 C3 0D 		jsr	TRGN
-0D09 : 20 2B 0D 		jsr	NOTE
-0D0C : A5 BF 			lda	CLCK
-0D0E : 8D 20 08 		sta	DISP
-0D11 : 20 00 0F 		jsr	DECD
-0D14 : C9 01 			cmp	#$01
-0D16 : 30 E8 			bmi	OPTN
-0D18 : D0 E9 			bne	LOOP
-0D1A : A0 5C 			ldy	#$5C
-0D1C : 20 52 0D 		jsr	FILL
-0D1F : F0 E2 			beq	LOOP
-
-0D21				INIT:
-0D21 : A9 00 			lda	#$00
-0D23 : A2 28 			ldx	#$28
-0D25 : D8 				cld
-0D26				INIT1:
-0D26 : 95 BF 			sta	CLCK,x
-0D28 : CA 				dex
-0D29 : D0 FB 			bne	INIT1
-
-0D2B				NOTE:
-0D2B : A2 10 			ldx	#$10
-0D2D				NO0:
-0D2D : B5 CF 			lda	NTBL,x
-0D2F : 18 				clc
-0D30 : 75 BF 			adc	TTBL,x
-0D32 : 8D 00 09 		sta	D/A
-0D35 : 9D EF 09 		sta	S/H,x
-0D38 : 30 0F 			bmi	NO2
-0D3A : 09 80 			ora	#$80
-0D3C : 24 E8 			bit	CTRL
-0D3E : 50 04 			bvc	DLAY
-0D40 : D5 A9 			cmp	LAST,x
-0D42 : F0 05 			beq	NO2
-0D44				DLAY:
-0D44 : A4 E9 			ldy	ODLY
-0D46				NO1:
-0D46 : 88 				dey
-0D47 : D0 FD 			bne	NO1
-0D49				NO2:
-0D49 : 95 A9 			sta	LAST,x
-0D4B : CA 				dex
-0D4C : D0 DF 			bne	NO0
-
-0D4E : E6 BF 			inc	CLCK
-0D50 : A0 00 			ldy	#$00
-0D52				FILL:
-0D52 : A2 08 			ldx	#$08
-0D54				LK2:
-0D54 : AD 10 08 		lda	KBD
-0D57 : 30 FB 			bmi	LK2
-0D59				LK3:
-0D59 : AD 10 08 		lda	KBD
-0D5C : 30 0F 			bmi	DONE
-0D5E : 2A 				rol	a
-0D5F : 10 F8 			bpl	LK3
-0D61 : 6A 				ror	a
-0D62 : 95 DF 			sta	KTBL,x
-0D64				LK4:
-0D64 : CD 10 08 		cmp	KBD
-0D67 : F0 FB 			beq	LK4
-0D69				LK0:
-0D69 : CA 				dex
-0D6A : D0 ED 			bne	LK3
-0D6C : 60 				rts
-				;
-0D6D				DONE:
-0D6D : 94 DF 			sty	KTBL,x
-0D6F : 30 F8 			bmi	LK0
-
-0D71				POLY:
-0D71 : A5 EA 			lda	OUTS
-0D73 : 85 EB 			sta	OUTT
-0D75 : A2 10 			ldx	#$10
-0D77				POL0:
-0D77 : B5 CF 			lda	NTBL,x
-0D79 : F0 27 			beq	NWKY
-0D7B : 29 7F 			and	#$7F
-0D7D : 09 40 			ora	#$40
-0D7F : A0 09 			ldy	#$09
-0D81				LP0:
-0D81 : 88 				dey
-0D82 : F0 12 			beq	NEXT1
-0D84 : D9 DF 00 		cmp	KTBL,y
-0D87 : D0 F8 			bne	LP0
-0D89 : 95 CF 			sta	NTBL,x
-0D8B : C6 EB 			dec	OUTT
-0D8D : F0 33 			beq	OUT
-0D8F : A9 00 			lda	#$00
-0D91 : 99 DF 00 		sta	KTBL,y
-0D94 : F0 04 			beq	LP1
-0D96				NEXT1:
-0D96 : 29 BF 			and	#$BF
-0D98 : 95 CF 			sta	NTBL,x
-0D9A				LP1:
-0D9A : 24 E8 			bit	CTRL
-0D9C : 10 01 			bpl	SKP1
-0D9E : CA 				dex
-0D9F				SKP1:
-0D9F : CA 				dex
-0DA0 : D0 D5 			bne	POL0
-
-0DA2				NWKY:
-0DA2 : A2 10 			ldx	#$10
-0DA4 : A0 09 			ldy	#$09
-0DA6				NK1:
-0DA6 : A9 40 			lda	#$40
-0DA8 : 35 CF 			and	NTBL,x
-0DAA : D0 0E 			bne	NK3
-0DAC				NK2:
-0DAC : 88 				dey
-0DAD : F0 13 			beq	OUT
-0DAF : B9 DF 00 		lda	KTBL,y
-0DB2 : F0 F8 			beq	NK2
-0DB4 : 95 CF 			sta	NTBL,x
-0DB6 : C6 EB 			dec	OUTT
-0DB8 : F0 08 			beq	OUT
-0DBA				NK3:
-0DBA : 24 E8 			bit	CTRL
-0DBC : 10 01 			bpl	SKP2
-0DBE : CA 				dex
-0DBF				SKP2:
-0DBF : CA 				dex
-0DC0 : D0 E4 			bne	NK1
-0DC2				OUT:
-0DC2 : 60 				rts
-				;
-				
-0DC3				TRGN:
-0DC3 : A5 E8 			lda	CTRL
-0DC5 : 10 38 			bpl	RTN1
-0DC7 : A2 10 			ldx	#$10
-
-0DC9				ADSR:
-0DC9 : A0 40 			ldy	#$40
-0DCB : B5 CF 			lda	NTBL,x
-0DCD : 2A 				rol	a
-0DCE : 2A 				rol	a
-0DCF : B5 CE 			lda	PARM,x
-0DD1 : 90 19 			bcc	RELS
-0DD3 : 10 0B 			bpl	DS
-				;Attk
-0DD5 : 18 				clc
-0DD6 : 65 BA 			adc	ATCK
-0DD8 : C9 BF 			cmp	#$BF
-0DDA : 90 1B 			bcc	NEXT2
-0DDC : A5 BE 			lda	PEAK
-0DDE : D0 17 			bne	NEXT2
-
-0DE0				DS:
-0DE0 : A0 C0 			ldy	#$C0
-0DE2 : E5 BB 			sbc	DCY
-0DE4 : C5 BC 			cmp	SUST
-0DE6 : 10 0F 			bpl	NEXT2
-0DE8 : A5 BC 			lda	SUST
-0DEA : 10 0B 			bpl	NEXT2
-
-0DEC				RELS:
-0DEC : 38 				sec
-0DED : 09 80 			ora	#$80
-0DEF : E5 BD 			sbc	RLS
-0DF1 : 30 04 			bmi	NEXT2
-0DF3 : A0 00 			ldy	#$00
-0DF5 : A9 80 			lda	#$80
-0DF7				NEXT2:
-0DF7 : 94 BE 			sty	CWRD,x
-0DF9 : 95 CE 			sta	PARM,x
-0DFB : CA 				dex
-0DFC : CA 				dex
-0DFD : D0 CA 			bne	ADSR
-0DFF				RTN1:
-0DFF : 60 				rts
-
-;--------------------------------------------------------------
-Symbol table
-============
-
-Value	Type	Name
------	----	----
-00A9	 04	LAST
-00BA	 04	ATCK
-00BB	 04	DCY
-00BC	 04	SUST
-00BD	 04	RLS
-00BE	 04	PEAK
-00BF	 04	CLCK
-00CE	 04	PARM
-00CF	 04	NTBL
-00DF	 04	KTBL
-00E8	 04	CTRL
-00E9	 04	ODLY
-00EA	 04	OUTS
-00EB	 04	OUTT
-0810	 04	KBD
-0820	 04	DISP
-0900	 04	D/A
-09EF	 04	S/H
-0D00	 04	OPTN
-0D03	 04	LOOP
-0D21	 04	INIT
-0D26	 04	INIT1
-0D2B	 04	NOTE
-0D2D	 04	NO0
-0D44	 04	DLAY
-0D46	 04	NO1
-0D49	 04	NO2
-0D52	 04	FILL
-0D54	 04	LK2
-0D59	 04	LK3
-0D64	 04	LK4
-0D69	 04	LK0
-0D6D	 04	DONE
-0D71	 04	POLY
-0D77	 04	POL0
-0D81	 04	LP0
-0D96	 04	NEXT1
-0D9A	 04	LP1
-0D9F	 04	SKP1
-0DA2	 04	NWKY
-0DA6	 04	NK1
-0DAC	 04	NK2
-0DBA	 04	NK3
-0DBF	 04	SKP2
-0DC2	 04	OUT
-0DC3	 04	TRGN
-0DC9	 04	ADSR
-0DE0	 04	DS
-0DEC	 04	RELS
-0DF7	 04	NEXT2
-0DFF	 04	RTN1
-0F00	 04	DECD
+                ADSR : $0dc9           3529
+                ATCK : $00ba            186   *
+                ATTK : $0dd5           3541
+                CLCK : $00bf            191   *
+                CTRL : $00e8            232   *
+                CWRD : $00be            190   *
+                  DA : $0900           2304   *
+                 DCY : $00bb            187   *
+                DECD : $0f00           3840   *
+                DISP : $0820           2080   *
+                DLAY : $0d44           3396
+                DONE : $0d6d           3437
+                  DS : $0de0           3552
+                FILL : $0d52           3410
+                INIT : $0d21           3361
+                INT0 : $0d23           3363
+                INT1 : $0d26           3366
+                 KBD : $0810           2064   *
+                KTBL : $00df            223   *
+                LAST : $00a9            169   *
+                 LK0 : $0d69           3433
+                 LK2 : $0d54           3412
+                 LK3 : $0d59           3417
+                 LK4 : $0d64           3428
+                LOOK : $0d4e           3406
+                LOOP : $0d03           3331
+                 LP0 : $0d81           3457
+                 LP1 : $0d9a           3482
+               NEXT1 : $0d96           3478
+               NEXT2 : $0df7           3575
+                 NK1 : $0da6           3494
+                 NK2 : $0dac           3500
+                 NK3 : $0dba           3514
+                NOTE : $0d2b           3371
+                 NO0 : $0d2d           3373
+                 NO1 : $0d46           3398
+                 NO2 : $0d49           3401
+                NTBL : $00cf            207   *
+                NWKY : $0da2           3490
+                ODLY : $00e9            233   *
+                OPTN : $0d00           3328
+                 OUT : $0dc2           3522
+                OUTS : $00ea            234   *
+                OUTT : $00eb            235   *
+                PARM : $00ce            206   *
+                PEAK : $00be            190   *
+                POLY : $0d71           3441
+                POL0 : $0d77           3447
+                RELS : $0dec           3564
+                 RLS : $00bd            189   *
+                RTN1 : $0dff           3583
+                  SH : $09ef           2543   *
+                SKP1 : $0d9f           3487
+                SKP2 : $0dbf           3519
+                SUST : $00bc            188   *
+                TBEG : $00bf            191   *
+                TRGN : $0dc3           3523
+                TTBL : $00bf            191   *

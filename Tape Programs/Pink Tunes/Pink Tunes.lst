@@ -1,486 +1,321 @@
-					org	$0000
-				;
-0000				X0000:
-0000 : 4C C0 FF 	"L  "		jmp	LFFC0
-				;
-0003 : 20 21 0D 	" ! "		jsr	L0D21
-0006 : AD 10 08 	"   "		lda	X0810
-0009 : 85 D0 		"  "		sta	X00D0
-000B				L000B:
-000B : 20 71 01 	" q "		jsr	L0171
-000E				L000E:
-000E : 20 2B 0D 	" + "		jsr	L0D2B
-0011 : A5 E7 		"  "		lda	X00E7
-0013 : F0 02 		"  "		beq	L0017
-0015 : C5 EC 		"  "		cmp	X00EC
-0017				L0017:
-0017 : 85 EC 		"  "		sta	X00EC
-0019 : F0 0A 		"  "		beq	L0025
-001B : A2 10 		"  "		ldx	#$10
-001D				L001D:
-001D : B4 8F 		"  "		ldy	X008F,x
-001F : 95 8F 		"  "		sta	X008F,x
-0021 : 98 		" "		tya
-0022 : CA 		" "		dex
-0023 : D0 F8 		"  "		bne	L001D
-0025				L0025:
-0025 : A5 BF 		"  "		lda	X00BF
-0027 : D0 1A 		"  "		bne	L0043
-0029 : A5 A9 		"  "		lda	X00A9
-002B : 85 BF 		"  "		sta	X00BF
-002D : 20 53 01 	" S "		jsr	L0153
-0030 : A5 A8 		"  "		lda	X00A8
-0032 : 8D 20 08 	"   "		sta	X0820
-0035 : F0 0C 		"  "		beq	L0043
-0037 : C6 A8 		"  "		dec	X00A8
-0039 : D0 08 		"  "		bne	L0043
-003B : 20 71 01 	" q "		jsr	L0171
-003E : 20 53 01 	" S "		jsr	L0153
-0041 : F0 CB 		"  "		beq	L000E
-0043				L0043:
-0043 : 20 00 0F 	"   "		jsr	L0F00
-0046 : D0 0C 		"  "		bne	L0054
-0048 : A2 03 		"  "		ldx	#$03
-004A				L004A:
-004A : 20 00 01 	"   "		jsr	L0100
-004D : 95 CF 		"  "		sta	X00CF,x
-004F : CA 		" "		dex
-0050 : D0 F8 		"  "		bne	L004A
-0052 : F0 B7 		"  "		beq	L000B
-0054				L0054:
-0054 : C9 01 		"  "		cmp	#$01
-0056 : D0 0C 		"  "		bne	L0064
-0058				X0058:
-0058 : A2 04 		"  "		ldx	#$04
-005A : A9 5C 		" \"		lda	#$5C
-005C				L005C:
-005C : 9D DB 00 	"   "		sta	X00DB,x
-005F : CA 		" "		dex
-0060 : D0 FA 		"  "		bne	L005C
-0062 : F0 AA 		"  "		beq	L000E
-0064				L0064:
-0064 : C9 02 		"  "		cmp	#$02
-0066 : D0 A6 		"  "		bne	L000E
-0068 : 20 71 01 	" q "		jsr	L0171
-006B : 20 2B 0D 	" + "		jsr	L0D2B
-006E : 00 		" "		brk
-006F : 08 		" "		php
-				;
-0070 : 3A 		":"		db	$3A
-0071 : BF 		" "		db	$BF
-0072 : 0C 		" "		db	$0C
-0073 : 0C 		" "		db	$0C
-0074 : BF 		" "		db	$BF
-0075 : BF 		" "		db	$BF
-0076 : 0C 		" "		db	$0C
-				;
-0077 : 08 		" "		php
-				;
-0078 : BF 		" "		db	$BF
-0079 : BF 		" "		db	$BF
-007A : 0C 		" "		db	$0C
-				;
-007B : 18 		" "		clc
-				;
-007C : BF 		" "		db	$BF
-007D : BF 		" "		db	$BF
-				;
-007E : 20 08 B7 	"   "		jsr	LB708
-				;
-0081 : C9 		" "		db	$C9
-				;
-0082				L0082:
-0082 : D0 F1 		"  "		bne	$0075
-0084 : 85 A0 		"  "		sta	X00A0
-0086 : EA 		" "		nop
-0087				X0087:
-0087 : EA 		" "		nop
-				;
-0088 : 02 		" "		db	$02
-0089 : 04 		" "		db	$04
-				;
-008A : 01 01 		"  "		ora	(X0001,x)
-				;
-008C : F2 		" "		db	$F2
-				;
-008D : F0 F3 		"  "		beq	L0082
-				;
-008F				X008F:
-008F : F3 		" "		db	$F3
-0090				X0090:
-0090 : 5A 		"Z"		db	$5A
-				;
-0091 : 5D 5F 62 	"]_b"		eor	X625F,x
-				;
-0094 : 64 		"d"		db	$64
-0095 : 62 		"b"		db	$62
-0096 : 5F 		"_"		db	$5F
-				;
-0097 : 5D 5A 58 	"]ZX"		eor	X585A,x
-009A : 56 53 		"VS"		lsr	X0053,x
-009C : 51 53 		"QS"		eor	(X0053),y
-009E : 56 58 		"VX"		lsr	X0058,x
-00A0				X00A0:
-00A0 : 00 		" "		brk
-00A1 : 00 		" "		brk
-00A2 : 00 		" "		brk
-00A3 : 00 		" "		brk
-00A4				X00A4:
-00A4 : 00 		" "		brk
-00A5				X00A5:
-00A5 : 00 		" "		brk
-00A6 : 00 		" "		brk
-00A7				X00A7:
-00A7 : 00 		" "		brk
-				;
-00A8				X00A8:
-00A8 : FA 		" "		db	$FA
-00A9				X00A9:
-00A9 : FA 		" "		db	$FA
-00AA : 80 		" "		db	$80
-00AB : 80 		" "		db	$80
-00AC : 80 		" "		db	$80
-00AD : 80 		" "		db	$80
-00AE : 80 		" "		db	$80
-00AF : 80 		" "		db	$80
-00B0 : 80 		" "		db	$80
-00B1 : 80 		" "		db	$80
-00B2 : 80 		" "		db	$80
-00B3 : 80 		" "		db	$80
-00B4 : 80 		" "		db	$80
-00B5 : 80 		" "		db	$80
-00B6 : 80 		" "		db	$80
-00B7 : 80 		" "		db	$80
-00B8 : 80 		" "		db	$80
-00B9 : 80 		" "		db	$80
-				;
-00BA : A2 3F 		" ?"		ldx	#$3F
-00BC : 20 21 01 	" ! "		jsr	L0121
-00BF				X00BF:
-00BF : AE 00 00 	"   "		ldx	X0000
-00C2 : 00 		" "		brk
-00C3				X00C3:
-00C3 : 00 		" "		brk
-00C4 : 00 		" "		brk
-00C5 : 00 		" "		brk
-00C6 : 00 		" "		brk
-00C7 : 00 		" "		brk
-00C8 : 00 		" "		brk
-00C9 : 00 		" "		brk
-00CA : 00 		" "		brk
-00CB : 00 		" "		brk
-00CC : 00 		" "		brk
-00CD : 00 		" "		brk
-00CE : 00 		" "		brk
-00CF				X00CF:
-00CF : 00 		" "		brk
-00D0				X00D0:
-00D0 : 00 		" "		brk
-00D1 : 00 		" "		brk
-00D2 : 00 		" "		brk
-00D3 : 00 		" "		brk
-00D4 : 00 		" "		brk
-00D5 : 00 		" "		brk
-00D6 : 00 		" "		brk
-00D7 : 00 		" "		brk
-00D8 : 00 		" "		brk
-00D9 : 00 		" "		brk
-00DA : 00 		" "		brk
-00DB				X00DB:
-00DB : 00 		" "		brk
-00DC : 00 		" "		brk
-00DD : 00 		" "		brk
-00DE : 00 		" "		brk
-00DF : 00 		" "		brk
-00E0 : 00 		" "		brk
-00E1 : 00 		" "		brk
-00E2 : 00 		" "		brk
-00E3 : 00 		" "		brk
-00E4 : 00 		" "		brk
-00E5 : 00 		" "		brk
-00E6 : 00 		" "		brk
-00E7				X00E7:
-00E7 : 00 		" "		brk
-00E8 : 00 		" "		brk
-00E9 : 20 04 04 	"   "		jsr	L0404
-00EC				X00EC:
-00EC : 00 		" "		brk
-				;
-00ED : FF 		" "		db	$FF
-00EE : B3 		" "		db	$B3
-00EF : FF 		" "		db	$FF
-				;
-00F0 : DD 02 FF 	"   "		cmp	XFF02,x
-00F3 : 01 00 		"  "		ora	(X0000,x)
-00F5 : 00 		" "		brk
-00F6 : F6 00 		"  "		inc	X0000,x
-00F8 : 16 82 		"  "		asl	L0082,x
-00FA : 00 		" "		brk
-00FB : 00 		" "		brk
-00FC : 6E 00 FF 	"n  "		ror	XFF00
-00FF : 00 		" "		brk
-0100				L0100:
-0100 : 8A 		" "		txa
-0101 : 48 		"H"		pha
-0102 : A5 A5 		"  "		lda	X00A5
-0104 : 0A 		" "		asl	a
-0105 : 45 A5 		"E "		eor	X00A5
-0107 : 0A 		" "		asl	a
-0108 : 0A 		" "		asl	a
-0109 : 0A 		" "		asl	a
-010A : A2 03 		"  "		ldx	#$03
-010C				L010C:
-010C : 36 A4 		"6 "		rol	X00A4,x
-010E : CA 		" "		dex
-010F : D0 FB 		"  "		bne	L010C
-0111 : 68 		"h"		pla
-0112 : AA 		" "		tax
-0113 : A5 A7 		"  "		lda	X00A7
-0115 : 60 		"`"		rts
-				;
-0116				L0116:
-0116 : A2 05 		"  "		ldx	#$05
-0118 : A5 EA 		"  "		lda	X00EA
-011A : C6 EA 		"  "		dec	X00EA
-011C : 45 EA 		"E "		eor	X00EA
-011E : 85 EB 		"  "		sta	X00EB
-				;
-0120 : A9 		" "		db	$A9
-0121				L0121:
-0121 : 00 		" "		db	$00
-				;
-0122				L0122:
-0122 : 46 EB 		"F "		lsr	X00EB
-0124 : 90 0A 		"  "		bcc	L0130
-0126 : 48 		"H"		pha
-0127 : 20 00 01 	"   "		jsr	L0100
-012A : 29 03 		") "		and	#$03
-012C : 95 9F 		"  "		sta	X009F,x
-012E : 68 		"h"		pla
-012F : 18 		" "		clc
-0130				L0130:
-0130 : 75 9F 		"u "		adc	X009F,x
-0132 : CA 		" "		dex
-0133 : D0 ED 		"  "		bne	L0122
-0135 : AA 		" "		tax
-0136 : B5 90 		"  "		lda	X0090,x
-0138 : F0 03 		"  "		beq	L013D
-013A : 99 BF 00 	"   "		sta	X00BF,y
-013D				L013D:
-013D : A5 A5 		"  "		lda	X00A5
-013F : 18 		" "		clc
-0140 : 39 8B 00 	"9  "		and	X008B,y
-0143 : 79 87 00 	"y  "		adc	X0087,y
-0146 : 29 0F 		") "		and	#$0F
-0148 : AA 		" "		tax
-0149 : A9 01 		"  "		lda	#$01
-014B				L014B:
-014B : 2A 		"*"		rol	a
-014C : CA 		" "		dex
-014D : D0 FC 		"  "		bne	L014B
-014F : 99 C3 00 	"   "		sta	X00C3,y
-0152 : 60 		"`"		rts
-				;
-0153				L0153:
-0153 : A2 04 		"  "		ldx	#$04
-0155				L0155:
-0155 : D6 C3 		"  "		dec	X00C3,x
-0157 : D0 07 		"  "		bne	L0160
-0159 : 8A 		" "		txa
-015A : A8 		" "		tay
-015B : 20 16 01 	"   "		jsr	L0116
-015E : 98 		" "		tya
-015F : AA 		" "		tax
-0160				L0160:
-0160 : CA 		" "		dex
-0161 : D0 F2 		"  "		bne	L0155
-0163 : A2 04 		"  "		ldx	#$04
-0165				L0165:
-0165 : B5 BF 		"  "		lda	X00BF,x
-0167 : 95 DB 		"  "		sta	X00DB,x
-0169 : 29 3F 		")?"		and	#$3F
-016B : 95 BF 		"  "		sta	X00BF,x
-016D : CA 		" "		dex
-016E : D0 F5 		"  "		bne	L0165
-0170 : 60 		"`"		rts
-				;
-0171				L0171:
-0171 : A9 00 		"  "		lda	#$00
-0173 : A0 01 		"  "		ldy	#$01
-0175 : A2 04 		"  "		ldx	#$04
-0177				L0177:
-0177 : 95 DB 		"  "		sta	X00DB,x
-0179 : 95 A0 		"  "		sta	X00A0,x
-017B : 94 C3 		"  "		sty	X00C3,x
-017D : 48 		"H"		pha
-017E : B5 CF 		"  "		lda	X00CF,x
-0180 : 95 A4 		"  "		sta	X00A4,x
-0182 : 68 		"h"		pla
-0183 : CA 		" "		dex
-0184 : D0 F1 		"  "		bne	L0177
-0186 : 85 A0 		"  "		sta	X00A0
-0188 : 85 EA 		"  "		sta	X00EA
-018A : 60 		"`"		rts
-				;
-018B : 04 		" "		db	$04
-018C : B7 		" "		db	$B7
-018D : B7 		" "		db	$B7
-018E : 04 		" "		db	$04
-018F : 04 		" "		db	$04
-0190 : B7 		" "		db	$B7
-0191 : B7 		" "		db	$B7
-0192 : 04 		" "		db	$04
-0193 : 04 		" "		db	$04
-0194 : B7 		" "		db	$B7
-0195 : B7 		" "		db	$B7
-0196 : 04 		" "		db	$04
-0197 : 04 		" "		db	$04
-0198 : B7 		" "		db	$B7
-0199 : B7 		" "		db	$B7
-019A : 04 		" "		db	$04
-019B : 04 		" "		db	$04
-019C : B7 		" "		db	$B7
-019D : B7 		" "		db	$B7
-019E : 04 		" "		db	$04
-019F : 04 		" "		db	$04
-01A0 : B7 		" "		db	$B7
-				;
-01A1 : 00 		" "		brk
-01A2 : B5 F7 		"  "		lda	X00F7,x
-01A4 : 00 		" "		brk
-01A5 : B5 F7 		"  "		lda	X00F7,x
-01A7 : 00 		" "		brk
-01A8 : B5 F7 		"  "		lda	X00F7,x
-01AA : 00 		" "		brk
-01AB : B5 F7 		"  "		lda	X00F7,x
-01AD : 00 		" "		brk
-01AE : B5 F7 		"  "		lda	X00F7,x
-01B0 : 00 		" "		brk
-01B1 : B5 F7 		"  "		lda	X00F7,x
-01B3 : 00 		" "		brk
-01B4 : B5 F7 		"  "		lda	X00F7,x
-01B6 : 00 		" "		brk
-01B7 : B5 F7 		"  "		lda	X00F7,x
-01B9 : 00 		" "		brk
-01BA : B5 F7 		"  "		lda	X00F7,x
-01BC : 00 		" "		brk
-01BD : B5 F7 		"  "		lda	X00F7,x
-01BF : 00 		" "		brk
-01C0 : B5 F7 		"  "		lda	X00F7,x
-01C2 : 00 		" "		brk
-01C3 : B5 F7 		"  "		lda	X00F7,x
-01C5 : 00 		" "		brk
-01C6 : B5 F7 		"  "		lda	X00F7,x
-01C8 : 00 		" "		brk
-01C9 : B5 F7 		"  "		lda	X00F7,x
-01CB : 00 		" "		brk
-01CC : B5 F7 		"  "		lda	X00F7,x
-01CE : 00 		" "		brk
-01CF : B5 F7 		"  "		lda	X00F7,x
-01D1 : 00 		" "		brk
-01D2 : B5 F7 		"  "		lda	X00F7,x
-01D4 : 00 		" "		brk
-01D5 : B5 F7 		"  "		lda	X00F7,x
-01D7 : 00 		" "		brk
-01D8 : B5 F7 		"  "		lda	X00F7,x
-01DA : 00 		" "		brk
-01DB : B5 F7 		"  "		lda	X00F7,x
-01DD : 00 		" "		brk
-01DE : B5 F7 		"  "		lda	X00F7,x
-01E0 : 00 		" "		brk
-01E1 : B5 F7 		"  "		lda	X00F7,x
-01E3 : 00 		" "		brk
-01E4 : B5 F7 		"  "		lda	X00F7,x
-01E6 : 00 		" "		brk
-01E7 : B5 F7 		"  "		lda	X00F7,x
-01E9 : 00 		" "		brk
-01EA : B5 F7 		"  "		lda	X00F7,x
-01EC : 00 		" "		brk
-01ED : B5 F7 		"  "		lda	X00F7,x
-01EF : 00 		" "		brk
-01F0 : B5 00 		"  "		lda	X0000,x
-				;
-01F2 : 0B 		" "		db	$0B
-				;
-01F3 : 3D 21 0E 	"=! "		and	X0E21,x
-01F6 : 41 0E 		"A "		eor	(L000E,x)
-01F8 : 01 01 		"  "		ora	(X0001,x)
-01FA : 79 0E C3 	"y  "		adc	XC30E,y
-01FD : 0E 14 0E 	"   "		asl	X0E14
+                        ;*********************************
+                        ;*                               *
+                        ;*         PINK TUNES            *
+                        ;*                               *
+                        ;*     A COMPOSING PROGRAM       *
+                        ;*    FOR FOUR PART HARMONIES    *
+                        ;*                               *
+                        ;*     BY JOHN S SIMONTON, JR    *
+                        ;*(C) 1978 PAIA ELECTRONICS, INC *
+                        ;*********************************
+                        ;
+0810 =                  KBD		=$0810
+0820 =                  DISP	=$0820
+0d21 =                  INIT	=$0D21
+0d2b =                  NOTE	=$0D2B
+0f00 =                  DECD	=$0F00
+ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
+                        
+0087 =                  TIME	=$0087
+008b =                  MASK	=$008B
+00bf =                  CLCK	=$00BF
+00bf =                  NTB7	=$00BF
+00c3 =                  NTBB	=$00C3
+00cf =                  NTMP	=$00CF
+00db =                  NT0B	=$00db
+00df =                  KTBL	=$00DF
+00ea =                  OUTS	=$00EA
+00eb =                  OUTT	=$00EB
+00ec =                  TEMP	=$00EC		;TEMPORARY STORAGE
+                        
+0000 =                  	org	$0000
+                        ;
+                        ;FIRST ATTEND TO HOUSKEEPING--
+                        ;
+0000 : 4cc0ff           BEG		jmp BRAK		;BREAK VECTOR
+0003 : 20210d           STAR    jsr INIT		;SETUP SYNTH - MUS1
+0006 : ad1008                   lda KBD			;INITIALIZE RANDOM
+0009 : 85d0                     sta NTMP+01		;NUMBER GENERATOR
+000b : 207101           LOOP    jsr SET1		;INIT PINK TUNES
+000e : 202b0d           LP0     jsr NOTE		;PLAY NOTE, READ AGO
+                        ;
+                        ;CHECK FOR ADDITION TO CANDIDATE
+                        ;NOTE TABLE
+                        ;
+0011 : a5e7             MAIN    lda KTBL+08		;ANY KEYS DOWN?
+0013 : f002                     beq OUT1		;NO-CHECK FOR TIME OUT
+0015 : c5ec                     cmp TEMP		;YES-A NEW KEY?
+0017 : 85ec             OUT1    sta TEMP		;SAVE FOR NEXT TIME
+0019 : f00a                     beq OUT			;BRANCH IS SAME KEY
+                        ;
+001b : a210                     ldx #$10		;IF NEW KEY SHIFT
+001d : b48f             LP3     ldy <NBUF-1,x	;ALL 16 CANDIDATES
+001f : 958f                     sta <NBUF-1,x	;DOWN BY ONE
+0021 : 98                       tya
+0022 : ca                       dex
+0023 : d0f8                     bne LP3			;NOT DONE-LOOP
+                        ;
+                        ;NOW CHECK FOR CLOCK TIME OUT
+                        ;
+0025 : a5bf             OUT     lda <CLCK		;GET MASTER CLOCK
+0027 : d01a                     bne TEST		;AND IF TIMES OUT
+0029 : a5a9                     lda <TMPO		;SET TO TEMPO VALUE
+002b : 85bf                     sta <CLCK		;CALL SUB FOR NEW
+002d : 205301                   jsr ALOC		;NOTES (IF NEEDED)
+0030 : a5a8                     lda <LNTH		;GET CYCLE STATUS
+0032 : 8d2008                   sta DISP		;SHOW IT AND IF ZERO
+0035 : f00c                     beq TEST		;CYCLE IS COMPLETE
+0037 : c6a8                     dec <LNTH		;IF NOT DONE, DCRMNT
+0039 : d008                     bne TEST		;IF NOT ZERO NOWLEAVE
+003b : 207101                   jsr SET1		;IF ZERO, REINIT
+003e : 205301                   jsr ALOC		;GET FIRST NOTES AND
+0041 : f0cb                     beq LP0			;BRANCH ALWAYS TO PLAY
+0043 : 20000f           TEST    jsr DECD		;GET A COMMAND - MUS-1
+0046 : d00c                     bne TST2		;NOT ZERO, NEXT TEST
+0048 : a203                     ldx #$03		;COMMAND 0, NEW TUNE
+                                                ;SET POINTER/COUNTER
+004a : 200001           TST1    jsr RNDM		;GET RANDOM NUMBER
+004d : 95cf                     sta <NTMP,x		;NEW INITIAL RANDOM
+004f : ca                       dex				;POINT TO NEXT
+0050 : d0f8                     bne TST1		;NOT DONE - LOOP
+0052 : f0b7                     beq LOOP		;BRANCH ALWAYS
+0054 : c901             TST2    cmp #$01		;COMMAND 1, TUNEING
+0056 : d00b                     bne TST4		;NOT 1, TEST NEXT
+0058 : a204                     ldx #$04		;4 OUTPUT BUFFERS
+005a : a95c                     lda #$5C		;PUT MIDDLE C IN ALL
+005c : 95db             TST3    sta NT0B,x  	;OUTPUT BUFFERS
+                        		;db $9D, $db, $00 ;STA     >NT0B,x
+005e : ca                       dex
+005f : d0fb                     bne TST3		;NOT DONE-LOOP
+0061 : f0ab                     beq LP0			;BRANCH ALWAYS
+0063 : c902             TST4    cmp #$02		;COMMAND 2, STOP
+0065 : d0a7                     bne LP0			;NO COMMAND - LOOP
+0067 : 207101                   jsr SET1		;CALL TO ZERO OUT-BUFFS
+006a : 202b0d                   jsr NOTE		;THEN MUTE SYNTHESIZER
+006d : 00                       brk				;AND RETURN TO PIEBUG
+                        
+0088 =                          org     $0088
+0088 : 02               TIMED   db      $02		;$0088
+0089 : 04               TIMEC   db      $04
+008a : 01               TIMEB   db      $01
+008b : 01               TIMEA   db      $01
+                        
+008c : f2               MASKD   db      $F2		;$008C
+008d : f0               MASKC   db      $F0
+008e : f3               MASKB   db      $F3
+008f : f3               MASKA   db      $F3
+                        
+0090 : 5a               NBUF	db      $5A		;$0090 - CANDIDATE ARRAY
+0091 : 5d               		db      $5D
+0092 : 5f                       db      $5F
+0093 : 62                       db      $62
+0094 : 64                       db      $64
+0095 : 62                       db      $62
+0096 : 5f                       db      $5F
+0097 : 5d                       db      $5D
+0098 : 5a                       db      $5A
+0099 : 58                       db      $58
+009a : 56                       db      $56
+009b : 53                       db      $53
+009c : 51               		db		$51
+009d : 53               		db		$53
+009e : 56                       db      $56
+009f : 58                       db      $58
+                        		
+00a0 : 00               RND0    db      $00		;$00A0 - 5 DICE/RANDOM NUMBERS
+00a1 : 00                       db      $00		;$00A1
+00a2 : 00                       db      $00		;$00A2
+00a3 : 00                       db      $00		;$00A3
+00a4 : 00               NOIS    db      $00		;$00A4
+                        
+00a5 : 00               		db      $00		;$00A5
+00a6 : 00                       db      $00
+00a7 : 00                       db      $00
+                        
+00a8 : 00               LNTH    db      $00		;$00A8 - CYCLE LENGTH
+                        
+00a9 : fa               TMPO    db      $FA
+                        
+00e8 =                          org     $00E8
+00e8 : 00               CTRL	db		$00		;MUS-1 VARIABLES
+00e9 : 20               ODLY	db		$20
+                        
+0100 =                          org     $0100
+                        ;
+                        ;      RANDOM NUMBER GENERATOR
+                        ;
+                        ;ESSENTIALLY A 22 BIT LONG SHIFT
+                        ;REGISTER WITH EX-0R TAPS AT
+                        ;STAGES 22 AND 21 FED BACK TO
+                        ;INPUT.
+                        ;
+0100 : 8a               RNDM    txa				;SAVE X
+0101 : 48                       pha
+0102 : a5a5                     lda <NOIS+1		;LAST BYTE S/R
+0104 : 0a                       asl a			;ALIGN BITS 22 &
+0105 : 45a5                     eor <NOIS+1		;21 AND DO EX-OR
+0107 : 0a                       asl a			;THEN SHIFT RE-
+0108 : 0a                       asl a			;SULT TO CARRY
+0109 : 0a                       asl a
+010a : a203                     ldx #$03		;SET UP PNT/CNT
+010c : 36a4             LP1     rol <NOIS,x		;AND SHIFT 3 BYTE
+010e : ca                       dex				;SHIFT REGISTER
+010f : d0fb                     bne LP1			;BY ONE BIT LEFT
+0111 : 68                       pla				;WHEN DONE RE-
+0112 : aa                       tax				;STORE X REG.
+0113 : a5a7                     lda <NOIS+03	;AND LEAVE WITH
+0115 : 60                       rts				;WITH NO. IN ACC.
+                        ;
+                        ;      NEW NOTE
+                        ;
+                        ;TAKES CARE OF PICKING PINK NOTE
+                        ;FROM CANDIDATE NOTE TABLE AND
+                        ;CALCULATES AND UPDATES NOTE TIMERS
+                        ;NOTE THAT Y POINTS TO CHANNEL FOR
+                        ;UPDATE
+                        ;
+0116 : a205             NWNT    ldx #$05		;SET UP PNT/CNT
+0118 : a5ea                     lda <OUTS		;GET COPY OF PINKING
+011a : c6ea                     dec <OUTS		;COUNTER, DEC ORIGINAL
+011c : 45ea                     eor <OUTS		;PATTERN OF CHANGED
+011e : 85eb                     sta <OUTT		;BITS - SAVE CHANGES
+0120 : a900                     lda #$00		;PREPARE TO SUM DICE
+0122 : 46eb             NW1     lsr <OUTT		;CHECK FOR CHANGED
+0124 : 900a                     bcc NW2			;BIT - IF CHANGED
+0126 : 48                       pha				;SAVE CURRENT TOTAL
+0127 : 200001                   jsr RNDM		;GET RANDOM NUBMER
+012a : 2903                     and #$03		;MAKE RANGE FROM 0 T0 3
+012c : 959f                     sta <RND0-1,x	;SAVE VALUE FOR NEXT
+012e : 68                       pla				;RECOVER TOTAL
+012f : 18                       clc				;PREPARE ADDITION
+0130 : 759f             NW2     adc <RND0-1,x	;ADD VALUE OF DIE
+0132 : ca                       dex				;POINT TO NEXT
+0133 : d0ed                     bne NW1			;LOOP IF NOT DONE
+0135 : aa                       tax				;USE TOTAL AS POINTER
+0136 : b590                     lda <NBUF,x		;GET CANDIDATE
+0138 : f003                     beq DURA		;ZERO, DO NOTE CHANGE
+013a : 99bf00                   sta NTB7,y		;PLACE IN TEMP BUFFER
+013d : a5a5             DURA    lda <NOIS+01	;A CHEAP RANDOM NUMBER
+013f : 18                       clc				;PREPARE
+0140 : 398b00                   and MASK,y		;MASK DURATION VAL.
+0143 : 798700                   adc TIME,y		;ADD MINIMUM VAL.
+0146 : 290f                     and #$0F		;AND MASK RESULT
+0148 : aa                       tax				;USE AS COUNTER AND
+0149 : a901                     lda #$01		;DO DURATIONS AS
+014b : 2a               NT2     rol a			;POWERS OF 2. CARRY
+014c : ca                       dex				;SET DOTS NOTE
+014d : d0fc                     bne NT2			;NOT DONE - LOOP
+014f : 99c300                   sta NTBB,y		;PUT RESULT IN NOTES
+0152 : 60                       rts				;TIMER AND RETURN
+                        ;
+                        ;      ALLOCATION 0151
+                        ;SEES IF NEW NOTES ARE NEED AND IF
+                        ;SO GETS THEM.  ALSO CLEARS TRIGGER
+                        ;OF NOTE OUTPUT ONCE IT is PLAYED.
+                        ;
+0153 : a204             ALOC    ldx #$04		;DO 4 NOTE CHANNELS
+0155 : d6c3             LP6     dec <NTBB,x		;DECREMENT NOTE TIMER
+0157 : d007                     bne LP5			;AND IF TIME OUT
+0159 : 8a                       txa				;TRANSFER X REG. TO
+015a : a8                       tay				;TO Y
+015b : 201601                   jsr NWNT		;AND GET NEW NOTE
+015e : 98                       tya				;AND DURATION AND
+015f : aa                       tax				;RESTORE X
+0160 : ca               LP5     dex				;DECRIMENT COUNTER
+0161 : d0f2                     bne LP6			;IF NOT DONE - LOOP
+0163 : a204                     ldx #$04		;AGAIN, FOUR CHANNELS
+0165 : b5bf             AL1     lda <NTB7,x		;GET NOTE FROM TEMP
+0167 : 95db                     sta <NT0B,x		;BUFFER, SAVE IN OUT
+0169 : 293f                     and #$3F		;BUFFER, CLEAR FLAG
+016b : 95bf                     sta <NTB7,x		;PUT BACK IN TEMP.
+016d : ca                       dex				;POINT TO NEXT
+016e : d0f5                     bne AL1			;NOT DONE - LOOP
+0170 : 60                       rts				;DONE, RETURN
+                        ;
+                        ;            SET1
+                        ;
+                        ;PREPARES KNOWN START POINT FOR
+                        ;CYCLIC TUNES.
+                        ;
+                        ;
+0171 : a900             SET1    lda #$00		;TO ZERO THINGS WITH
+0173 : a001                     ldy #$01		;PRESET FOR NOTE CNTRS
+0175 : a204                     ldx #$04		;DO 4 CHANNLES
+0177 : 95db             LP10    sta <NT0B,x		;ZERO OUT-BUFFERS
+0179 : 95a0                     sta <RND0,x		;ZERO 4 DICE
+017b : 94c3                     sty <NTBB,x		;PRESET NOTE TIMERS
+017d : 48                       pha				;SAVE THE ZERO
+017e : b5cf                     lda <NTMP,x		;SET UP RNDM'S S/R
+0180 : 95a4                     sta <NOIS,x		;AND CYCLE COUNTER
+0182 : 68                       pla				;RECOVER ZERO
+0183 : ca                       dex				;POINT TO NEXT
+0184 : d0f1                     bne LP10		;NOT DONE - LOOP
+0186 : 85a0                     sta <RND0		;ZERO 5TH DIE
+0188 : 85ea                     sta <OUTS		;ZERO PINKING COUNTER
+018a : 60                       rts				;AND RETURN
+                        
+                        		end
 
-;--------------------------------------------------------------
-Symbol table
-============
+-------------------------------- Symbol Table --------------------------------
 
-Value	Type	Name
------	----	----
-0000	 04	X0000
-0001	 04	X0001
-000B	 04	L000B
-000E	 04	L000E
-0017	 04	L0017
-001D	 04	L001D
-0025	 04	L0025
-0043	 04	L0043
-004A	 04	L004A
-0053	 04	X0053
-0054	 04	L0054
-0058	 04	X0058
-005C	 04	L005C
-0064	 04	L0064
-0082	 04	L0082
-0085	 04	X0085
-0087	 04	X0087
-008B	 04	X008B
-008F	 04	X008F
-0090	 04	X0090
-009F	 04	X009F
-00A0	 04	X00A0
-00A4	 04	X00A4
-00A5	 04	X00A5
-00A7	 04	X00A7
-00A8	 04	X00A8
-00A9	 04	X00A9
-00BF	 04	X00BF
-00C3	 04	X00C3
-00CF	 04	X00CF
-00D0	 04	X00D0
-00DB	 04	X00DB
-00E7	 04	X00E7
-00EA	 04	X00EA
-00EB	 04	X00EB
-00EC	 04	X00EC
-00F7	 04	X00F7
-0100	 04	L0100
-010C	 04	L010C
-0116	 04	L0116
-0121	 04	L0121
-0122	 04	L0122
-0130	 04	L0130
-013D	 04	L013D
-014B	 04	L014B
-0153	 04	L0153
-0155	 04	L0155
-0160	 04	L0160
-0165	 04	L0165
-0171	 04	L0171
-0177	 04	L0177
-0404	 04	L0404
-0810	 04	X0810
-0820	 04	X0820
-0D21	 04	L0D21
-0D2B	 04	L0D2B
-0E14	 04	X0E14
-0E21	 04	X0E21
-0F00	 04	L0F00
-585A	 04	X585A
-625F	 04	X625F
-B708	 04	LB708
-C30E	 04	XC30E
-FF00	 04	XFF00
-FF02	 04	XFF02
-FFC0	 04	LFFC0
+              Symbol   Value        Decimal
 
-Number of symbols:			66
-
-;--------------------------------------------------------------
+                ALOC : $0153            339
+                 AL1 : $0165            357
+                 BEG : $0000              0
+                BRAK : $ffc0          65472   *
+                CLCK : $00bf            191   *
+                CTRL : $00e8            232
+                DECD : $0f00           3840   *
+                DISP : $0820           2080   *
+                DURA : $013d            317
+                INIT : $0d21           3361   *
+                 KBD : $0810           2064   *
+                KTBL : $00df            223   *
+                LNTH : $00a8            168
+                LOOP : $000b             11
+                 LP0 : $000e             14
+                 LP1 : $010c            268
+                LP10 : $0177            375
+                 LP3 : $001d             29
+                 LP5 : $0160            352
+                 LP6 : $0155            341
+                MAIN : $0011             17
+                MASK : $008b            139   *
+               MASKA : $008f            143
+               MASKB : $008e            142
+               MASKC : $008d            141
+               MASKD : $008c            140
+                NBUF : $0090            144
+                NOIS : $00a4            164
+                NOTE : $0d2b           3371   *
+                NTBB : $00c3            195   *
+                NTB7 : $00bf            191   *
+                NTMP : $00cf            207   *
+                NT0B : $00db            219   *
+                 NT2 : $014b            331
+                NWNT : $0116            278
+                 NW1 : $0122            290
+                 NW2 : $0130            304
+                ODLY : $00e9            233
+                 OUT : $0025             37
+                OUTS : $00ea            234   *
+                OUTT : $00eb            235   *
+                OUT1 : $0017             23
+                RNDM : $0100            256
+                RND0 : $00a0            160
+                SET1 : $0171            369
+                STAR : $0003              3
+                TEMP : $00ec            236   *
+                TEST : $0043             67
+                TIME : $0087            135   *
+               TIMEA : $008b            139
+               TIMEB : $008a            138
+               TIMEC : $0089            137
+               TIMED : $0088            136
+                TMPO : $00a9            169
+                TST1 : $004a             74
+                TST2 : $0054             84
+                TST3 : $005c             92
+                TST4 : $0063             99
+				
