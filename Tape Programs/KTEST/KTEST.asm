@@ -7,15 +7,15 @@ KTEST
 	inx			; increment counter
 	stx DISP	; show counter
 LOOP0
-	bit KBD		; check keybaord
+	bit KBD		; check keyboard
 	bmi LOOP0	; no scan, loop
 LOOP1
 	lda KBD		; get keyboard
 	bmi KTEST	; scan done, no keys
-	rol a		; prepate-check for trigger
-	bpl LOOP1	; no triiger, coninute
+	rol a		; prepare-check for trigger
+	bpl LOOP1	; no trigger, continue
 	ror a		; trigger-restore key #
-	sta DISP	;	and shwo it
+	sta DISP	; and show it
 LOOP2
 	bit KBD		; check keyboard
 	bpl LOOP2	; wait for scan end

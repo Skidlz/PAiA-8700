@@ -1,8 +1,34 @@
-AS65 Assembler for R6502 [1.42].                                     Page    1
--- C:\Users\zackary.nelson\Google Drive\Schematics\PAiA 8700\BINs\KTEST.asm --
+                        ;8782 Digitally Encoded Keyboard Test
+0810 =                  KBD		=$0810
+0820 =                  DISP	=$0820
+                        
+0000 =                  	org $0000
+0000 :                  KTEST
+0000 : e8               	inx			; increment counter
+0001 : 8e2008           	stx DISP	; show counter
+0004 :                  LOOP0
+0004 : 2c1008           	bit KBD		; check keyboard
+0007 : 30fb             	bmi LOOP0	; no scan, loop
+0009 :                  LOOP1
+0009 : ad1008           	lda KBD		; get keyboard
+000c : 30f2             	bmi KTEST	; scan done, no keys
+000e : 2a               	rol a		; prepare-check for trigger
+000f : 10f8             	bpl LOOP1	; no trigger, continue
+0011 : 6a               	ror a		; trigger-restore key #
+0012 : 8d2008           	sta DISP	; and show it
+0015 :                  LOOP2
+0015 : 2c1008           	bit KBD		; check keyboard
+0018 : 10fb             	bpl LOOP2	; wait for scan end
+001a : 30e8             	bmi LOOP0	; branch always for more
+                        	end
 
-22 lines read, no errors in pass 1.
-No errors in pass 2.
-Wrote binary from address $0000 through $001b.
-Total size 28 bytes.
-
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                DISP : $0820           2080   *
+                 KBD : $0810           2064   *
+               KTEST : $0000              0
+               LOOP0 : $0004              4
+               LOOP1 : $0009              9
+               LOOP2 : $0015             21
