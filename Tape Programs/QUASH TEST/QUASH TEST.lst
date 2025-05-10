@@ -1,8 +1,27 @@
-AS65 Assembler for R6502 [1.42].                                     Page    1
-- C:\Users\zackary.nelson\Google Drive\Schematics\PAiA 8700\BINs\QUASH TEST --
+                        ;8781 QuaSH Test
+0820 =                  DISP	=$0820
+09ef =                  SH		=$09EF
+                        
+0000 =                  	org $0000
+0000 : a910             TEST	lda #$10	; set up note
+0002 : a210             REPEAT	ldx #$10	; set up S/H pointer
+0004 : 9def09           LOOP1	sta SH,x	; update S/H
+0007 : 8e2008           		stx DISP	; show in display - working
+000a : a010             		ldy #$10	; set up delay
+000c : 88               LOOP2	dey			; delay
+000d : d0fd             		bne LOOP2
+000f : ca               		dex			; point to next S/H
+0010 : d0f2             		bne LOOP1	; if not done, loop
+0012 : f0ee             		beq REPEAT	; branch always repeat
+                        		end
 
-19 lines read, no errors in pass 1.
-No errors in pass 2.
-Wrote binary from address $0000 through $0013.
-Total size 20 bytes.
-
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                DISP : $0820           2080   *
+               LOOP1 : $0004              4
+               LOOP2 : $000c             12
+              REPEAT : $0002              2
+                  SH : $09ef           2543   *
+                TEST : $0000              0

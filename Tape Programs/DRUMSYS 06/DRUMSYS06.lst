@@ -1,246 +1,253 @@
-				;
-				;	Disassembled by:
-				;		DASMx object code disassembler
-				;		(c) Copyright 1996-1999   Conquest Consultants
-				;		Version 1.30 (Oct  6 1999)
-				;
-				;	File:		G:\My Drive\Schematics\PAiA 8700\Tape Programs\DRUMSYS 06\DRUMSYS06.bin
-				;
-				;	Size:		256 bytes
-				;	Checksum:	867A
-				;	CRC-32:		E2F0B119
-				;
-				;	Date:		Thu Nov 18 13:44:37 2021
-				;
-				;	CPU:		MOS Technology 6502 (MCS6500 family)
-				;
-				;
-				;
-					org	$0000
-				;
-0000				L0000:
-0000 : A9 86 		"  "		lda	#$86
-0002 : 85 39 		" 9"		sta	X0039
-0004 : EA 		" "		nop
-0005 : EA 		" "		nop
-0006 : A9 00 		"  "		lda	#$00
-0008 : 85 E9 		"  "		sta	X00E9
-000A : 8D 20 08 	"   "		sta	X0820
-000D : AA 		" "		tax
-000E				L000E:
-000E : 9D 00 01 	"   "		sta	X0100,x
-0011 : E8 		" "		inx
-0012 : D0 FA 		"  "		bne	L000E
-0014 : 20 53 10 	" S "		jsr	L1053
-0017 : B0 1F 		"  "		bcs	L0038
-0019 : C9 10 		"  "		cmp	#$10
-001B : B0 16 		"  "		bcs	L0033
-001D : C9 08 		"  "		cmp	#$08
-001F : B0 DF 		"  "		bcs	L0000
-0021 : A9 86 		"  "		lda	#$86
-0023 : 85 39 		" 9"		sta	X0039
-0025 : B9 DA 10 	"   "		lda	X10DA,y
-0028 : A6 E9 		"  "		ldx	X00E9
-002A : 9D 00 01 	"   "		sta	X0100,x
-002D : 20 3E 10 	" > "		jsr	L103E
-0030 : 4C 14 10 	"L  "		jmp	L1014
-				;
-0033				L0033:
-0033 : B9 D1 00 	"   "		lda	X00D1,y
-0036 : 85 39 		" 9"		sta	X0039
-0038				L0038:
-0038 : 20 86 00 	"   "		jsr	L0086
-003B : 4C 14 10 	"L  "		jmp	L1014
-				;
-003E : A4 EB 		"  "		ldy	X00EB
-0040 : 8D 40 08 	" @ "		sta	X0840
-0043 : 29 7F 		") "		and	#$7F
-0045				L0045:
-0045 : 88 		" "		dey
-0046 : D0 FD 		"  "		bne	L0045
-0048 : 8D 40 08 	" @ "		sta	X0840
-004B : E6 E9 		"  "		inc	X00E9
-004D : A6 E9 		"  "		ldx	X00E9
-004F : 8E 20 08 	"   "		stx	X0820
-0052 : 60 		"`"		rts
-				;
-0053 : 20 00 FF 	"   "		jsr	LFF00
-0056 : B0 05 		"  "		bcs	L005D
-0058 : A2 00 		"  "		ldx	#$00
-005A : 86 EC 		"  "		stx	X00EC
-005C : 60 		"`"		rts
-				;
-005D				L005D:
-005D : A2 20 		"  "		ldx	#$20
-005F				L005F:
-005F : A0 3F 		" ?"		ldy	#$3F
-0061				L0061:
-0061 : 88 		" "		dey
-0062 : D0 FD 		"  "		bne	L0061
-0064 : CA 		" "		dex
-0065 : D0 F8 		"  "		bne	L005F
-0067 : E6 EC 		"  "		inc	X00EC
-0069 : 60 		"`"		rts
-				;
-006A : A9 7C 		" |"		lda	#$7C
-006C : 85 39 		" 9"		sta	X0039
-006E				L006E:
-006E : A9 00 		"  "		lda	#$00
-0070 : 85 E9 		"  "		sta	X00E9
-0072				L0072:
-0072 : A6 E9 		"  "		ldx	X00E9
-0074 : BD 00 01 	"   "		lda	X0100,x
-0077 : F0 F5 		"  "		beq	L006E
-0079 : 20 3E 10 	" > "		jsr	L103E
-007C : A5 EC 		"  "		lda	X00EC
-007E : 45 EA 		"E "		eor	X00EA
-0080 : D0 04 		"  "		bne	L0086
-0082 : 85 EC 		"  "		sta	X00EC
-0084 : F0 EC 		"  "		beq	L0072
-0086				L0086:
-0086 : 60 		"`"		rts
-				;
-0087 : A9 86 		"  "		lda	#$86
-0089 : 85 39 		" 9"		sta	X0039
-008B : D0 E5 		"  "		bne	L0072
-008D : A9 96 		"  "		lda	#$96
-008F : 85 39 		" 9"		sta	X0039
-0091 : C6 E9 		"  "		dec	X00E9
-0093 : D0 DD 		"  "		bne	L0072
-0095 : 60 		"`"		rts
-				;
-0096 : A9 86 		"  "		lda	#$86
-0098 : 85 39 		" 9"		sta	X0039
-009A : C6 E9 		"  "		dec	X00E9
-009C : 60 		"`"		rts
-				;
-009D : A9 A5 		"  "		lda	#$A5
-009F : 85 39 		" 9"		sta	X0039
-00A1 : A9 00 		"  "		lda	#$00
-00A3 : 85 EA 		"  "		sta	X00EA
-00A5 : E6 EA 		"  "		inc	X00EA
-00A7 : 60 		"`"		rts
-				;
-00A8 : A2 07 		"  "		ldx	#$07
-00AA				L00AA:
-00AA : B5 D2 		"  "		lda	X00D2,x
-00AC : 95 F0 		"  "		sta	X00F0,x
-00AE : CA 		" "		dex
-00AF : D0 F9 		"  "		bne	L00AA
-00B1 : 60 		"`"		rts
-				;
-00B2 : 20 A8 10 	"   "		jsr	L10A8
-00B5 : A9 DD 		"  "		lda	#$DD
-00B7 : D0 05 		"  "		bne	L00BE
-00B9 : 20 A8 10 	"   "		jsr	L10A8
-00BC : A9 11 		"  "		lda	#$11
-00BE				L00BE:
-00BE : 20 25 0E 	" % "		jsr	L0E25
-00C1 : 20 AA 0E 	"   "		jsr	L0EAA
-00C4 : A9 86 		"  "		lda	#$86
-00C6 : 85 39 		" 9"		sta	X0039
-00C8 : 18 		" "		clc
-00C9 : 20 22 0F 	" " "		jsr	L0F22
-00CC : 60 		"`"		rts
-				;
-00CD				X00CD:
-00CD : C6 E9 		"  "		dec	X00E9
-00CF : 4C 72 10 	"Lr "		jmp	L1072
-				;
-00D2				X00D2:
-00D2 : FF 		" "		db	$FF
-				;
-00D3 : 00 		" "		brk
-				;
-00D4 : 80 		" "		db	$80
-				;
-00D5 : 01 00 		"  "		ora	(L0000,x)
-00D7 : 01 00 		"  "		ora	(L0000,x)
-00D9 : 01 FF 		"  "		ora	(X00FF,x)
-00DB : FE FD F3 	"   "		inc	XF3FD,x
-				;
-00DE : F7 		" "		db	$F7
-00DF : EF 		" "		db	$EF
-00E0 : DF 		" "		db	$DF
-00E1 : BF 		" "		db	$BF
-				;
-00E2 : 6A 		"j"		ror	a
-00E3 : 9D 8D 87 	"   "		sta	X878D,x
-				;
-00E6 : 7C 		"|"		db	$7C
-00E7 : B2 		" "		db	$B2
-				;
-00E8 : B9 CD 00 	"   "		lda	X00CD,y
-00EB				X00EB:
-00EB : 08 		" "		php
-00EC				X00EC:
-00EC : 20 FF FF 	"   "		jsr	LFFFF
-				;
-00EF : FF 		" "		db	$FF
-00F0				X00F0:
-00F0 : FF 		" "		db	$FF
-00F1 : FF 		" "		db	$FF
-00F2 : FF 		" "		db	$FF
-00F3 : FF 		" "		db	$FF
-00F4 : FF 		" "		db	$FF
-00F5 : FF 		" "		db	$FF
-				;
-00F6 : F6 F7 		"  "		inc	X00F7,x
-00F8 : F8 		" "		sed
-00F9 : F9 FA FB 	"   "		sbc	XFBFA,y
-				;
-00FC : FC 		" "		db	$FC
-				;
-00FD : FD FF 00 	"   "		sbc	X00FF,x
+                        ;
+                        ;
+                        ;*********************************
+                        ;*                               *
+                        ;*          DRUMSYS 0.6          *
+                        ;*                               *
+                        ;*   8700/EK-2 DRUM OPERATING    *
+                        ;*            SYSTEM             *
+                        ;*              BY               *
+                        ;*         JOHN SIMONTON         *
+                        ;*                               *
+                        ;*(C) 1978 - PAIA ELECTRONICS,INC*
+                        ;*                               *
+                        ;*********************************
+                        ;
+00f0 =                  BUFF	= $00F0
+00ec =                  CNTR	= $00EC
+00eb =                  EXP		= $00EB
+00ea =                  TMPO	= $00EA
+00e9 =                  PNTR	= $00E9
+0820 =                  DSP		= $0820
+ff00 =                  DECD	= $FF00
+0f22 =                  BEEP	= $0F22
+0100 =                  SCOR	= $0100
+0086 =                  DUMY	= $0086
+0840 =                  OUTP	= $0840
+0e25 =                  SNBT	= $0E25
+0eaa =                  CASS	= $0EAA
+                        ;---------------------
+                        ;00E8
+                        ;    S-TABLE (CONTROL CODES)
+                        ;00E1
+                        ;---------------------
+00d1 =                  STBL	= $00D1
+                        ;---------------------
+                        ;00E0
+                        ;    DRUM SIGNATURES
+                        ;00D9
+                        ;---------------------
+                        ;*********************************
+10d2 =                  		org $10D2 ;org $10D1
+                        ;*********************************
+                        ;
+10d2 : ff00800100010001 TAPE	db	$FF, $00, $80, $01, $00, $01, $00, $01
+10da : fffefdf3f7efdfbf DSIG	db	$FF, $FE, $FD, $F3, $F7, $EF, $DF, $BF
+10e2 : 6a9d8d877cb2b9.. CRL		db	$6A, $9D, $8D, $87, $7C, $B2, $B9, $CD, $00, $
+                        ;
+10ed =                  		org $10ED
+10ed : ff               PARM	db	$FF
+10f6 =                  		org $10F6
+10f6 : f6f7f8f9fafbfc.. PAR1	db	$F6, $F7, $F8, $F9, $FA, $FB, $FC, $FD, $FF, $
+                        ;*********************************
+1000 =                  		org $1000
+                        ;*********************************
+                        ;
+1000 : a986             SPHK	lda	#$86		;SPARE HOOK KEYS 8-F3
+1002 : 8539             		sta	<lo ACTN+01	;USED ONLY TO RE-START
+1004 : ea               		nop				;SYTEM.  IN LATER VERSIONS
+1005 : ea               		nop				;WILL PROVIDE ADDITTIONAL
+                        ;						 FEATURES
+                        ;
+1006 : a900             STAR	lda	#$00		;PREPARE ACCUMULATOR AND
+1008 : 85e9             		sta	<lo PNTR	;ZERO SCORE POINTER
+100a : 8d2008            		sta	DSP			;AND DISPLAYS
+100d : aa               		tax				;PREPARE X REG AS POINTER
+100e : 9d0001           SLP0	sta	SCOR,x		;AND USE IT TO CLEAR SCORE
+1011 : e8               		inx
+1012 : d0fa             		bne	SLP0		;LOOP UNTIL DONE
+1014 : 205310           SLP1	jsr	RDKY		;GO READ THE KEYBOARD, ETC.
+1017 : b01f             		bcs	ACTN		;AND IF NO NEW KEYS, BRAND
+1019 : c910             		cmp	#$10		;NEW KEY - A "CONTROL" KEY?
+101b : b016             		bcs	CTRL		;YES - BRANCH TO CONTROL
+101d : c908             		cmp	#$08		;ONE OF "SPARE" KEYS?
+101f : b0df             		bcs	SPHK		;YES- BRANCH
+                        ; 		**
+1021 : a986             NTRY	lda	#$86		;DRUM ENTRY MODE, GET LINK
+1023 : 8539             		sta	<lo ACTN+01	;SET LINK
+1025 : b9da10            		lda	DSIG,y		;GET DRUM SIGNATURE
+1028 : a6e9             		ldx	<lo PNTR	;GET SCORE POINTER
+102a : 9d0001            		sta	SCOR,x		;SAVE DRUM SIG IN SCORE
+102d : 203e10            		jsr	PLAY		;PLAY THE DRUM BEAT
+1030 : 4c1410            		jmp	SLP1		;LOOP FOR MORE
+1033 : b9d100           CTRL	lda	STBL,y		;GET COMMAND ADDRESS LINK
+1036 : 8539             		sta	<lo ACTN+01;AND SET LINK IN JSR DUMY
+1038 : 208600           ACTN	jsr	DUMY		;AND GO TO COMMAND SUBROUTINE
+103b : 4c1410            		jmp	SLP1		;THEN LOOP FOR MORE
+                        ;
+                        ;PLAY SUBROUTINE
+                        ;
+103e : a4eb             PLAY	ldy	<lo EXP		;GET EXPRESSION VARIABLE
+1040 : 8d4008           		sta	OUTP		;OUTPUT CONTROL TO EK-2
+1043 : 297f             		and	#$7F		;RESET STROBE BIT
+1045 : 88               PLA0	dey				;DELAY FOR THE EXP. TIME
+1046 : d0fd             		bne	PLA0		;LOOP UNTIL DONE
+1048 : 8d4008            		sta	OUTP		;AND TURN DRUM "OFF"
+104b : e6e9             		inc	<lo PNTR	;INCREMENT SCORE POINTER
+104d : a6e9             		ldx	<lo PNTR	;PLACE IN X REGISTER
+104f : 8e2008            		stx	DSP			;AND SHOW IN DISPLAYS
+1052 : 60               		rts				;THEN RETURN
+                        ;
+                        ;READ KEY-ALSO IMPORTANT TO TEMPO
+                        ;
+1053 : 2000ff           RDKY	jsr	DECD		;PIEBUG KEYBOARD SUBROUTINE
+1056 : b005             		bcs	DLY			;SAME KEY - JUST DELAY
+1058 : a200             		ldx	#$00
+105a : 86ec             		stx	<lo CNTR	;ZERO TEMPO COUNTER
+105c : 60               		rts
+105d : a220             DLY		ldx	#$20		;SET X AN Y REGISTER
+105f : a03f             NXTX	ldy	#$3F		;DELAY PARAMETERS
+1061 : 88               DELY	dey				;AND DO DELAY
+1062 : d0fd             		bne	DELY
+1064 : ca               		dex
+1065 : d0f8             		bne	NXTX		;LOOP UNTIL DONE
+1067 : e6ec             		inc	<lo CNTR	;INCREMENT TEMPO COUNTER
+1069 : 60               		rts				;AND RETURN
+                        ;
+                        ;RUN SUBROUTINE
+                        ;
+                        ;		**
+106a : a97c             RUN		lda	#lo WAIT	;COMMAND LINK TO "WAIT"
+106c : 8539             		sta	<lo ACTN+01	;SET COMMAND LINK
+106e : a900             CYCL	lda	#$00		;PREPARE AND SET
+1070 : 85e9             		sta	<lo PNTR	;SCORE POINTER TO 0
+1072 : a6e9             CONT	ldx	<lo PNTR	;GET CURRENT SCORE POINTER
+1074 : bd0001            		lda	SCOR,x		;GET CURRENT DRUM SIGNATURE
+1077 : f0f5             		beq	CYCL		;ZERO, END OF SCORE-BRANCH
+1079 : 203e10           		jsr	PLAY		;GO PLAY DRUM SOUND, ETC.
+107c : a5ec             WAIT	lda	<lo CNTR	;GET TEMPO COUNTER AND
+107e : 45ea             		eor	<lo TMPO	;COMPARE TO TEMPO VARIABLE
+1080 : d004             		bne	RETN		;IF NOT TIMED OUT, RETURN
+1082 : 85ec             OCNT	sta	<lo CNTR	;TIMED OUT - ZERO COUNTER
+1084 : f0ec             		beq	CONT		;BRANCH ALWAYS TO PLAY, ETC
+1086 : 60               RETN	rts				;RETURN
+                        ;
+                        ;SINGLE STEP SUBROUTINE
+                        ;
+                        ;		**
+1087 : a986             STEP	lda	#lo RETN	;COMMAND LINK TO "RETN"
+1089 : 8539             		sta	<lo ACTN+01	;SET COMMAND LINK
+108b : d0e5             		bne	CONT		;BRANCH ALWAYS TO PLAY, ETC.
+                        ;
+                        ;BACKSPACE SUBROUTINE
+                        ;
+                        ;		**
+108d : a996             BACK	lda	#lo NEXT	;COMMAND LINK TO "NEXT"
+108f : 8539             		sta	<lo ACTN+01	;SET COMMAND LINK
+1091 : c6e9             		dec	<lo PNTR	;SCORE POINTER BACK ONE
+1093 : d0dd             		bne	CONT		;GO PLAY SCORE, ETC.
+1095 : 60               		rts				;AND RETURN
+                        ;		**
+1096 : a986             NEXT	lda	#lo RETN	;COMMAND LINK TO "RETN"
+1098 : 8539             		sta	<lo ACTN+01	;SET COMMAND LINK
+109a : c6e9             		dec	<lo PNTR	;SCORE POINTER BACK ONE
+109c : 60               		rts				;RETURN
+                        ;
+                        ;TEMPO
+                        ;
+                        ;		**
+109d : a9a5             TMP		lda	#lo NXT2	;COMMAND LINK TO "NXT2"
+109f : 8539             		sta	<lo ACTN+01	;SET COMMAND LINK
+10a1 : a900             		lda	#$00		;INITIALIZE TEMPO COUNTER
+10a3 : 85ea             		sta	<lo TMPO	;AND START COUNTIN
+10a5 : e6ea             NXT2	inc <lo TMPO	;UNTIL NEXT COMMAND
+10a7 : 60               		rts				;RETURN
+                        ;
+                        ;SET UP FOR TAPE TRANSFER
+                        ;
+10a8 : a207             STTP	ldx	#$07		;TRANSFER SEVEN BYTES
+10aa : b5d2             STP		lda	<lo TAPE,x 	;GET PARAMETER
+10ac : 95f0             		sta	BUFF,x		;PLACE PARAMETER
+10ae : ca               		dex				;POINT TO NEXT
+10af : d0f9             		bne	STP			;LOOP UNTIL ALL TRANSFERED
+10b1 : 60               		rts				;THEN RETURN
+                        ;
+                        ;TAPE IN AND OUT ROUTINES
+                        ;
+10b2 : 20a810           TOUT	jsr	STTP		;SET UP PARAMETERS
+10b5 : a9dd             		lda	#$DD		;SET DUMP "SWITCH"
+10b7 : d005             		bne	DO			;BRANCH ALWAYS
+10b9 : 20a810           TIN		jsr	STTP		;SET UP PARAMETERS
+10bc : a911             		lda	#$11		;SET LOAD "SWITCH"
+10be : 20250e           DO		jsr	SNBT		;TURN ON RELAYS
+10c1 : 20aa0e            		jsr	CASS		;DO CASSETTE ROUTINE
+                        ;		**
+10c4 : a986             		lda	#lo RETN	;COMMAND LINK TO "RETN"
+10c6 : 8539             		sta	<lo ACTN+01	;SET LINK
+10c8 : 18               		clc				;PREPARE FOR BEEP
+10c9 : 20220f            		jsr	BEEP		;TURN OFF RELAYS AND BEEP
+10cc : 60               		rts				;AND RETURN
+                        ;
+                        ;STROBE DRUM EFFECT
+                        ;
+10cd : c6e9             STRB	dec	<lo PNTR	;PREPARE TO GET SAME DRUM
+10cf : 4c7210            		jmp	CONT		;PLAY DRUM
+                        ;
+                        ;
+                        ;
+                        ;
+                        	end
 
-;--------------------------------------------------------------
-Symbol table
-============
+-------------------------------- Symbol Table --------------------------------
 
-Value	Type	Name
------	----	----
-0000	 04	L0000
-000E	 04	L000E
-0033	 04	L0033
-0038	 04	L0038
-0039	 04	X0039
-0045	 04	L0045
-005D	 04	L005D
-005F	 04	L005F
-0061	 04	L0061
-006E	 04	L006E
-0072	 04	L0072
-0086	 04	L0086
-00AA	 04	L00AA
-00BE	 04	L00BE
-00CD	 04	X00CD
-00D1	 04	X00D1
-00D2	 04	X00D2
-00E9	 04	X00E9
-00EA	 04	X00EA
-00EB	 04	X00EB
-00EC	 04	X00EC
-00F0	 04	X00F0
-00F7	 04	X00F7
-00FF	 04	X00FF
-0100	 04	X0100
-0820	 04	X0820
-0840	 04	X0840
-0E25	 04	L0E25
-0EAA	 04	L0EAA
-0F22	 04	L0F22
-1014	 04	L1014
-103E	 04	L103E
-1053	 04	L1053
-1072	 04	L1072
-10A8	 04	L10A8
-10DA	 04	X10DA
-878D	 04	X878D
-F3FD	 04	XF3FD
-FBFA	 04	XFBFA
-FF00	 04	LFF00
-FFFF	 04	LFFFF
+              Symbol   Value        Decimal
 
-Number of symbols:			41
-
-;--------------------------------------------------------------
+                ACTN : $1038           4152
+                BACK : $108d           4237
+                BEEP : $0f22           3874   *
+                BUFF : $00f0            240   *
+                CASS : $0eaa           3754   *
+                CNTR : $00ec            236   *
+                CONT : $1072           4210
+                 CRL : $10e2           4322
+                CTRL : $1033           4147
+                CYCL : $106e           4206
+                DECD : $ff00          65280   *
+                DELY : $1061           4193
+                 DLY : $105d           4189
+                  DO : $10be           4286
+                DSIG : $10da           4314
+                 DSP : $0820           2080   *
+                DUMY : $0086            134   *
+                 EXP : $00eb            235   *
+                NEXT : $1096           4246
+                NTRY : $1021           4129
+                NXTX : $105f           4191
+                NXT2 : $10a5           4261
+                OCNT : $1082           4226
+                OUTP : $0840           2112   *
+                PARM : $10ed           4333
+                PAR1 : $10f6           4342
+                PLAY : $103e           4158
+                PLA0 : $1045           4165
+                PNTR : $00e9            233   *
+                RDKY : $1053           4179
+                RETN : $1086           4230
+                 RUN : $106a           4202
+                SCOR : $0100            256   *
+                SLP0 : $100e           4110
+                SLP1 : $1014           4116
+                SNBT : $0e25           3621   *
+                SPHK : $1000           4096
+                STAR : $1006           4102
+                STBL : $00d1            209   *
+                STEP : $1087           4231
+                 STP : $10aa           4266
+                STRB : $10cd           4301
+                STTP : $10a8           4264
+                TAPE : $10d2           4306
+                 TIN : $10b9           4281
+                 TMP : $109d           4253
+                TMPO : $00ea            234   *
+                TOUT : $10b2           4274
+                WAIT : $107c           4220
