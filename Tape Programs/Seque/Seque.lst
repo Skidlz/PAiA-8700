@@ -1,0 +1,541 @@
+AS65 Assembler for R6502 [1.42].                                     Page    1
+- C:\Users\zacka\My Drive\Schematics\PAiA 8700\Tape Programs\Seque\Seque.as --
+
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                ACTN : $117a           4474
+                BEEP : $1f22           7970   *
+                BUFF : $00f0            240   *
+                CASS : $1eaa           7850   *
+                CLIK : $10cf           4303
+                CNCL : $10c8           4296
+                CNTR : $00e5            229   *
+                CNTU : $1045           4165
+                 COM : $1118           4376
+                COM0 : $1140           4416
+                COM1 : $1147           4423
+                CONT : $11b6           4534
+                COUT : $114a           4426
+                CTRL : $116d           4461
+                DBIT : $1e49           7753   *
+                DECD : $1f00           7936   *
+                  DO : $1178           4472
+                DOTP : $1246           4678
+                 DSP : $0820           2080   *
+                DTMP : $1080           4224
+                DUMY : $0003              3   *
+                EOUT : $10b3           4275
+                ESAV : $10a3           4259
+                 ES1 : $10a7           4263
+                ITAP : $10da           4314
+                 KBD : $0810           2064   *
+                KBUF : $00ec            236   *
+                KRED : $1157           4439
+                KRTN : $116b           4459
+                 KR2 : $115c           4444
+                 KR3 : $1161           4449
+                 LP1 : $11b0           4528
+                 LP2 : $11b2           4530
+                LSTL : $00e3            227   *
+                MCOM : $10ca           4298
+                MEND : $00e8            232   *
+                 MET : $10bc           4284
+                METF : $00e0            224   *
+                MET1 : $113d           4413
+                MPNT : $00ea            234   *
+                MSAV : $103f           4159
+                MSV1 : $1184           4484
+                 MS1 : $118f           4495
+                MTBL : $0300            768   *
+               MTBL1 : $0301            769   *
+               MTBL2 : $0302            770   *
+               MTBL3 : $0303            771   *
+                MTRC : $00df            223   *
+                NRML : $100c           4108
+                NRM1 : $1013           4115
+                OLDK : $105c           4188
+                OTAP : $10d7           4311
+                 OUT : $11ab           4523
+                OUTP : $0840           2112   *
+                PBUF : $00eb            235   *
+                PLAC : $1206           4614
+                PLA1 : $11ac           4524
+                 PL1 : $11d6           4566
+                REST : $1085           4229
+                ROUT : $1060           4192
+                RPLA : $1046           4166
+                RPL1 : $1052           4178
+                SBIT : $1e25           7717   *
+                SING : $1063           4195
+                SNG1 : $1069           4201
+                SRTN : $107b           4219
+                STAR : $1000           4096
+                STBL : $1100           4352
+                STEP : $1092           4242
+                STOR : $101b           4123
+                 STP : $1217           4631
+                STP1 : $10a2           4258
+                STTP : $1215           4629
+                STUS : $00e2            226   *
+                SYNC : $10c2           4290
+                TAPE : $11e1           4577
+                TBLM : $10b4           4276
+                 TCH : $1254           4692
+                TCHG : $10d4           4308
+                TCHR : $125c           4700
+                TCM1 : $120f           4623
+                TCOM : $1200           4608
+                TEND : $00e7            231   *
+                 TIN : $1233           4659
+                TLOD : $101e           4126
+                 TLP : $1205           4613
+                 TL1 : $102a           4138
+                 TL2 : $1039           4153
+                TOUT : $1220           4640
+                TPNT : $00e9            233   *
+                 TPO : $00e1            225   *
+                TRAN : $1144           4420
+                TRNS : $00e6            230   *
+                TRTN : $103c           4156
+                TTBL : $02c0            704   *
+                TTRN : $00e4            228   *
+                UTMP : $107c           4220
+                 U_D : $1082           4226
+            __6502__ : $0001              1
+
+99 labels used
+
+423 lines read, no errors in pass 1.
+AS65 Assembler for R6502 [1.42].                                     Page    2
+- C:\Users\zacka\My Drive\Schematics\PAiA 8700\Tape Programs\Seque\Seque.as --
+
+                        ;********************************
+                        ;*                              *
+                        ;*          SEQUE 1.0           *
+                        ;*                              *
+                        ;* MONOTONIC SEQUENCER PROGRAMS *
+                        ;*                              *
+                        ;*             BY               *
+                        ;*    JOHN S. SIMONTON, JR.     *
+                        ;*                              *
+                        ;*(C) 1978 PAIA ELECTRONICS, INC*
+                        ;*     ALL RGIHTS RESERVED      *
+                        ;*                              *
+                        ;********************************
+                        ;
+                        ;DEFINE ADDRESS OF LABELS
+                        ;
+1f22 =                  BEEP	=$1F22
+1f00 =                  DECD	=$1F00	
+1eaa =                  CASS	=$1EAA
+1e49 =                  DBIT	=$1E49
+1e25 =                  SBIT	=$1E25
+0840 =                  OUTP	=$0840 ;$09FF IN TAPE DUMP
+0820 =                  DSP		=$0820
+0810 =                  KBD		=$0810
+                        ;
+0303 =                  MTBL3	=$0303
+0302 =                  MTBL2	=$0302
+0301 =                  MTBL1	=$0301
+0300 =                  MTBL	=$0300
+02c0 =                  TTBL	=$02C0
+                        ;
+00f0 =                  BUFF	=$00F0
+00ec =                  KBUF	=$00EC
+00eb =                  PBUF	=$00EB
+00ea =                  MPNT	=$00EA
+00e9 =                  TPNT	=$00E9
+00e8 =                  MEND	=$00E8
+00e7 =                  TEND	=$00E7
+00e6 =                  TRNS	=$00E6
+00e5 =                  CNTR	=$00E5
+00e4 =                  TTRN	=$00E4
+00e3 =                  LSTL	=$00E3
+00e2 =                  STUS	=$00E2
+00e1 =                  TPO		=$00E1
+00e0 =                  METF	=$00E0
+00df =                  MTRC	=$00DF
+0003 =                  DUMY	=$0003
+                        ;
+                        ;
+                        ;
+1000 =                  		org	$1000
+                        ;
+1000 : a900             STAR	lda	#$00	;START / RESTART
+1002 : 85e2             		sta	STUS	;CANCEL OPTIONS
+1004 : a90c             		lda	#$0C	;NRML COMMAND LINK
+1006 : 8d7b11           		sta	ACTN+01	;PLACE COMMAND LINK
+1009 : 4c1811           		jmp	COM		;JUMP TO COMMON
+                        ;
+                        ;NORMAL OPERATING MODE - DOES NOT ALTER
+                        ;T-SEQUENCE OR M-SEQUENCE
+                        ;
+100c : b005             NRML	bcs	NRM1	;FIRST PASS THROUGH
+100e : 85e6             		sta	TRNS	;ZERO TRANSPOSE
+1010 : 8d2008           		sta	DSP		;AND DISPLAYS
+1013 : a5ec             NRM1	lda	KBUF	;CHECK FOR NOTES
+1015 : d004             		bne	STOR	;ZERO- NO NEW KEY
+1017 : a5eb              		lda	PBUF	;SO GET OLD KEY
+1019 : 293f              		and	#$3F	;CLEAR BOTH FLAGS
+101b : 85eb             STOR	sta	PBUF	;SAVE AGAIN
+101d : 60                		rts			;AND RETURN
+                        ;
+                        ;PROGRAM TRANSPOE MODE - NOTE PLAYED
+                        ;IS "KILLED" WHEN KEY IS RELEASED
+                        ;
+101e : b00a             TLOD	bcs	TL1		;FIRST PASS, INITIALIZE
+1020 : 85e6             		sta	TRNS	;ZERO TRANSPOSE FIGURE
+1022 : 85eb              		sta	PBUF	;ZERO OUTPUT NOTE
+1024 : 85e7              		sta	TEND	;ZERO TABLE END POINTER
+1026 : a980             		lda	#$80	;TURN T-SEQUE OPTION
+1028 : 85e2              		sta	STUS	;ON
+102a : a6e7             TL1		ldx	TEND	;GET TRANSPOSE POINTER
+102c : 8e2008           		stx	DSP		;SHOW IT
+102f : a5ec             		lda	KBUF	;GET THE NOTE
+1031 : f006             		beq	TL2		;ZERO- NO KEY, SAVE
+1033 : c5eb             		cmp	PBUF	;KEY SAME AS LAST?
+1035 : f005             		beq	TRTN	;YES - LEAVE
+1037 : e6e7             		inc	TEND	;POINT TO NEXT LOCATION
+1039 : 9dc002           TL2		sta	TTBL,x	;SAVE TRANSPOSE
+103c : 85eb             TRTN	sta	PBUF	;AND OUTPUT AS NOTE
+103e : 60               		rts			;THEN RETURN
+                        ;
+                        ;PROGRAM SCORE MODE - USES REAL-TIME CLOCK
+                        ;
+103f : 208411           MSAV	jsr	MSV1	;CALL SAVE MODULE
+1042 : e6e5              		inc	CNTR	;INCREMENT THE TEMPO
+1044 : 60                		rts			;COUNTER AND RETURN
+                        ;
+                        ;CONTINUE PLAY MODE - DOES NOT RESET
+                        ;M-SEQUENCE OR T-SEQUENCE POINTERS
+                        ;
+1045 : 38               CNTU	sec			;SKIP INITIALIZATION
+                        ;
+                        ;REPEAT PLAY MODE - WHEN FIRST ENTERED
+                        ;M-SEQ AND T-SEQ POINTERS ARE SET TO ZERO
+                        ;BY THE PLAY MODULE (PLA1)
+                        ;
+1046 : 20ac11           RPLA	jsr	PLA1	;CALL PLAY MODULE
+1049 : ad1411           		lda	STBL+$14;WAS THE PREVIOUS MODE
+104c : c5e3              		cmp	LSTL	;MSAV (PROG. SCORE)?
+104e : d002              		bne	RPL1	;NO-SKIP INCREMENT
+1050 : e6e9              		inc	TPNT	;INC. T-SEQ POINTER
+1052 : 24e2             RPL1	bit	STUS	;T-SEQ ASSERTED ?
+1054 : 300a              		bmi	ROUT	;OPTION ON - LEAVE
+1056 : a5ec              		lda	KBUF	;OPTION OFF- GET NOTE
+1058 : f002              		beq	OLDK	;AND IF NO NOTE, BRANCH
+105a : 85e4              		sta	TTRN	;SAVE NOTE FOR NEXT TIME
+105c : a5e4             OLDK	lda	TTRN	;GET LAST ACTIVE NOTE
+105e : 85e6              		sta	TRNS	;USE AS TRANSPOSE
+1060 : e6e5             ROUT	inc	CNTR	;INCREMENT TEMPO COUNTER
+1062 : 60                		rts			;AND RETURN
+                        ;
+                        ;SINGLE PLAY MODE - WAITS FOR AGO KEY
+                        ;THEN PLAYS SEQUENCE ONCE THROUGH
+                        ;TRANSPOSED TO INDICAtED KEY
+                        ;
+1063 : 9004             SING	bcc	SNG1	;FIRST PASS, BRANCH
+1065 : a5ec              		lda	KBUF	;AGO KEY DOWN?
+1067 : d0dd              		bne	RPLA	;YES - PLAY SEQUENCE
+1069 : 204610           SNG1	jsr	RPLA	;NO - "PLAY" THEN RETURN
+106c : a5ea              		lda	MPNT	;M-SEQ POINTER > 0 ?
+106e : d00b              		bne	SRTN	;YES - RETURN
+1070 : a900             		lda	#$00	;NO - PREPARE
+1072 : 85e5              		sta	CNTR	;ZERO TEMPO COUNTER
+1074 : a6e8              		ldx	MEND	;POINT TO LAST NOTE
+1076 : bd0103           		lda	MTBL1,x	;OF M-SEQ AND GET IT
+1079 : 85eb              		sta	PBUF	;PLACE IN PLAY BUFFER
+107b : 60               SRTN	rts			;THEN RETURN
+                        ;
+                        ;UP TEMPO AND DOWN TEMPO - COMMON PORTION
+                        ;OF BOTH PROGRAMS ON PAGE 2
+                        ;
+107c : a97e             UTMP	lda	#$7E	;THE OP-CODE FOR ROR
+107e : d002             		bne	U_D		;BRANCH ALWAYS
+1080 : a93e             DTMP	lda	#$3E	;THE OP-CODE FOR ROL
+1082 : 4c0012           U_D		jmp	TCOM	;JUMP FOR THE REST
+                        ;
+                        ;REST MODE - EXTENDS NOTES OR UN-NOTES
+                        ;WHEN IN PROGRAM EVENT MODE
+                        ;
+1085 : 18               REST	clc			;PREPARE FOR ADDITTION
+1086 : a5e5              		lda	CNTR	;GET TEMPO COUNTER
+1088 : 65e1              		adc	TPO		;ADD TEMPO VALUE
+108a : 85e5              		sta	CNTR	;PUT COUNTER BACK
+108c : a5e3              		lda	LSTL	;AND RETURN TO
+108e : 8d7b11           		sta	ACTN+01	;PREVIOUS OPERATING
+1091 : 60                		rts			;MODE
+                        ;
+                        ;STOP/STEP MODE - STOPS PLAY WITHOUT
+                        ;CHANGING POINTERS. SINGLE STEPS THROUGH
+                        ;SEQUENCE
+                        ;
+1092 : b00e             STEP	bcs	STP1	;NOT FIRST PASS=BRANCH
+1094 : a9ff             		lda	#$FF	;SET TEMPO COUNTER AT
+1096 : 85e5             		sta	CNTR	;"TIMED OUT" VALUE
+1098 : 20b611           		jsr	CONT	;CALL PART OF PLAY MODULE
+109b : 8e2008           		stx	DSP		;DISPLAY M-SEQ POINTER
+109e : a900             		lda	#$00	;MAKE TRANSPOSE VALUE
+10a0 : 85e6             		sta	TRNS	;EQUAL TO ZERO
+10a2 : 60               STP1	rts			;AND RETURN
+                        ;
+                        ;PROGRAM EVENT MODE - SAVES M-SEQUENCE
+                        ;BUT SUBSTITUTES EVENT CLOCK FOR REAL-TIME
+                        ;CLOCK
+                        ;
+10a3 : b002             ESAV	bcs	ES1		;FIRST PASS, INITIALIZE
+10a5 : 85e5             		sta	CNTR	;TEMPO COUNTER AS ZERO
+10a7 : 208411           ES1		jsr	MSV1	;CALL SAVE MODULE
+10aa : a5e5             		lda	CNTR	;GET TEMPO COUNTER
+10ac : d005             		bne	EOUT	;NO ENTRY-RETURN
+10ae : 18               		clc			;PREPARE
+10af : 65e1             		adc	TPO		;ADD TEMPO VALUE
+10b1 : 85e5             		sta	CNTR	;SAVE AS TEMPO COUNTER
+10b3 : 60               EOUT	rts			;TEHN RETURN
+                        ;
+                        ;OPTION MENU - RETURN TO PREVIOUS
+                        ;OPERATING MODE AFTER TURING ON OR
+                        ;CANCELLING OPTIONS
+                        ;
+10b4 : 85e9             TBLM	sta	TPNT	;T-SEQ POINTER TO BEG
+10b6 : a5e2             		lda	STUS	;ASSERT T-SEQ OPTION
+10b8 : 0980             		ora	#$80
+10ba : d00e             		bne	MCOM	;BRANCH ASLWAYS
+10bc : a5e2             MET		lda	STUS	;TURN METRONOME ON
+10be : 0940             		ora	#$40
+10c0 : d008             		bne	MCOM	;BRANCH ALWAYS
+10c2 : a5e2             SYNC	lda	STUS	;TURN ON SYNC TO
+10c4 : 0901             		ora	#$01	;CLICK TRACK OPTION
+10c6 : d002             		bne	MCOM	;BRANCH ALWAYS
+10c8 : a900             CNCL	lda	#$00	;PREPARE AND
+10ca : 85e2             MCOM	sta	STUS	;CANCEL ALL OPTIONS
+10cc : 4c0f12           		jmp	TCM1	;JUMP FOR THE REST
+                        ;
+                        ;CLICK MODE - SEND CLICK TRACK TO TAPE
+                        ;AGO KEYBOARD SCAN RATE IS TIME
+                        ;
+10cf : 18               CLIK	clc			;PREPARE TO SEND "0"
+10d0 : 20251e           		jsr	SBIT	;SEND IT
+10d3 : 60                		rts			;RETURN FOR KEYBOARD DELAY
+                        ;
+                        ;METRONOME TEMPO CHANGE - PROGRAM ON PAGE 2
+                        ;
+10d4 : 4c5412           TCHG	jmp	TCH		;JUMP TO PROGRAM
+                        ;
+                        ;DUMP M&T-SEQ TO TAPE - PROGRAM ON PAGE 2
+                        ;
+10d7 : 4c2012           OTAP	jmp	TOUT	;JUMP TO PROGRAM
+                        ;
+                        ;LOAD M&T-SEQ FROM TAPE - PROGRAM ON PAGE 2
+                        ;
+10da : 4c3312           ITAP	jmp	TIN		;JUMP TO PROGRAM
+                        ;
+                        ;
+                        ;COMMAND LINKS - LOW BYTE OF ADDRESS OF SUBS
+                        ;
+1100 =                  	org $1100
+1100 :                  STBL
+1100 : 85858585         		db	lo REST, lo REST, lo REST, lo REST
+1104 : c2bcb4c8         		db	lo SYNC, lo MET,  lo TBLM, lo CNCL
+1108 : cfd4807c         		db	lo CLIK, lo TCHG, lo DTMP, lo UTMP
+110c : dad70c0c         		db	lo ITAP, lo OTAP, lo NRML, lo NRML
+1110 : 45926346         		db	lo CNTU, lo STEP, lo SING, lo RPLA
+1114 : 3fa31e46         		db	lo MSAV, lo ESAV, lo TLOD, lo RPLA
+                        ;
+1118 =                  	org $1118
+                        ;
+                        ;COMMON PROGRAM - DOES METRONOME WHEN ON
+                        ;ADDS PLAY AND TRASNPOSE BUFFERS TO GET
+                        ;OUTPUT NOTE, PLAYS NOTE, READS COMMAND
+                        ;KEYBOARD AND JUMPS TO SELECTED MODE
+                        ;SUBSTITUES CLICK SYNCH FOR KEYBOARD
+                        ;TIMING LOOP WHEN SYNC OPTION IS ASSERTED
+                        ;
+1118 : a5e2             COM		lda STUS	;CHECK OPTIONS
+111a : 48                		pha			;SAVE A COPY
+111b : 0a                		asl	a		;METRONOME ON ?
+111c : 1022              		bpl	COM0	;NO - BRANCH
+111e : c6df              		dec	MTRC	;DECREMENT METRONOME COUNTER
+1120 : 101e             		bpl	COM0	;NOT <0 YET, BRANCH
+1122 : a6e1             		ldx	TPO		;TIME UP, GET TEMPO VALUE
+1124 : ca               		dex			;DECREMENT ONCE
+1125 : 86df             		stx	MTRC	;THEN SAVE AS COUNTER
+1127 : a980             		lda	#$80	;TO DETERMINE ALTERNATE DISPLAY
+1129 : aa               		tax			;CYCLE AND "PENDULUM" LEFT
+112a : 18               		clc			;PREPARE FOR ADDITTION
+112b : 65e0             		adc	METF	;ADD FLIP-FLOP VALUE
+112d : 85e0             		sta	METF	;SAVE NEW VALUE
+112f : 100c             		bpl	MET1	;ALTERNATE? - DISPLAY
+1131 : a5eb             		lda	PBUF	;OTHERWISE, GET OUTPUT
+1133 : 0980             		ora	#$80	;SET D7
+1135 : 85eb             		sta	PBUF	;SAVE IN PLAY BUFFER
+1137 : 18               		clc			;PREPARE AND
+1138 : 20251e           		jsr	SBIT	;CALL BEEP
+113b : a208             		ldx	#$08	;"PENDULUM" RIGHT
+113d : 8e2008           MET1	stx	DSP		;SHOW PENDULUM
+1140 : a5e6             COM0	lda	TRNS	;IS THERE A TRANSPOSE ?
+1142 : f003             		beq	COM1	;NO - BRANCH
+1144 : 18               TRAN	clc			;YES - PREPARE
+1145 : 69a4             		adc	#$A4	;CALCULATE TRANSPOSE VALUE
+1147 : 18               COM1	clc			;MORE PREPARATION
+1148 : 65eb             		adc	PBUF	;CALCULATE NOTE
+114a : 8d4008           COUT	sta	OUTP	;PLAY NOTE
+114d : 68               		pla			;GET STUS (OPTION CODES)
+114e : 6a               		ror	a		;SYNC OPTION ON ?
+114f : 9006             		bcc	KRED	;NO - SKIP
+1151 : 20491e           		jsr	DBIT	;WAIT FOR CLIK
+1154 : 4c6d11           		jmp	CTRL	;SKIP READING AGO
+                        ;
+1157 : 2c1008           KRED	bit	KBD		;WAIT FOR DUMMY SCAN
+115a : 10fb             		bpl	KRED	;LOOP UNTIL STARTED
+115c : ad1008           KR2		lda	KBD		;WAIT FOR SCAN TO START
+115f : 30fb             		bmi	KR2		;LOOP UNTIL STARTED
+1161 : 2c1008           KR3		bit	KBD		;CHECK FOR KEYS DOWN
+1164 : 3005             		bmi	KRTN	;WHEN SCAN DONE, RETURN
+1166 : 50f9             		bvc	KR3		;CURRENT KEY NOT DOWN, LOOP
+1168 : ad1008           		lda	KBD		;KEY DOWN, GET IT
+116b : 85ec             KRTN	sta	KBUF	;SAVE RESULT
+116d : 20001f           CTRL	jsr	DECD	;GET COMMAND
+1170 : b006             		bcs	DO		;OLD COMMAND - DO IT
+1172 : b90011           		lda	STBL,y	;NEW COMMADN - GET LINK
+1175 : 8d7b11           		sta	ACTN+01	;PLACE LINK
+1178 : a900             DO		lda	#$00	;THIS WILL BE HANDY
+117a : 200300           ACTN	jsr	DUMY	;CALL OPERATION MODE
+117d : ad7b11           		lda	ACTN+01	;SAVE CURRENT COMMAND
+1180 : 85e3             		sta	LSTL	;LINK FOR LATER
+1182 : d094             		bne	COM		;AND LOOP ALWAYS
+                        ;
+                        ;SAVE MODULE - TAKES CARE OF ALTERNATELY
+                        ;STACKING DURATIONS AND NOTES IN M-SEQUENCE
+                        ;USES WHAT WILL BE "END OF SEQUENCE"
+                        ;INDICATOR IN PLAY MODES AS POINTER
+                        ;
+1184 : b009             MSV1	bcs	MS1		;FIRST PASS?
+1186 : 8d0103           		sta	MTBL1	;YES-ZERO PROGRAM NOTE
+1189 : 85e8             		sta	MEND	;ZERO M-SEQ POINTER
+118b : 85e6             		sta	TRNS	;ZERO TRANSPOSE
+118d : 85eb             		sta	PBUF	;ZERO OUTPUT NOTE
+118f : a5e5             MS1		lda	CNTR	;GET TIME SINCE LAST NOTE
+1191 : a6e8             		ldx	MEND	;AND M-SEQ END POINTER
+1193 : 9d0003           		sta	MTBL,x	;SAVE THE TIME
+1196 : 201310           		jsr	NRM1	;IN CASE NO KEYS DOWN
+1199 : 297f             		and	#$7F	;CLEAR D7 IN OUTPUT NOTE
+119b : dd0103           		cmp	MTBL1,x	;SAME AS LAST NOTE?
+119e : f00b             		beq	OUT		;YES, LEAVE
+11a0 : e8               		inx			;NO, SAVE BY INCREMENTING
+11a1 : e8               		inx			;M-SEQ POINTER TWICE
+11a2 : 86e8             		stx	MEND	;AND SAVING AS END
+11a4 : 9d0103           		sta	MTBL1,x	;THEN SAVE NOTE
+11a7 : a900             		lda	#$00	;AND ZERO TIME SINCE
+11a9 : 85e5             		sta	CNTR	;LAST NOTE
+11ab : 60               OUT		rts			;AND RETURN
+                        ;
+                        ;PLAY MODULE - MANAGES M-SEQ AND T-SEQ
+                        ;POINTERS AS WELL AS TEMPO CLOCK.
+                        ;DETERMINES WHEN NOTES ARE TO BE PLAYED
+                        ;
+11ac : b008             PLA1	bcs	CONT	;FIRST PASS ?
+11ae : 85e4             		sta	TTRN	;YES-ZERO TEMP. TRANSPOSE
+11b0 : 85e9             LP1		sta	TPNT	;ZERO T-SEQ POINTER
+11b2 : 85ea             LP2		sta	MPNT	;AND M-SEQ POINTER
+11b4 : 85e5             		sta	CNTR	;AND CLOCK (TEMPO CONTER)
+11b6 : a5e5             CONT	lda	CNTR	;GET CLOCK
+11b8 : a4e9             		ldy	TPNT	;GET T-SEQ POINTER
+11ba : a6ea             		ldx	MPNT	;GET M-SEQ POINTER
+11bc : dd0203           		cmp	MTBL2,x	;TIME UP?
+11bf : 9015             		bcc	PL1		;NO, BRANCH
+11c1 : a900             		lda	#$00	;YES, PREP. COUNTER, ETC.
+11c3 : 85e5             		sta	CNTR	;FOR NEXT ACCUMULATION
+11c5 : e8               		inx			;INCREMENT M-SEQ POINTER
+11c6 : e8               		inx			;TWICE
+11c7 : 86ea             		stx	MPNT	;AND SAVE NEW POINTER
+11c9 : e4e8             		cpx	MEND	;END OF M-SEQ?
+11cb : d009             		bne	PL1		;NO - BRANCH
+11cd : c8               		iny			;YES, INC T-SEQ POINTER
+11ce : c4e7             		cpy	TEND	;END OF T-SEQ ?
+11d0 : b0de             		bcs	LP1		;YES-START T&M-SEQ AGAIN
+11d2 : 84e9             		sty	TPNT	;NO-SAVE T-SEQ POINTER
+11d4 : d0dc             		bne	LP2		;BRANCH-START M-SEQ AGAIN
+11d6 : bd0303           PL1		lda	MTBL3,x	;GET THE NOTE
+11d9 : 85eb             		sta	PBUF	;SAVE IN PLAY BUFFER
+11db : b9c002           		lda	TTBL,y	;GET TRANSPOSE
+11de : 85e6             		sta	TRNS	;TO TRANSPOSE BUFFER
+11e0 : 60               		rts			;RETURN
+                        ;
+                        ;TAPE TRASNFER PARAMETER TABLE
+                        ;
+11e1 : ff00ff03c002c002 TAPE	db	$FF, $00, $FF, $03, $C0, $02, $C0, $02
+                        ;
+1200 =                  	org $1200
+                        ;
+                        ;COMMON PORTION OF TEMPO UP & DOWN -
+                        ;ROTATES RIGHT OR LEFT THE DURATIONS
+                        ;SAVED WITH M-SEQUENCE
+                        ;
+1200 : 8d0612           TCOM	sta	PLAC	;PLACE ROR OR ROL OP CODE
+1203 : a200             		ldx	#$00	;ZERO A COUNTER/POINTER
+1205 : 18               TLP		clc			;PREPARE
+1206 : 7e0203           PLAC	ror	MTBL2,x	;ROTATE SAVED TEMPO
+1209 : e8               		inx			;INCREMENT POINTER TWICE
+120a : e8               		inx			;TO POINT TO NEXT
+120b : e4e8             		cpx	MEND	;END OF M-SEQ ?
+120d : d0f6             		bne	TLP		;NO - LOOP FOR MORE
+120f : a5e3             TCM1	lda	LSTL	;DONE, GET LINK AND
+1211 : 8d7b11           		sta	ACTN+01	;SET UP FOR PREVIOUS MODE
+1214 : 60               		rts			;THEN RETURN
+                        ;
+                        ;SET UP PROCEDURE FOR TAPE TRASNFER
+                        ;
+1215 : a207             STTP	ldx	#$07	;TRANSFER 7 BYTES
+1217 : bde111           STP		lda	TAPE,x	;GET PARAMETER FROM TABLE
+121a : 95f0             		sta	BUFF,x	;PLACE IN POT-SHOT BUFFER
+121c : ca               		dex			;POINT TO NEXT, MORE ?
+121d : d0f8             		bne	STP		;YES - LOOP
+121f : 60               		rts			;NO - RETURN
+                        ;
+                        ;DUMP M-SEQ AND T-SEQ TO TAPE
+                        ;
+1220 : 201512           TOUT	jsr	STTP	;SET UP FOR TRANSFER
+1223 : a5e8             		lda	MEND	;SAVE M-SEQ END WITH
+1225 : 8d0003           		sta	MTBL	;M&T-SEQUENCE
+1228 : a5e7             		lda	TEND	;ALSO T-SEQUENCE END
+122a : 8d0103           		sta	MTBL1
+122d : a9dd             		lda	#$DD	;SET UP FOR DUMP
+122f : 204612           		jsr	DOTP	;AND DO IT
+1232 : 60               		rts			;THEN RETURN
+                        ;
+                        ;LOAD M-SEQ AND T-SEQ FROM TAPE
+                        ;
+1233 : 201512           TIN		jsr	STTP	;SET UP FOR TRANSFER
+1236 : a911             		lda	#$11	;SET UP FOR LOAD
+1238 : 204612           		jsr	DOTP	;AND DO IT
+123b : ad0003           		lda	MTBL	;PLACE M-SEQUENCE END
+123e : 85e8             		sta	MEND
+1240 : ad0103           		lda MTBL1	;AND T-SEQUENCE END
+1243 : 85e7             		sta	TEND
+1245 : 60               		rts			;THEN RETURN
+                        ;
+                        ;PERFORM TAPE TRANSFER
+                        ;
+1246 : 20aa1e           DOTP	jsr	CASS	;CALL POT-SHOT
+1249 : ad0f11           		lda	STBL+$F	;SET UP TO RETURN
+124c : 8d7b11           		sta	ACTN+01	;IN NORMAL MODE
+124f : 18               		clc			;PREPARE
+1250 : 20221f           		jsr	BEEP	;SIGNAL DONE
+1253 : 60               		rts			;AND RETURN
+                        ;
+                        ;CHANGE METRONOME TEMPO
+                        ;
+1254 : 85df             TCH		sta	MTRC	;ZERO METRONOME CLOCK
+1256 : 66e1             		ror	TPO		;HALVE TEMPO VALUE
+1258 : 9002             		bcc	TCHR	;IF NOT ZERO, LEAVE
+125a : 66e1             		ror	TPO		;ZERO, MAKE NOT ZERO
+125c : d0b1             TCHR	bne TCM1	;GO SET UP PREVIOUS MODE
+                        ;
+                        	end
+No errors in pass 2.
+Wrote binary from address $1000 through $125d.
+Total size 606 bytes.
+
