@@ -1,0 +1,209 @@
+                        ;********************************
+                        ;*                              *
+                        ;*         ECHO 0.31            *
+                        ;*                              *
+                        ;*   POLYPHONIC VOICE QUEUING   *
+                        ;*                              *
+                        ;*            BY                *
+                        ;*       JOHN SIMONTON          *
+                        ;*                              *
+                        ;*(C) 1979 PAIA ELECTRONICS, INC*
+                        ;*     ALL RIGHTS RESERVED      *
+                        ;*                              *
+                        ;********************************
+                        ;
+00be =                  EPNT	= $00BE
+00d0 =                  NTBL	= $00D0	;MUS1 OUTPUT BUFFER
+00df =                  CHN1	= $00DF
+00eb =                  OUTT	= $00EB
+00ec =                  CNTR	= $00EC
+                        
+0200 =                  EBUF	= $0200
+0820 =                  DISP 	= $0820
+0d21 =                  INIT	= $0D21 ;MUS1
+0d2b =                  NOTE	= $0D2B ;MUS1
+0d52 =                  FILL	= $0D52 ;MUS1
+0d71 =                  POLY	= $0D71	;MUS1
+0f00 =                  DECD	= $0F00	;PIEBUG
+ffc0 =                  BRAK	= $FFC0	;PIEBUG
+                        
+1000 =                  	org	$1000
+                        ;
+                        ;INITIALIZE SYSTEM, CLEAR OUTPUT BUFFERS AND ECHO BUFF
+                        ;
+1000 : 20210d           STAR	jsr	INIT		;CALL MUS1 INITIALIZATION
+1003 : a2ff             		ldx	#$FF		;PREPARE TO SET STACK POINTER
+1005 : 9a               		txs				;SET STACK TO TOP OF PAGE
+1006 : a900             EBZR	lda	#$00		;PREPARE TO ZERO OUT ECHO BUFFER
+1008 : a23f             		ldx	#$3F		;POINTER TO END OF ECHO BUFFER
+100a : 9d0002           ILP		sta	EBUF,x		;ZERO ECHO BUFFER LOCATION
+100d : ca               		dex				;POINT TO NEXT LOCATION
+100e : 10fa             		bpl	ILP			;NOT DONE YET, LOOP
+1010 : 20710d           ECHO	jsr	POLY		;CALL MUS1 POLYPHONIC ALLOCATION
+                        ;
+                        ;DETERMINE ADDRESS OF THE FIRST CHANNEL AVAILABLE
+                        ;FOR ECHO USE
+                        ;
+1013 : a00f             		ldy	#$0F		;OFFSET TO FIRST OUT-BUF LOCATION
+1015 : a6ea             		ldx	<OUTS		;NUMBER OF POLYPHONIC CHANNELS
+1017 : 88               LP0		dey				;POINT TO NEXT OUTPUT CHANNEL
+1018 : ca               		dex				;ONE LESS POLY CHANNEL
+1019 : d0fc             		bne	LP0			;ALL POLY CHANS NOT USED, LOOP
+101b : 84eb             		sty	<OUTT		;SAVE FIRST ECHO POINTER FOR LATER
+                        ;
+                        ;ADVANCE ECHO BUFFER POINTER AND ADJUST IF NECESSARY
+                        ;
+101d : a6be             		ldx	<EPNT		;GET CURRENT ECHO BUFFER POINTER
+101f : c6ec             		dec	<CNTR		;DECREMENT TIMER
+1021 : d009             		bne	GETN		;TIME NOT UP, BRANCH
+1023 : a5bc             		lda	<EDLY		;TIME UP, RE-INIT TIMER VALUE
+1025 : 85ec             		sta	<CNTR		;RE-INITIALIZE TIMER
+1027 : ca               		dex				;POINT TO NEXT
+1028 : 1002             		bpl	GETN		;BRANCH IF STILL WITHIN BUFFER AREA
+102a : a23f             		ldx	#$3F		;OTHERWISE, RE-INIT POINTER
+102c : 86be             GETN	stx	<EPNT		;SAVE NEW POINTER
+                        ;
+                        ;PUT CURRENT CHANNEL 1 NOTE IN ECHO BUFFER AND
+                        ;PREPARE ECHO CHANNEL COUNTER
+                        ;
+102e : a5df             		lda	<CHN1		;GET CHANNEL 1 NOTE
+1030 : 9d0002           		sta	EBUF,x		;SAVE IN ECHO BUFFER
+1033 : a5bb             		lda	<ECCO		;GET NUMBER OF ECHO CHANNELS
+1035 : 85ba             		sta	<TEMP		;SAVE AS COUNTER
+                        ;
+                        ;CALCULATE SUCCESSIVE ECHO BUFFER LOCATIONS AND
+                        ;ADJUST AS NECESSARY
+                        ;
+1037 : 8a               LP1		txa				;ECHO BUFFER POINTER TO ACCUMULATOR
+1038 : 18               		clc				;PREPARE FOR ADDITTION
+1039 : 65bd             		adc	<OFST		;CALCULATE NEXT LOCATION
+103b : c940             		cmp	#$40		;STILL WITHIN ECHO BUFFER?
+103d : 9003             		bcc	SAVE		;YES, BRANCH TO CONTINUE
+103f : 38               		sec				;NO, SET CARRY FOR SUBTRACTION
+1040 : e940             		sbc	#$40		;AND ADJUST POINTER
+1042 : aa               SAVE	tax				;PUT POINTER IN PLACE
+                        ;
+                        ;THEN PULL NOTES FROM ROTATED ECHO BUFFER LOCATIONS
+                        ;AND PLACE IN ECHO CHANNELS OF OUTPUT BUFFER (NTBL)
+                        ;
+1043 : bd0002           		lda	EBUF,x		;GET NOTE FROM ECHO BUFFER
+1046 : 99d000           		sta	NTBL,y		;PLACE TO OUTPUT CHANNEL
+1049 : 88               		dey				;POINT TO NEXT OUTPUT CHANNEL
+104a : c6ba             		dec	<TEMP		;ONE LESS ECHO CHANNEL
+104c : d0e9             		bne	LP1			;BUT SOME LEFT, LOOP
+                        ;
+                        ;NOTES ARE PLAYED BY CALLING THE QUASH DRIVER (NOTE).
+                        ;FINALLY, ECHO OUTPUT CHANNELS ARE CLEARED SO AS NOT
+                        ;TO CONFUSE POLY WHEN CALLED
+                        ;
+104e : 202b0d           		jsr	NOTE		;CALL MUST QUASH DRIVERS, ETC.
+1051 : a4eb             		ldy	<OUTT		;GET FIRST ECHO CHANNEL POINTER
+1053 : a6bb             		ldx	<ECCO		;GET # OF ECHO CHANNELS
+1055 : a900             		lda	#$00		;PREPARE TO ZERO
+1057 : 99d000           LP2		sta	NTBL,y		;ZERO EACHO OUTPUT CHANNEL
+105a : 88               		dey				;POINT TO NEXT OUTPUT
+105b : ca               		dex				;ONE LESS ECHO CHANNEL
+105c : d0f9             		bne	LP2			;SOME LEFT, LOOP
+                        ;
+                        ;READ COMMANDS. 0-3; PRESETS, 4-INITIALIZE SYSTEM
+                        ;5-CLEAR ECHO, 6-BREAK, 7-TUNE
+                        ;
+105e : 20000f           		jsr	DECD		;READ COMMAND KEYBOARD
+1061 : c904             		cmp	#$04		;IS COMMAND A PRE-SET?
+1063 : 101b             		bpl	NEXT		;NO, BRANCH FOR NEXT TEST
+                        ;
+                        ;THE COMMAND IS TO CALL UP A PRE-SET.  AFTER CALCULATI
+                        ;THE BASE ADDRESS OF THE PRE-SETS CALLED FOR, THE PRES
+                        ;VALUES ARE TRANSFERED TO THEIR RESPECTIVE LOCATIONS
+                        ;AS ACTIVE PARAMETERS. NOTE THAT THE NUMBER OF
+                        ;CHANNELS ALLOCATED TO POLY USAGE (OUTS - $00EA) IS IN
+                        ;NON-CONTIGUOUS LOCATION AND MUST BE HANDLED SEPARATEL
+                        ;NOTE THAT THE CONTIGUOUS LOCATION *TEMP IS USED AS AC
+                        ;DUMMY VARIABLE AT THIS POINT
+                        ;
+1065 : 8c2008           		sty	DISP		;SHOW PRESET
+1068 : a9ff             		lda	#$FF		;ONE LESS THAN PRESETS BASE ADDRESS
+106a : 18               LP3		clc				;PREPARE FOR CALCULATION
+106b : 6904             		adc	#$04		;THERE ARE 4 PRESET VARIABLES
+106d : 88               		dey				;POINT TO NEXT PRESET BASE
+106e : 10fa             		bpl	LP3			;IF NOT THIS PRESET, LOOP
+1070 : aa               		tax				;PUT POINTER CALCULATED TO X
+1071 : a003             		ldy	#$03		;4 PRESETS, WILL COUNT TO -1
+1073 : b59a             LP4		lda	<PRST,x		;GET PRE-SET DATA
+1075 : 99ba00           		sta	lo TEMP,y	;AND PLACE AS ACTIVE PARAMETER
+1078 : ca               		dex				;POINT TO NEXT PRESET DATA
+1079 : 88               		dey				;AND NEXT ACTIVE PARAMETER
+107a : 10f7             		bpl	LP4			;IF NOT DONE, LOOP
+107c : 85ea             		sta	<OUTS		;SAVE THE MAVERICK PARAMETER
+107e : 3090             		bmi	ECHO		;BRANCH ALWAYS
+                        ;
+1080 : f07e             NEXT	beq	$1100		;COMMAND IS FOR CLEAR, BRANCH
+1082 : c906             		cmp	#$06		;IS COMMAND 5 (CLEAR ECHO) OR (BRK)?
+1084 : 3080             		bmi	EBZR		;COMMAND IS CLEAR ECHO, BRANCH
+1086 : d006             		bne	NXT0		;COMMAND IS NOT BRK, BRANCH
+1088 : 20210d           		jsr	INIT		;SHUT DOWN SYNTHESIZER
+108b : 4cc0ff           		jmp	BRAK		;AND RETURN TO MONITOR
+                        
+108e : c907             NXT0	cmp	#$07		;IS COMMAND TUNE?
+1090 : d005             		bne	BRDG		;A BRANCH TOO FAR
+1092 : a05c             		ldy	#$5C		;PREPARE TO TUNE TO MIDDLE C
+1094 : 20520d           		jsr	FILL		;SEE MUS 1.0 DOCUMENTATION
+1097 : 4c1010           BRDG	jmp	ECHO		;PLAY ON AND ON AND ON
+                        ;
+                        ;SET-UP VARIABLES FOR MUS1
+10ba =                  	org $10BA			;INITIAL PRE-SET
+10ba : 01               TEMP	db	$01
+10bb : 03               ECCO	db	$03			;# OF ECHO CHANNELS
+10bc : 02               EDLY	db	$02
+10bd : 04               OFST	db	$04
+10e8 =                  	org $10E8			;SYSTEM CONTROL AND QUASH DELAY
+10e8 : 40               CTRL	db	$40			;MUS1
+10e9 : 20               ODLY	db	$20			;MUS1
+10ea : 01               OUTS	db	$01			;AND OUTS
+109a =                  	org $109A
+109a : 01070101         PRST	db	$01, $07, $01, $01
+109e : 01070108         		db	$01, $07, $01, $08
+10a2 : 01030208         		db	$01, $03, $02, $08
+10a6 : 01030210         		db	$01, $03, $02, $10
+                        	end
+
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                BRAK : $ffc0          65472   *
+                BRDG : $1097           4247
+                CHN1 : $00df            223   *
+                CNTR : $00ec            236   *
+                CTRL : $10e8           4328
+                DECD : $0f00           3840   *
+                DISP : $0820           2080   *
+                EBUF : $0200            512   *
+                EBZR : $1006           4102
+                ECCO : $10bb           4283
+                ECHO : $1010           4112
+                EDLY : $10bc           4284
+                EPNT : $00be            190   *
+                FILL : $0d52           3410   *
+                GETN : $102c           4140
+                 ILP : $100a           4106
+                INIT : $0d21           3361   *
+                 LP0 : $1017           4119
+                 LP1 : $1037           4151
+                 LP2 : $1057           4183
+                 LP3 : $106a           4202
+                 LP4 : $1073           4211
+                NEXT : $1080           4224
+                NOTE : $0d2b           3371   *
+                NTBL : $00d0            208   *
+                NXT0 : $108e           4238
+                ODLY : $10e9           4329
+                OFST : $10bd           4285
+                OUTS : $10ea           4330
+                OUTT : $00eb            235   *
+                POLY : $0d71           3441   *
+                PRST : $109a           4250
+                SAVE : $1042           4162
+                STAR : $1000           4096
+                TEMP : $10ba           4282
+				
