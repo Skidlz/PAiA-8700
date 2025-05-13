@@ -38,7 +38,7 @@
                         ;ALSO USES PIEBUG DECODE AND
                         ;ASSIGNS KEY #0 AS SYSTEM CLEAR
                         ;AND #1 AS TUNE - EQUIVALENT TO
-                        ;ALL CHANNELS 2ND "C" on KBD DOWN
+                        ;ALL CHANNELS 2ND "C" ON KBD DOWN
                         ;
 0d00 =                  	org	$0D00
 0d00 : 20210d           OPTN	jsr	INIT	;ZERO ALL BUFFS
@@ -49,9 +49,9 @@
 0d0e : 8d2008           		sta	DISP	;RAZZ-MA-TAZZ
 0d11 : 20000f           		jsr	DECD	;CHECK COMMANDS
 0d14 : c901             		cmp	#$01	;0? 1? >1?
-0d16 : 30e8             		bmi	OPTN	;0 CLEAR ALL
-0d18 : d0e9             		bne	LOOP	;>1 KEEP ON
-0d1a : a05c             		ldy	#$5C	;1 TUNE 2ND C
+0d16 : 30e8             		bmi	OPTN	;0; CLEAR ALL
+0d18 : d0e9             		bne	LOOP	;>1; KEEP ON
+0d1a : a05c             		ldy	#$5C	;1; TUNE 2ND C
 0d1c : 20520d           		jsr	FILL	;KEYS ALL DOWN
 0d1f : f0e2             		beq	LOOP	;BRANCH ALWAYS
                         ;
@@ -61,6 +61,7 @@
                         ;
 00e8 =                  CTRL	=$00E8
 00bf =                  TBEG	=$00BF
+                        ;
                         ;INIT CLEARS INPUT BUFFER (KTBL)
                         ;OUTPUT BUFFER (NTBL) AND TRANS-
                         ;POSE BUFFER/CONTROL WORDS (TTBL)
@@ -107,7 +108,7 @@
 0d35 : 9def09           		sta	SH,x	;WRITE TO S/H
                         ;
                         ;NOW THE DYNAMIC PART, IF GLIDE
-                        ;IS ON, DELAY IS SKIPPED. IF NOTE
+                        ;IS ON,DELAY IS SKIPPED. IF NOTE
                         ;IS SAME AS LAST PLAYED (IGNORING
                         ;CONTROL BITS D6 D7) DELAY IS
                         ;SKIPPED.  IF NOT IN DYNAMIC MODE
@@ -171,7 +172,7 @@
                         ;D7 IN CTRL SET - ALTERNATE MODE
                         ;D7 "   "   CLR - SEQUENTIAL MODE
                         ;
-0d71 : a5ea             POLY	lda	OUTS	;# OD OUT CHANS
+0d71 : a5ea             POLY	lda	OUTS	;# OF OUT CHANS
 0d73 : 85eb             		sta	OUTT	;USE AS COUNTER
 0d75 : a210             		ldx	#$10	;PREPARE PNT/CNT
 0d77 : b5cf             POL0	lda	NTBL,x	;GET NOTE
@@ -192,8 +193,8 @@
 0d96 : 29bf             NEXT1	and	#$BF	;CLEAR TRIG (DG6)
 0d98 : 95cf             		sta	NTBL,x	;& RESTORE NOTE
 0d9a : 24e8             LP1		bit	CTRL	;ALTERNATE MODE?
-0d9c : 1001             		bpl	SKP1	;NO -DEC ONCE
-0d9e : ca               		dex			;YES-DEC TWICE
+0d9c : 1001             		bpl	SKP1	;NO -DEC.  ONCE
+0d9e : ca               		dex			;YES-DEC.  TWICE
 0d9f : ca               SKP1	dex			;POINT NEXT NOTE
 0da0 : d0d5             		bne	POL0	;SOME LEFT -LOOP
                         ;
@@ -223,7 +224,7 @@
                         ;
                         ;       TRGN
                         ;TRANSIENT GENERATOR PROGRAM
-                        
+                        ;
                         ;********************************
                         ;
                         ;
@@ -247,8 +248,8 @@
                         ;
                         ;   A/D/S/R DETERMINATION
                         ;ROUTINE PREPARES Y TO USE AS
-                        ;CONTROL WORD. GETS NOTE AND
-                        ;SHIFTS TRIG.  TO CARRY.  GETS
+                        ;CONTROL WORD, GETS NOTE AND
+                        ;SHIFTS TRIG. TO CARRY, GETS
                         ;CURRENT STATE (CS) PARAMETER.
                         ;IF NOTE TRIG.  NOT SET STATE IS
                         ;RELEASE.  IF CS PARA IS POSI-
@@ -259,14 +260,14 @@
 0dcb : b5cf             		lda	NTBL,x	;GET NOTE AND
 0dcd : 2a               		rol	a		;ROTATE TRIGGER
 0dce : 2a               		rol	a		;TO CARRY BIT
-0dcf : b5ce             		lda	PARM,x	;NO TRIG? -RLS
-0dd1 : 9019             		bcc	RELS	;CS>0? -DECAY/S
-0dd3 : 100b             		bpl	DS
+0dcf : b5ce             		lda	PARM,x	;GET CS PARA.
+0dd1 : 9019             		bcc	RELS	;NO TRIG? -RLS
+0dd3 : 100b             		bpl	DS		;CS>0? -DECAY/S
                         ;
                         ;   ATTACK ROUTINE
                         ;ADDS ATTACK PARAMETER TO CS PARA
                         ;AND IF GREATER THAN PEAK
-                        ;SUBSTITUTES $#F AND SETS CONTROL
+                        ;SUBSTITUTES $3F AND SETS CONTROL
                         ;WORD TO $40 (D6 SET - NO GLIDE).
                         ;NOTE THAT CS PARA WILL BE >0
                         ;WHEN NEXT CHECKED.
@@ -298,8 +299,8 @@
                         ;MAKE SURE THAT CURRENT STATE
                         ;GLIDE BIT IS SET (NOTE-MAKES
                         ;CS NEGATIVE). SUBTRACTS RELEASE
-                        ;PARA. FROM CURRENT STATE.  IF
-                        ;RESULT >0. MAKES CS & CWRD =80
+                        ;PARA. FROM CURRENT STATE. IF
+                        ;RESULT >0, MAKES CS & CWRD =80
                         ;
 0dec : 38               RELS	sec			;PREPARE
 0ded : 0980             		ora	#$80	;SET CS GLIDE
@@ -309,7 +310,7 @@
 0df5 : a980             		lda	#$80	;CS=80; CWRD=0
                         ;
                         ;   NEXT
-                        ;PLAVES CS PARA AND CWRD IN
+                        ;PLACES CS PARA AND CWRD IN
                         ;PROPER CONTROL CHANNEL OUTPUTS
                         ;DECREMENTS POINTER (TWICE) AND
                         ;IF NOT YET DONE LOOPS FOR MORE
@@ -320,7 +321,6 @@
 0dfc : ca               		dex			;AND AGAIN
 0dfd : d0ca             		bne	ADSR	;SOME LEFT -LOOP
 0dff : 60               RTN1	rts			;RETURN
-                        
 
 -------------------------------- Symbol Table --------------------------------
 
