@@ -3,7 +3,7 @@ A redraw of the PAiA 8700 music computer in Eagle CAD</br>
 Also includes:</br>
  - Python scripts for converting to and from tape dump format
 
- ###### TAPE PROGRAMS ######
+ ##### TAPE PROGRAMS #####
  - [**Echo**](Tape%20Programs/Echo/) listing/binary/tape dump
  - [**Orgasmatronic Glide (O-Glide)**](Tape%20Programs/O-Glide) listing/binary/tape dump
  - [**Poly-Split**](Tape%20Programs/Poly-Split/) listing/binary/tape dump
@@ -17,20 +17,25 @@ Also includes:</br>
  - [**Chameleon**](Tape%20Programs/Chameleon) listing/source/binary
  - Test programs source/binary/tape dump
 
-###### EPROM PROGRAMS ######
+##### EPROM PROGRAMS #####
  - [**PIEBUG**](EPROM%20Programs/PIEBUG) listing/binary/source
  - [**POT-SHOT**](EPROM%20Programs/POT-SHOT) listing/binary/source
  - [**MUS-1**](EPROM%20Programs/MUS-1) listing/source/binary
  
-###### EXTRAS ######
+##### EXTRAS #####
  - memory map
  
  - 600DPI scan on the Seque overlay
 
-###### NOTES ######
+##### NOTES #####
 .asm files can be assembled with [Frank's Cross Assembler (AS65)](http://www.kingswood-consulting.co.uk/assemblers/).
 
+##### BUGS #####
+###### DrumSys ######
 The original code listing for DrumSys contains an error in the code/data alginment. Two versions are included here, and they correct the error in opposite ways. One shifts the data, while the other shifts the code.
+
+###### Echo ######
+Echo has a relative branch that is out of range. At address $080 is "beq STAR". STAR, being at $000, is a byte too far away, and the branch instead points to $100. This has not been corrected. Adding a "jmp STAR" at address $100 is a possible fix to the issue.
 
 ![PCB](https://github.com/Skidlz/PAiA-8700/blob/master/PAiA%208700%20Redraw%20white%20PCB.png)
 
