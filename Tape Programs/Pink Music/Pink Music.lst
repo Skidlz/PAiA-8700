@@ -1,148 +1,165 @@
-					org	$0000
-				;
-0000 : 4C 03 00 	"L  "		jmp	PINK
-				;
-0003				PINK:
-0003 : A2 FF 		"  "		ldx	#$FF
-0005 : 9A 			" "			txs
-0006 : D8 			" "			cld
-0007 : 86 B1 		"  "		stx	KEY
-0009				KEYLOOP:
-0009 : A5 B1 		"  "		lda	KEY
-000B : 8D 20 08 	"   "		sta	DISP
-000E : E6 B1 		"  "		inc	KEY
-0010 : 45 B1 		"E "		eor	KEY
-0012 : 85 B2 		"  "		sta	DELTA
-0014 : A2 04 		"  "		ldx	#$04
-0016 : A0 00 		"  "		ldy	#$00
-0018				VOXLOOP:
-0018 : A9 00 		"  "		lda	#$00
-001A : 95 B4 		"  "		sta	NOTESTAT,x
-001C : A9 08 		"  "		lda	#$08
-001E : 85 B3 		"  "		sta	NUMBIT
-0020 : A5 B2 		"  "		lda	DELTA
-0022				RNDLOOP:
-0022 : 2A 			"*"			rol	a
-0023 : 48 			"H"			pha
-0024 : 90 0C 		"  "		bcc	ADDEM
-0026				PICK:
-0026 : 20 83 00 	"   "		jsr	L0083
-0029 : 29 07 		") "		and	#$07
-002B : C9 05 		"  "		cmp	#$05
-002D : B0 F7 		"  "		bcs	PICK
-002F : 99 00 01 	"   "		sta	RANDOM,y
-0032				ADDEM:
-0032 : B9 00 01 	"   "		lda	RANDOM,y
-0035 : 18 			" "			clc
-0036 : 75 B4 		"u "		adc	NOTESTAT,x
-0038 : 95 B4 		"  "		sta	NOTESTAT,x
-003A : C8 			" "			iny
-003B : 68 			"h"			pla
-003C : C6 B3 		"  "		dec	NUMBIT
-003E : D0 E2 		"  "		bne	RNDLOOP
-0040 : CA 			" "			dex
-0041 : D0 D5 		"  "		bne	VOXLOOP
-0043 : A9 C0 		"  "		lda	#$C0
-0045 : 20 5B 00 	" [ "		jsr	PLAY
-0048 : A9 00 		"  "		lda	#$00
-004A : 20 5B 00 	" [ "		jsr	PLAY
-004D : A2 04 		"  "		ldx	#$04
-004F				SCALOOP:
-004F : B4 B4 		"  "		ldy	NOTESTAT,x
-0051 : B9 BD 00 	"   "		lda	SCALE,y
-0054 : 95 B8 		"  "		sta	X00B8,x
-0056 : CA 			" "			dex
-0057 : D0 F6 		"  "		bne	SCALOOP
-0059 : F0 AE 		"  "		beq	KEYLOOP
-005B				PLAY:
-005B : 85 B4 		"  "		sta	NOTESTAT
-005D : A9 20 		"  "		lda	#$20
-005F : 85 DD 		"  "		sta	COUNTEMP
-0061				TEMPLOOP:
-0061 : A2 04 		"  "		ldx	#$04
-0063				UPDATE:
-0063 : B5 B8 		"  "		lda	X00B8,x
-0065 : B4 B4 		"  "		ldy	NOTESTAT,x
-0067 : D9 BD 00 	"   "		cmp	SCALE,y
-006A : D0 02 		"  "		bne	CHOP
-006C : 09 C0 		"  "		ora	#$C0
-006E				CHOP:
-006E : 05 B4 		"  "		ora	NOTESTAT
-0070 : 8D 00 09 	"   "		sta	DAC
-0073 : 9D FB 09 	"   "		sta	QUASH,x
-0076 : A0 25 		" %"		ldy	#$25
-0078				SETTLE:
-0078 : 88 			" "			dey
-0079 : D0 FD 		"  "		bne	SETTLE
-007B : CA 			" "			dex
-007C : D0 E5 		"  "		bne	UPDATE
-007E : C6 DD 		"  "		dec	COUNTEMP
-0080 : D0 DF 		"  "		bne	TEMPLOOP
-0082 : 60 			"`"			rts
-					;
-0083				L0083:
-0083 : 98 			" "			tya
-0084 : 48 			"H"			pha
-0085 : A4 AC 		"  "		ldy	BYT1
-0087 : A5 AD 		"  "		lda	BYT2
-0089 : 84 AD 		"  "		sty	BYT2
-008B : A4 AE 		"  "		ldy	BYT3
-008D : 85 AE 		"  "		sta	BYT3
-008F : A5 AF 		"  "		lda	BYT4
-0091 : 84 AF 		"  "		sty	BYT4
-0093 : 84 B0 		"  "		sty	SHREG
-0095 : 06 B0 		"  "		asl	SHREG
-0097 : 2A 			"*"			rol	a
-0098 : 85 AC 		"  "		sta	BYT1
-009A : 06 B0 		"  "		asl	SHREG
-009C : 2A 			"*"			rol	a
-009D : 06 B0 		"  "		asl	SHREG
-009F : 2A 			"*"			rol	a
-00A0 : 06 B0 		"  "		asl	SHREG
-00A2 : 2A 			"*"			rol	a
-00A3 : 45 AC 		"E "		eor	BYT1
-00A5 : 85 AC 		"  "		sta	BYT1
-00A7 : 68 			"h"			pla
-00A8 : A8 			" "			tay
-00A9 : A5 AC 		"  "		lda	BYT1
-00AB : 60 			"`"			rts
+                        ;Pink Music 
+                        ;A program for the PAIA 8700
+                        ;by Bob Yannes and Steve Witham
+                        
+00ac =                  BYT1		= $00AC
+00ad =                  BYT2		= $00AD
+00ae =                  BYT3		= $00AE
+00af =                  BYT4		= $00AF
+00b0 =                  SHREG		= $00B0
+00b1 =                  KEY			= $00B1
+00b2 =                  DELTA		= $00B2
+00b3 =                  NUMBIT		= $00B3
+00b4 =                  NOTESTAT	= $00B4
+00b5 =                  TOTAL		= $00B5 ;0B5-0B8
+00b9 =                  OLD			= $00B9 ;0B9-0BC
+00bd =                  SCALE		= $00BD ;0BD-0DC
+00dd =                  COUNTEMP	= $00DD
+0100 =                  RANDOM		= $0100 ;100-11F	
+                        
+0820 =                  DISP		= $0820
+0900 =                  DAC			= $0900
+09fc =                  QUASH		= $09FC
+                        
+                        ;Constants
+00c0 =                  ONBITS		= $C0
+0004 =                  LIMIT		= $04
+0004 =                  VOXNUM		= $04
+0020 =                  TEMPO		= $20
+                        
+0000 =                  	org $0000
+                        	
+0000 : 4c0300           BPOINT		jmp PINK 		;BREAKPOINT TRAP.
+0003 : a2ff             PINK		ldx #$FF		;INITIALIZE
+0005 : 9a               			txs				;STACK POINTER.
+0006 : d8               			cld 			;SET HEX MODE.
+0007 : 86b1             			stx KEY 		;INITIALIZE KEY.
+0009 : a5b1             KEYLOOP		lda KEY			;GET KEY...
+000b : 8d2008           			sta DISP		;AND SHOW IT.
+000e : e6b1             			inc KEY			;NEXT KEY,
+0010 : 45b1             			eor KEY			;GET PATTERN OF CHANGED KEY BITS...
+0012 : 85b2             			sta DELTA		;AND STORE IT.
+0014 : a204             			ldx #VOXNUM		;GET # OF VOICES,
+0016 : a000             			ldy #0			;INITIALIZE RND # COUNTER.
+0018 : a900             VOXLOOP		lda #0			;CLEAR THE
+001a : 95b4             			sta TOTAL-1,x	;RUNNING SUM FOR VOICE #X.
+001c : a908             			lda #8			;INITIALIZE BIT COUNTER...
+001e : 85b3             			sta NUMBIT		;AND STORE IT.
+0020 : a5b2             			lda DELTA		;GET CHANGED BIT PATTERN.
+0022 : 2a               RNDLOOP		rol a			;PREPARE TO TEST LEFTMOST BIT.
+0023 : 48               			pha				;SAVE SHIFTED PATTERN.
+0024 : 900c             			bcc ADDEM		;BIT DIDN'T CHANGE--KEEP OLD RND #.
+0026 : 208300           PICK		jsr RNDGEN		;BIT DID CHANGE--GET NEW RND #.
+0029 : 2907             			and #7			;TRUNCATE IT.
+002b : c905             			cmp #LIMIT+1	;# OUT OF RANGE?
+002d : b0f7             			bcs PICK		;YES, GO GET ANOTHER.
+002f : 990001           			sta RANDOM,y	;NO STORE IT IN LOCATION Y.
+0032 : b90001           ADDEM		lda RANDOM,y	;GET THE RANDOM # FROM LOCATION Y.
+0035 : 18               			clc				;PREPARE TO ADD.
+0036 : 75b4             			adc TOTAL-1,x	;ADD IT TO THE RUNNING SUM FOR VOICE 
+0038 : 95b4             			sta TOTAL-1,x	;STORE THE RUNNING SUM (PINK #) FOR V
+003a : c8               			iny				;NEXT RND  #.
+003b : 68               			pla				;GET SHIFTED PATTERN BACK.
+003c : c6b3             			dec NUMBIT		;NEXT BIT.
+003e : d0e2             			bne RNDLOOP		;DONE ALL BITS? IF NO, GO DO NEXT.
+0040 : ca               			dex				;NEXT VOICES.
+0041 : d0d5             			bne VOXLOOP		;DONE ALL VOICES? IF NO, GO DO NEXT.
+0043 : a9c0             			lda #ONBITS		;PLAY NOTES WITH
+0045 : 205b00           			jsr PLAY		;GATE & GLIDE FORCED ON.
+0048 : a900             			lda #0			;PLAY GATE & GLIDE ONLY
+004a : 205b00           			jsr PLAY		;ON SUSTAINED NOTES.
+004d : a204             			ldx #VOXNUM		;GET # OF VOICES.
+004f : b4b4             SCALOOP		ldy TOTAL-1,x	;GET PINK # FOR VOICE #X.
+0051 : b9bd00           			lda SCALE,y		;USE IT AS POINTER FOR SCALE TABLE.
+0054 : 95b8             			sta OLD-1,x		;STORE QUANTIZED NOTE FOR VOICE #X.
+0056 : ca               			dex				;NEXT VOICE.
+0057 : d0f6             			bne SCALOOP		;DONE ALL VOICES? IF NO, GO DO NEXT.
+0059 : f0ae             			beq KEYLOOP		;BRANCH ALWAYS.
+005b : 85b4             PLAY		sta NOTESTAT	;STORE GATE & GLIDE STATUS.
+005d : a920             			lda #TEMPO		;INITIALIZE
+005f : 85dd             			sta COUNTEMP	;TEMPO COUNTER.
+0061 : a204             TEMPLOOP	ldx #VOXNUM		;GET # OF VOICES.
+0063 : b5b8             UPDATE		lda OLD-1,x		;GET NOTE TO BE PLAYED.(OLD NOTE)
+0065 : b4b4             			ldy TOTAL-1,x	;GET NEW PINK # (POINTER) FOR VOICE #
+0067 : d9bd00           			cmp SCALE,y		;OLD NOTE = NEW NOTE?
+006a : d002             			bne CHOP		;NO, GO CLEAR.
+006c : 09c0             			ora #ONBITS		;YES FORCE GATE & GLIDE ON.
+006e : 05b4             CHOP		ora NOTESTAT	;CLEAR GATE & GLIDE UNLESS FORCED.
+0070 : 8d0009           			sta DAC			;LET DAC SETTLE...
+0073 : 9dfb09           			sta QUASH-1,x	;SEND IT TO QUASH CHANNEL #X...
+0076 : a025             			ldy #$25		;AND DELAY
+0078 : 88               SETTLE		dey				;UNTIL QUASH
+0079 : d0fd             			bne SETTLE 		;SETTLES.
+007b : ca               			dex				;NEXT VOICE.
+007c : d0e5             			bne	UPDATE		;DONE ALL VOICES? IF NO, GO DO NEXT.
+007e : c6dd             			dec COUNTEMP	;1 LESS TEMPO DELAY.
+0080 : d0df             			bne TEMPLOOP	;DONE TEMPO DELAY? IF NO, DO IT ALL AG
+0082 : 60               			rts				;RETURN
+                        		
+0083 : 98               RNDGEN		tya				;SAVE
+0084 : 48               			pha				;Y.
+0085 : a4ac             			ldy BYT1
+0087 : a5ad             			lda BYT2
+0089 : 84ad             			sty BYT2		;BYT2=OLD BYT1.
+008b : a4ae             			ldy BYT3
+008d : 85ae             			sta BYT3		;BYT3=OLD BYT2.
+008f : a5af             			lda BYT4		;ACCUM.=OLD BYT4.
+0091 : 84af             			sty BYT4		;BYT4=OLD BYT3.
+0093 : 84b0             			sty SHREG		;SHREG=OLD BYT3.
+0095 : 06b0             			asl SHREG		;SHIFTED ONCE
+0097 : 2a               			rol a			;INTO A.
+0098 : 85ac             			sta BYT1
+009a : 06b0             			asl SHREG		;TWICE.
+009c : 2a               			rol a
+009d : 06b0             			asl SHREG		;THRICE.
+009f : 2a               			rol a
+00a0 : 06b0             			asl SHREG		;FOURCE (FOURCE?).
+00a2 : 2a               			rol a
+00a3 : 45ac             			eor BYT1		;EXOR WITH ONCE-SHIFTED BITS.
+00a5 : 85ac             			sta BYT1		;BACK INTO BYT1 AS NEW RANDOM #.
+00a7 : 68               			pla				;GET Y
+00a8 : a8               			tay				;BACK.
+00a9 : a5ac             			lda BYT1		;LOAD NEW RANDOM NUMBER.
+00ab : 60               			rts				;RETURN.
+                        
 
-;--------------------------------------------------------------
-Symbol table
-============
+-------------------------------- Symbol Table --------------------------------
 
-Value	Type	Name
------	----	----
-0003	 04	PINK
-0009	 04	KEYLOOP
-0018	 04	VOXLOOP
-0022	 04	RNDLOOP
-0026	 04	PICK
-0032	 04	ADDEM
-004F	 04	SCALOOP
-005B	 04	PLAY
-0061	 04	TEMPLOOP
-0063	 04	UPDATE
-006E	 04	CHOP
-0078	 04	SETTLE
-0082	 04	DELTA
-0083	 04	L0083
-00AC	 04	BYT1
-00AD	 04	BYT2
-00AE	 04	BYT3
-00AF	 04	BYT4
-00B0	 04	SHREG
-00B1	 04	KEY
-00B3	 04	NUMBIT
-00B4	 04	NOTESTAT
-00B8	 04	X00B8	;OLD-1
-00BD	 04	SCALE
-00DD	 04	COUNTEMP
-0100	 04	RANDOM
-0820	 04	DISP
-0900	 04	DAC
-09FB	 04	QUASH
+              Symbol   Value        Decimal
 
-Number of symbols:			29
-
-;--------------------------------------------------------------
+               ADDEM : $0032             50
+              BPOINT : $0000              0
+                BYT1 : $00ac            172   *
+                BYT2 : $00ad            173   *
+                BYT3 : $00ae            174   *
+                BYT4 : $00af            175   *
+                CHOP : $006e            110
+            COUNTEMP : $00dd            221   *
+                 DAC : $0900           2304   *
+               DELTA : $00b2            178   *
+                DISP : $0820           2080   *
+                 KEY : $00b1            177   *
+             KEYLOOP : $0009              9
+               LIMIT : $0004              4   *
+            NOTESTAT : $00b4            180   *
+              NUMBIT : $00b3            179   *
+                 OLD : $00b9            185   *
+              ONBITS : $00c0            192   *
+                PICK : $0026             38
+                PINK : $0003              3
+                PLAY : $005b             91
+               QUASH : $09fc           2556   *
+              RANDOM : $0100            256   *
+              RNDGEN : $0083            131
+             RNDLOOP : $0022             34
+               SCALE : $00bd            189   *
+             SCALOOP : $004f             79
+              SETTLE : $0078            120
+               SHREG : $00b0            176   *
+            TEMPLOOP : $0061             97
+               TEMPO : $0020             32   *
+               TOTAL : $00b5            181   *
+              UPDATE : $0063             99
+             VOXLOOP : $0018             24
+              VOXNUM : $0004              4   *
+			  
