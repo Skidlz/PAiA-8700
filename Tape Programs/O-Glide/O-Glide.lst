@@ -1,0 +1,310 @@
+                        ;********************************
+                        ;*                              *
+                        ;*     ORGASMATRONIC GLIDE      *
+                        ;*                              *
+                        ;*  ARPEGIATION PROGRAMMER AND  *
+                        ;*           EDITOR             *
+                        ;*             BY               *
+                        ;*     JOHN S. SIMONTON, JR     *
+                        ;*                              *
+                        ;*(C) 1979 PAIA ELECTRONICS, INC*
+                        ;*                              *
+                        ;********************************
+                        ;
+1f00 =                  DECD	= $1F00	;PIEBUG DECODE
+1820 =                  DISP	= $1820	;LED DISPLAY
+1d21 =                  INIT	= $1D21 ;MUS-1 INIT
+1d2b =                  NOTE	= $1D2B	;MUS-1 NOTEOUT
+00e0 =                  KTBL	= $00E0 ;MUS-1 INPUT BUFFER
+00d0 =                  NTBL	= $00D0	;MUS-1 OUTPUT BUFFER 
+00c0 =                  TTBL	= $00C0	;MUS-1 TRANSPOSE BUFFER
+                        ;
+1000 =                  	org	$1000
+                        ;
+                        ;****** MONITOR SUBROUTINES ******
+                        ;THIS IS THE MAIN PROGRAM LOOP. START BY INITIALIZING 
+                        ;AND CALLING THE QUASH DRIVERS AND AGO KBD READING ROU
+                        ;CHECK TO SEE IF A COMMAND KEY HAS BEEN TOUCHED; AND I
+                        ;SUBROUTINE TO DETERMINE THE COMMAND AND EXECUTE IT. D
+                        ;POINTER FOR THE OUTPUT CHANNEL AND JUMP TO SUBROUTINE
+                        ;PROCESSING.  ON RETURN, LOOP.
+                        ;
+1000 : 20211d           		jsr	INIT		;MUS1 SYNTH INIT ROUTINE
+1003 : 202b1d           LOOP	jsr	NOTE		;QUASH DRIVERS AND READ AGO
+1006 : 20001f           		jsr	DECD		;PIEBUG READ COMMAND KBD
+1009 : b003             		bcs	HERE		;IF NO NEW KEY TOUCHED, SKIP NEXT
+100b : 200011           		jsr	CMND		;CALL COMMAND DECODER
+100e : a00f             HERE	ldy	#$0F		;POINTER TO ORG. GLIDE OUTPUT CHANNEL
+1010 : 201610           		jsr	STAR		;CALL ORG. GLIDE PROGRAM
+1013 : 4c0310           		jmp	LOOP		;LOOP TO CONTINUE
+                        ;
+                        ;FIRST THE TIMER IS TESTED AND IF NOT TIME FOR THE NEX
+                        ;PROCESSED THE STACCATO CONTROL BIT IS CHECKED AND IF 
+                        ;(STACCATO) BRANCH IS TAKEN TO DE-TRIGGER NOTE IN OUTP
+                        ;BUFFER. IF LEGATO MODE, EXIT IS IMMEDIATE
+                        ;
+1016 : 24e7             STAR	bit	KTBL+7		;ARE THERE ANY AGO KEYS DOWN?
+1018 : 501e             		bvc	SINT		;NO KEYS, BRANCH TO RE-INIT ARP. POINTER
+101a : c672             		dec	<TIMR		;OTHERWISE, DECREMENT THE TIMER
+101c : 3005             		bmi	ADVA		;IF EVENT TIME, BRANCH
+101e : 2474             		bit	<SCTL		;OTHERWISE CHECK FOR STACCATO AND IF TRUE
+1020 : 5046             		bvc	CLRN		;BRANCH TO CLEAR TRIGGER FROM OUTPUT NOTE
+1022 : 60               		rts				;OTHERWISE, RETURN WITHOUT CLEARING TRIGGER
+                        ;
+                        ;IF IT'S TIME FOR A NOTE TO BE PROCESSED, THE POINTER 
+                        ;BUFFER IS ADVANCED (EITHER FORWARD OR BACKWARD) AND I
+                        ;MORE BUFFER LEFT WE DROP THROUGH TO ADVANCE THE POINT
+                        ;BUFFER TO GET THE NEXT SET OF GLIDE PARAMETERS.  IF W
+                        ;TO THE END OF THE IN BUFFER, WE BRANCH OUT TO RESET T
+                        ;
+1023 : a673             ADVA	ldx	<PNTR		;GET POINTER TO INPUT BUFFER
+1025 : 2474             		bit	<SCTL		;CURRENTLY flRPEGGIATING UP?
+1027 : 1005             		bpl	DOWN		;NO, BRANCH TO DO DOWN
+1029 : ca               		dex				;TO GO UP-SCALE, DECREMENT POINTER
+102a : 3007             		bmi	SADV		;IF POINTER NOW <0, BRANCH
+102c : 1026             		bpl	STIM		;STILL IN RANGE. BRANCH ALWAYS
+102e : e8               DOWN	inx				;DOWN-SCALE. INCREMENT POINTER
+102f : e008             		cpx	#$08		;OUT OF RANGE?
+1031 : d021             		bne	STIM		;STILL IN RANGE. BRANCH
+                        ;
+                        ;IF WE GET HERE (SADV) IT MEANS THAT WE HAVE PLAYED AL
+                        ;THAT WERE DOWN AND HAVE REACHED THE END OF THE INPUT 
+                        ;NOW IT'S TIME TO GET THE NEXT ENTRY FROM THE CONTROL 
+                        ;WE TEST TO SEE IF WE ARE AT THE END OF THE SEQUENCE A
+                        ;POINTER IS RE-INITIALIZED. OTHERWISE, THE COMMAND IS 
+                        ;ZERO IT MERNS THAT IT IS THE END OF THE SEQUENCE AND 
+                        ;IS ALSO REINITIALIZED
+                        ;
+1033 : a676             SADV	ldx	<SPNT		;GET CONTROL SEQUENCE POINTER
+1035 : ca               		dex				;POINT TO NEXT SEQUENCE ENTRY
+1036 : 1002             		bpl	GSEQ		;IF NOT TO END. BRANCH
+1038 : a207             SINT	ldx	#$07		;RE-INIT SEQUENCE POINTER
+103a : 8676             GSEQ	stx	<SPNT		;SAVE SEQUENCE POINTER
+103c : b577             		lda	<CSEQ,x		;GET COMMAND FROM CONTROL SEO.
+103e : f0f8             		beq	SINT		;ZERO ENDS THE SEQUENCE. BRANCH
+                        ;
+                        ;A NEW COMMAND FROM THE SEQUENCE. FIRST USE IT TO SET 
+                        ;THE GLIDE CONTROL BIT FROM THE TRANSPOSE BUFFER. IN T
+                        ;THE NEW COMMAND IS SHIFTED ONE BIT TO THE LEFT; WHICH
+                        ;THE TEMPO VARIABLE BY 2 AND SHIFTS THE UP/DOWN AND LE
+                        ;INTO MORE EASILY TESTED POSITIONS.
+                        ;
+1040 : 8574             GLID	sta	<SCTL		;SAVE SEQUENCE ENTRY IN CONTROL BUFFER
+1042 : b9c000           		lda	<TTBL,y		;GET THE CURRENT TRANSOSE BUFFER ENTRY
+1045 : 2a               		rol	a			;ROTATE GLIDE BIT TO CARRY
+1046 : 0674             		asl	<SCTL		;ROTATE CONTROL WORD GLIDE TO CARRY
+1048 : 6a               		ror	a			;ROTATE CARRY TO GLIDE BIT
+1049 : 99c000           		sta	<TTBL,y		;THEN RETURN TO TRANSPOSE BUFFER
+                        ;
+                        ;THIS LITTLE ROUTINE DETERMINES WHETHER SCAN IS UP OR 
+                        ;INITIALIZES THE POINTER TO THE PROPER VALUE
+                        ;SKVP-SET KEY POINTER
+                        ;
+104c : a207             SKYP	ldx	#$07		;PREPARE FOR ARP. UP INITIAL POINTER
+104e : 2474             		bit	<SCTL		;CHECK COMMAND BUFFER - ARP. UP?
+1050 : 3002             		bmi	STIM		;YES. BRANCH
+1052 : a200             		ldx	#$00		;NO, ARP. DOWN INTIAL POINTER
+                        ;
+                        ;NOW THE ROUTINE TO RESET THE TIMER. SINCE ALL KEY POI
+                        ;WIND UP AT THIS POINT. THE FIRST INSTRUCTION IS TO SA
+                        ;THE TIMER VALUE IS EXTRACTED FROM THE CONTROL WORD SC
+                        ;STIM-SET TIMER
+                        ;
+1054 : 8673             STIM	stx	<PNTR		;SAVE INPUT BUFFER POINTER
+1056 : a91f             		lda	#$1F		;PREPARE MASK AND
+1058 : 2574             		and	<SCTL		;GET THE TIMER (TEMPO) VALUE
+105a : 8572             		sta	<TIMR		;AND SAVE IN THE TIMER VARIABLE
+                        ;
+                        ;NOW WE GET THE CURRENT NOTE OF INTEREST FROM THE INPU
+                        ;AND IF THE KEY IS NOT DOWN, A CHECK IS MADE TO SEE IF
+                        ;ARE DOWN. IF NONE ARE, THE TIMER IS TRICKED INTO TIMI
+                        ;NEXT TIME THROUGH WHICH WILL THEN RESULT IN THE WHOLE
+                        ;SEQUENCE FOLLOWING SYSTEM BEING RESET
+                        ;
+105c : b5e0             		lda	<KTBL,x		;GET THE CURRENT KEY FROM INPUT BUFFER
+105e : d00d             		bne	BOUT		;IF ZERO, NO KEY - BRANCH
+1060 : 24e7             		bit	<KTBL+7		;ARE ANY KEYS DOWN?
+1062 : 70bf             		bvs	ADVA		;YES, BRANCH
+1064 : a901             		lda	#$01		;NO, PREPARE TO MAKE TIMER RUN OUT
+1066 : 8572             		sta	<TIMR		;NEXT PASS THROUGH
+1068 : b9d000           CLRN	lda	<NTBL,y		;GET THE CURRENT OUTPUT NOTE
+106b : 29bf             		and	#$BF		;CLEAR THE TRIGGER FLAG
+106d : 99d000           BOUT	sta	<NTBL,y		;AND REPLACE IN OUTPUT BUFFER
+1070 : 60               		rts				;RETURN
+                        ;NOW SOME TEMPORARY LOCATIONS AND THEIR INITIAL STATES
+                        ;
+1071 : 00               TEMP	db	$00
+1072 : 01               TIMR	db	$01
+1073 : 08               PNTR	db	$08
+1074 : c4               SCTL	db	$C4
+1075 : 07               PPNT	db	$07
+1076 : 07               SPNT	db	$07
+1077 : 000000000000e404 CSEQ	db	$00, $00, $00, $00, $00, $00, $E4, $04
+10e8 =                  	org $10E8
+10e8 :                  STUP
+10e8 : 40               CTRL	db	$40			;MUS1
+10e9 : 20               ODLY	db	$20			;MUS1
+10ea : 01               OUTS	db	$01			;MUS1
+1100 =                  	org $1100
+                        ;THIS IS THE COMMAND KEY DECODING AND SEQUENCE EDITING
+                        ;# OF COMMAND KEY IS IN Y REGISTER
+                        ;
+1100 : a675             CMND	ldx	<lo PPNT	;GET THE EDITORS POINTER TO COMMAND 
+1102 : b577             		lda	<lo CSEQ,x	;GET THE COMMAND POINTED TO (IN ACC, 
+1104 : c010             		cpy	#$10		;IS KEY 10 - CLEAR COMMAND SEQUENCE
+1106 : f00f             		beq	CLR			;YES, BRANCH
+1108 : 901f             		bcc	CNXT		;NO, IT'S LESS THAN "F", BRANCH
+                        ;
+                        ;THE KEY IS 11 OR GREfiTER.  EXCHANGE THE COMMRND POIN
+                        ;TEMPORARY STORAGE LOCATION TEMP. NOTE THAT THIS CAN B
+                        ;EXCHANGE TWO OR MORE COMMANDS IN THE SEQUENCE
+                        ;
+110a : a471             		ldy	<lo TEMP	;GET THE COMMAND IN THE TEMPORARY BUFFE
+110c : d004             		bne	ELP0		;IS THE COMMAND FROM TEMP A 0? NO, BRANCH
+110e : e007             		cpx	#$07		;POINTING TO FIRST COMMAND?
+1110 : f02b             		beq	RTN			;YES, BRANCH. DON'T WRITE ZERO AS FIRST CO
+1112 : 9477             ELP0	sty	<lo CSEQ,x	;PUT COMMRND IN THE SEQUENCE SLOT 
+1114 : 8571             		sta	<lo TEMP	;AND THEN SAVE OLD COMMAND IN THE TEMP 
+1116 : 60               		rts				;THEN RETURN
+                        ;
+                        ;THE KEY IS "10", CLEAR THE COMMAND SEQUENCE. NOTE THA
+                        ;ENTRY IN THE SEQUENCE IS NOT CHANGED.
+                        ;
+1117 : a207             CLR		ldx	#$07		;SET POINT TO FIRST SEQUENCE ENTRY
+1119 : 8675             		stx	<lo PPNT	;AND SAVE IT
+111b : ca               		dex				;DECREMENT THE POINTER(SKIP FIRST ENTRY)
+111c : a900             		lda	#$00		;AND GET READY
+111e : 8d2018           		sta	DISP		;ZERO THE DISPLAYED EDITOR POINTER
+1121 : 8571             		sta	<lo TEMP	;AND THE EXCHANGE REGISTER
+1123 : 9577             CLLP	sta	<lo CSEQ,x	;ZERO THE SEQUENCE ENTRY
+1125 : ca               		dex				;AND POINT TO NEXT ENTRY
+1126 : 10fb             		bpl	CLLP		;SOME LEFT, LOOP
+1128 : 60               		rts				;RETURN
+                        ;
+                        ;NOW WE TEST FOR "E" OR "F", BACKSPACE OR ADVANCE THE 
+                        ;EDITOR'S POINTER TO THE COMMAND SEQUENCE. NOTE THAT I
+                        ;POINTER PRODUCES A BACKSPACE.
+                        ;
+1129 : c00e             CNXT	cpy	#$0E		;IS KEY "E" OR "F"?
+112b : 9018             		bcc	STMP		;NEITHER AND LESS THAN "E", BRANCH FOR NEX
+112d : f00f             		beq	BACK		;IT'S "E", BRANCH TO BACKSPACE
+112f : ca               		dex				;IT'S "F", ADVANCE THE POINTER
+1130 : 300b             		bmi	RTN			;AND IF OUT OF RANGE, BRANCH TO LEAVE IMME
+1132 : 8675             COUT	stx	<lo PPNT	;SAVE NEW POINTER
+                        ;
+                        ;IN THIS SECTION THE POINTER (WiCH IS 07 FOR THE START
+                        ;AND 00 AT THE END) IS CONVERTED TO AN INCREASING NUMB
+                        ;DISPLAY PURPOSES.
+                        ;
+1134 : 8a               		txa				;POINTER TO THE ACCUM. FOR A CALCULATION
+1135 : 38               		sec				;PREPARE FOR A SUBTRACTION
+1136 : e908             		sbc	#$08		;TWO'SD COMPLEMENT
+1138 : 49ff             		eor	#$FF		;COMPLEMENT OF THAT
+113a : 8d2018           		sta	DISP		;SHOW VALUE IN THE DISPLAYS
+113d : 60               RTN	rts					;RETURN
+                        ;
+                        ;BACKSPRCE POINTER AND MAKE SURE IT IS STILL IN RANGE,
+                        ;
+113e : e8               BACK	inx				;BACKSPACE THE POINTER
+113f : e008             		cpx	#$08		;OUT OF RANGE?
+1141 : f0fa             		beq	RTN			;YES, BRANCH TO LEAVE IMMEDIATELY
+1143 : d0ed             		bne	COUT		;NO, BRANCH ALWAYS TO SAVE POINTER, ETC.
+                        ;
+                        ;IF THE KEY IS ONE OF THE TEMPOS, ADD 1 (0 TEMPO NOT A
+                        ;FIT IT INTO THE CONTROL SEQUENCE ENTRY POINTED TO
+                        ;
+1145 : c008             STMP	cpy	#$08		;TEMPO KEY?
+1147 : b00a             		bcs	SGLD		;NO, BRANCH
+1149 : c8               		iny				;YES, ADD 1 TO KEY #
+114a : 29f0             		and	#$F0		;MASK PRESENT TEMPO IN COMMAND TO ERO
+114c : 9577             		sta	<lo CSEQ,x	;SAVE CONTROL FLAGS IN CSEQ TEMPORARI
+114e : 98               		tya				;BRING NEW TEMPO TO ACC
+114f : 1577             		ora	<lo CSEQ,x	;COMBINE WITH OLD CONTROL FLAGS
+1151 : d01a             		bne	SAVA		;BRANCH ALWAYS
+                        ;
+                        ;NOW A SERIES OF TESTS WHICH RESULT IN THE CARRY BIT B
+                        ;CLEAR. A SERIES OF ROTATES BRINGS THE CARRY TO THE AP
+                        ;IN THE COMMAND WORD
+                        ;
+1153 : 2a               SGLD	rol	a			;ROTATE THE GLIDE COMMAND BIT TO CARRY
+1154 : 08               		php				;AND SAVE THE CARRY ON THE STACK
+1155 : c009             		cpy	#$09		;IS KEY GLIDE ON OR OFF?
+1157 : f012             		beq	ROT1		;9-GLIDE ON, BRANCH
+1159 : 9010             		bcc	ROT1		;8-GLIDE OFF, BRANCH
+                        ;
+                        ;THE KEY HAS NEITHER GLIDE ON NOR OFF, TEST FOR DIRECT
+                        ;
+115b : 28               SMOD	plp				;GET THE OLD GLIDE BIT FROM THE STACK
+115c : 2a               		rol	a			;ROTATE DIRECTION BIT TO CARRY
+115d : 08               		php				;SAVE IT ON STACK
+115e : c00b             		cpy	#$0B		;IS KEV UP OR DOWN?
+1160 : f008             		beq	ROT2		;B-UP, BRANCH
+1162 : 9006             		bcc	ROT2		;A-DOWN, BRANCH
+                        ;
+                        ;THE KEV HAS TO BE C OR D (STACCATO OR LEGATO)
+                        ;
+1164 : 28               SDIR	plp				;GET THE OLD DIRECTION BIT
+1165 : 2a               		rol	a			;STAC/LEGA BIT TO CARRY
+1166 : 08               		php				;SAVE IT
+1167 : c00d             		cpy	#$0D		;CARRY SETS IF KEY IS "D" - LEGATO
+1169 : 6a               		ror	a			;ROTATE COMMAND HORD BACK INTO PLACE
+116a : 6a               ROT2	ror	a
+116b : 6a               ROT1	ror	a
+116c : 28               		plp				;WASTE A STACK SLOT TO COMPENSATE
+116d : 9577             SAVA	sta	<lo CSEQ,x	;SAVE THE COMMAND HORD IN THE SEQU
+116f : 60               		rts				;RETURN
+                        ;
+                        	end
+                        
+
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                ADVA : $1023           4131
+                BACK : $113e           4414
+                BOUT : $106d           4205
+                CLLP : $1123           4387
+                 CLR : $1117           4375
+                CLRN : $1068           4200
+                CMND : $1100           4352
+                CNXT : $1129           4393
+                COUT : $1132           4402
+                CSEQ : $1077           4215
+                CTRL : $10e8           4328
+                DECD : $1f00           7936   *
+                DISP : $1820           6176   *
+                DOWN : $102e           4142
+                ELP0 : $1112           4370
+                GLID : $1040           4160
+                GSEQ : $103a           4154
+                HERE : $100e           4110
+                INIT : $1d21           7457   *
+                KTBL : $00e0            224   *
+                LOOP : $1003           4099
+                NOTE : $1d2b           7467   *
+                NTBL : $00d0            208   *
+                ODLY : $10e9           4329
+                OUTS : $10ea           4330
+                PNTR : $1073           4211
+                PPNT : $1075           4213
+                ROT1 : $116b           4459
+                ROT2 : $116a           4458
+                 RTN : $113d           4413
+                SADV : $1033           4147
+                SAVA : $116d           4461
+                SCTL : $1074           4212
+                SDIR : $1164           4452
+                SGLD : $1153           4435
+                SINT : $1038           4152
+                SKYP : $104c           4172
+                SMOD : $115b           4443
+                SPNT : $1076           4214
+                STAR : $1016           4118
+                STIM : $1054           4180
+                STMP : $1145           4421
+                STUP : $10e8           4328
+                TEMP : $1071           4209
+                TIMR : $1072           4210
+                TTBL : $00c0            192   *
+				

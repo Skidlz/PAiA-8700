@@ -1,339 +1,429 @@
-					org	$1000
-				;
-1000 : 20 21 1D 	" ! "		jsr	L1D21
-1003				L1003:
-1003 : 20 2B 1D 	" + "		jsr	L1D2B
-1006 : 20 00 1F 	"   "		jsr	L1F00
-1009 : B0 03 		"  "		bcs	L100E
-100B : 20 00 11 	"   "		jsr	L1100
-100E				L100E:
-100E : A0 0F 		"  "		ldy	#$0F
-1010 : 20 16 10 	"   "		jsr	L1016
-1013 : 4C 03 10 	"L  "		jmp	L1003
-				;
-1016				L1016:
-1016 : 24 E7 		"$ "		bit	X00E7
-1018 : 50 1E 		"P "		bvc	L1038
-101A : C6 72 		" r"		dec	X0072
-101C : 30 05 		"0 "		bmi	L1023
-101E : 24 74 		"$t"		bit	X0074
-1020 : 50 46 		"PF"		bvc	L1068
-1022 : 60 		"`"		rts
-				;
-1023				L1023:
-1023 : A6 73 		" s"		ldx	X0073
-1025 : 24 74 		"$t"		bit	X0074
-1027 : 10 05 		"  "		bpl	L102E
-1029 : CA 		" "		dex
-102A : 30 07 		"0 "		bmi	L1033
-102C : 10 26 		" &"		bpl	L1054
-102E				L102E:
-102E : E8 		" "		inx
-102F : E0 08 		"  "		cpx	#$08
-1031 : D0 21 		" !"		bne	L1054
-1033				L1033:
-1033 : A6 76 		" v"		ldx	X0076
-1035 : CA 		" "		dex
-1036 : 10 02 		"  "		bpl	L103A
-1038				L1038:
-1038 : A2 07 		"  "		ldx	#$07
-103A				L103A:
-103A : 86 76 		" v"		stx	X0076
-103C : B5 77 		" w"		lda	X0077,x
-103E : F0 F8 		"  "		beq	L1038
-1040 : 85 74 		" t"		sta	X0074
-1042 : B9 C0 00 	"   "		lda	X00C0,y
-1045 : 2A 		"*"		rol	a
-1046 : 06 74 		" t"		asl	X0074
-1048 : 6A 		"j"		ror	a
-1049 : 99 C0 00 	"   "		sta	X00C0,y
-104C : A2 07 		"  "		ldx	#$07
-104E : 24 74 		"$t"		bit	X0074
-1050 : 30 02 		"0 "		bmi	L1054
-1052 : A2 00 		"  "		ldx	#$00
-1054				L1054:
-1054 : 86 73 		" s"		stx	X0073
-1056 : A9 1F 		"  "		lda	#$1F
-1058 : 25 74 		"%t"		and	X0074
-105A : 85 72 		" r"		sta	X0072
-105C : B5 E0 		"  "		lda	X00E0,x
-105E : D0 0D 		"  "		bne	L106D
-1060 : 24 E7 		"$ "		bit	X00E7
-1062 : 70 BF 		"p "		bvs	L1023
-1064 : A9 01 		"  "		lda	#$01
-1066 : 85 72 		" r"		sta	X0072
-1068				L1068:
-1068 : B9 D0 00 	"   "		lda	X00D0,y
-106B : 29 BF 		") "		and	#$BF
-106D				L106D:
-106D : 99 D0 00 	"   "		sta	X00D0,y
-1070 : 60 		"`"		rts
-				;
-1071 : 00 		" "		brk
-1072 : 01 08 		"  "		ora	(X0008,x)
-1074 : C4 07 		"  "		cpy	X0007
-				;
-1076 : 07 		" "		db	$07
-				;
-1077 : 00 		" "		brk
-1078 : 00 		" "		brk
-1079 : 00 		" "		brk
-107A : 00 		" "		brk
-107B : 00 		" "		brk
-107C : 00 		" "		brk
-107D : E4 04 		"  "		cpx	X0004
-107F : DD D0 DF 	"   "		cmp	XDFD0,x
-1082 : 60 		"`"		rts
-				;
-1083 : 98 		" "		tya
-1084 : 48 		"H"		pha
-1085 : A4 AC 		"  "		ldy	X00AC
-1087 : A5 AD 		"  "		lda	X00AD
-1089 : 84 AD 		"  "		sty	X00AD
-108B : A4 AE 		"  "		ldy	X00AE
-108D : 85 AE 		"  "		sta	X00AE
-108F : A5 AF 		"  "		lda	X00AF
-1091 : 84 AF 		"  "		sty	X00AF
-1093 : 84 B0 		"  "		sty	X00B0
-1095 : 06 B0 		"  "		asl	X00B0
-1097 : 2A 		"*"		rol	a
-1098 : 81 AC 		"  "		sta	(X00AC,x)
-109A : 06 B0 		"  "		asl	X00B0
-109C : 2A 		"*"		rol	a
-109D : 06 B0 		"  "		asl	X00B0
-109F : 2A 		"*"		rol	a
-10A0 : 06 B0 		"  "		asl	X00B0
-10A2 : 2A 		"*"		rol	a
-10A3 : 45 AC 		"E "		eor	X00AC
-10A5 : 85 AC 		"  "		sta	X00AC
-10A7 : 68 		"h"		pla
-10A8 : A8 		" "		tay
-10A9 : A5 80 		"  "		lda	X0080
-				;
-10AB : 80 		" "		db	$80
-10AC : 80 		" "		db	$80
-10AD : 80 		" "		db	$80
-10AE : 80 		" "		db	$80
-10AF : 80 		" "		db	$80
-10B0 : 80 		" "		db	$80
-10B1 : 80 		" "		db	$80
-10B2 : 80 		" "		db	$80
-10B3 : 80 		" "		db	$80
-10B4 : 80 		" "		db	$80
-10B5 : 80 		" "		db	$80
-10B6 : 80 		" "		db	$80
-10B7 : 80 		" "		db	$80
-10B8 : 80 		" "		db	$80
-				;
-10B9 : A0 F0 		"  "		ldy	#$F0
-10BB : ED C9 04 	"   "		sbc	X04C9
-10BE : 06 27 		" '"		asl	X0027
-10C0 : 00 		" "		brk
-10C1 : 00 		" "		brk
-10C2 : 00 		" "		brk
-10C3 : 00 		" "		brk
-10C4 : 00 		" "		brk
-10C5 : 00 		" "		brk
-10C6 : 00 		" "		brk
-10C7 : 00 		" "		brk
-10C8 : 00 		" "		brk
-10C9 : 00 		" "		brk
-10CA : 00 		" "		brk
-10CB : 00 		" "		brk
-10CC : 00 		" "		brk
-10CD : 00 		" "		brk
-10CE : 00 		" "		brk
-10CF : 00 		" "		brk
-10D0 : 00 		" "		brk
-10D1 : 00 		" "		brk
-10D2 : 00 		" "		brk
-10D3 : 00 		" "		brk
-10D4 : 00 		" "		brk
-10D5 : 00 		" "		brk
-10D6 : 00 		" "		brk
-10D7 : 00 		" "		brk
-10D8 : 00 		" "		brk
-10D9 : 00 		" "		brk
-10DA : 00 		" "		brk
-10DB : 00 		" "		brk
-10DC : 00 		" "		brk
-10DD : 00 		" "		brk
-10DE : 00 		" "		brk
-10DF : 20 00 00 	"   "		jsr	L0000
-10E2 : 00 		" "		brk
-10E3 : 00 		" "		brk
-10E4 : 00 		" "		brk
-10E5 : 00 		" "		brk
-10E6 : 00 		" "		brk
-10E7 : 00 		" "		brk
-10E8 : 40 		"@"		rti
-				;
-10E9 : 20 01 DC 	"   "		jsr	LDC01
-				;
-10EC : 34 		"4"		db	$34
-10ED : FF 		" "		db	$FF
-10EE : 93 		" "		db	$93
-10EF : FF 		" "		db	$FF
-				;
-10F0 : DD 03 6F 	"  o"		cmp	X6F03,x
-10F3 : 01 00 		"  "		ora	(L0000,x)
-10F5 : 00 		" "		brk
-10F6 : F6 00 		"  "		inc	L0000,x
-10F8 : 16 00 		"  "		asl	L0000,x
-				;
-10FA : 3A 		":"		db	$3A
-10FB : F2 		" "		db	$F2
-				;
-10FC : 36 75 		"6u"		rol	X0075,x
-				;
-10FE : FF 		" "		db	$FF
-				;
-10FF : 00 		" "		brk
-1100				L1100:
-1100 : A6 75 		" u"		ldx	X0075
-1102 : B5 77 		" w"		lda	X0077,x
-1104 : C0 10 		"  "		cpy	#$10
-1106 : F0 0F 		"  "		beq	L1117
-1108 : 90 1F 		"  "		bcc	L1129
-110A : A4 71 		" q"		ldy	X0071
-110C : D0 04 		"  "		bne	L1112
-110E : E0 07 		"  "		cpx	#$07
-1110 : F0 2B 		" +"		beq	L113D
-1112				L1112:
-1112 : 94 77 		" w"		sty	X0077,x
-1114 : 85 71 		" q"		sta	X0071
-1116 : 60 		"`"		rts
-				;
-1117				L1117:
-1117 : A2 07 		"  "		ldx	#$07
-1119 : 86 75 		" u"		stx	X0075
-111B : CA 		" "		dex
-111C : A9 00 		"  "		lda	#$00
-111E : 8D 20 18 	"   "		sta	X1820
-1121 : 85 71 		" q"		sta	X0071
-1123				L1123:
-1123 : 95 77 		" w"		sta	X0077,x
-1125 : CA 		" "		dex
-1126 : 10 FB 		"  "		bpl	L1123
-1128 : 60 		"`"		rts
-				;
-1129				L1129:
-1129 : C0 0E 		"  "		cpy	#$0E
-112B : 90 18 		"  "		bcc	L1145
-112D : F0 0F 		"  "		beq	L113E
-112F : CA 		" "		dex
-1130 : 30 0B 		"0 "		bmi	L113D
-1132				L1132:
-1132 : 86 75 		" u"		stx	X0075
-1134 : 8A 		" "		txa
-1135 : 38 		"8"		sec
-1136 : E9 08 		"  "		sbc	#$08
-1138 : 49 FF 		"I "		eor	#$FF
-113A : 8D 20 18 	"   "		sta	X1820
-113D				L113D:
-113D : 60 		"`"		rts
-				;
-113E				L113E:
-113E : E8 		" "		inx
-113F : E0 08 		"  "		cpx	#$08
-1141 : F0 FA 		"  "		beq	L113D
-1143 : D0 ED 		"  "		bne	L1132
-1145				L1145:
-1145 : C0 08 		"  "		cpy	#$08
-1147 : B0 0A 		"  "		bcs	L1153
-1149 : C8 		" "		iny
-114A : 29 F0 		") "		and	#$F0
-114C : 95 77 		" w"		sta	X0077,x
-114E : 98 		" "		tya
-114F : 15 77 		" w"		ora	X0077,x
-1151 : D0 1A 		"  "		bne	L116D
-1153				L1153:
-1153 : 2A 		"*"		rol	a
-1154 : 08 		" "		php
-1155 : C0 09 		"  "		cpy	#$09
-1157 : F0 12 		"  "		beq	L116B
-1159 : 90 10 		"  "		bcc	L116B
-115B : 28 		"("		plp
-115C : 2A 		"*"		rol	a
-115D : 08 		" "		php
-115E : C0 0B 		"  "		cpy	#$0B
-1160 : F0 08 		"  "		beq	L116A
-1162 : 90 06 		"  "		bcc	L116A
-1164 : 28 		"("		plp
-1165 : 2A 		"*"		rol	a
-1166 : 08 		" "		php
-1167 : C0 0D 		"  "		cpy	#$0D
-1169 : 6A 		"j"		ror	a
-116A				L116A:
-116A : 6A 		"j"		ror	a
-116B				L116B:
-116B : 6A 		"j"		ror	a
-116C : 28 		"("		plp
-116D				L116D:
-116D : 95 77 		" w"		sta	X0077,x
-116F : 60 		"`"		rts
+                        ;********************************
+                        ;*                              *
+                        ;*     ORGASMATRONIC GLIDE      *
+                        ;*                              *
+                        ;*  ARPEGIATION PROGRAMMER AND  *
+                        ;*           EDITOR             *
+                        ;*             BY               *
+                        ;*     JOHN S. SIMONTON, JR     *
+                        ;*                              *
+                        ;*(C) 1979 PAIA ELECTRONICS, INC*
+                        ;*                              *
+                        ;********************************
+                        ;
+1f00 =                  DECD	= $1F00	;PIEBUG DECODE
+1820 =                  DISP	= $1820	;LED DISPLAY
+1d21 =                  INIT	= $1D21 ;MUS-1 INIT
+1d2b =                  NOTE	= $1D2B	;MUS-1 NOTEOUT
+00e0 =                  KTBL	= $00E0 ;MUS-1 INPUT BUFFER
+00d0 =                  NTBL	= $00D0	;MUS-1 OUTPUT BUFFER 
+00c0 =                  TTBL	= $00C0	;MUS-1 TRANSPOSE BUFFER
+                        ;
+1000 =                  	org	$1000
+                        ;
+                        ;****** MONITOR SUBROUTINES ******
+                        ;THIS IS THE MAIN PROGRAM LOOP. START BY INITIALIZING 
+                        ;AND CALLING THE QUASH DRIVERS AND AGO KBD READING ROU
+                        ;CHECK TO SEE IF A COMMAND KEY HAS BEEN TOUCHED; AND I
+                        ;SUBROUTINE TO DETERMINE THE COMMAND AND EXECUTE IT. D
+                        ;POINTER FOR THE OUTPUT CHANNEL AND JUMP TO SUBROUTINE
+                        ;PROCESSING.  ON RETURN, LOOP.
+                        ;
+1000 : 20211d           		jsr	INIT		;MUS1 SYNTH INIT ROUTINE
+1003 : 202b1d           LOOP	jsr	NOTE		;QUASH DRIVERS AND READ AGO
+1006 : 20001f           		jsr	DECD		;PIEBUG READ COMMAND KBD
+1009 : b003             		bcs	HERE		;IF NO NEW KEY TOUCHED, SKIP NEXT
+100b : 200011           		jsr	CMND		;CALL COMMAND DECODER
+100e : a00f             HERE	ldy	#$0F		;POINTER TO ORG. GLIDE OUTPUT CHANNEL
+1010 : 201610           		jsr	STAR		;CALL ORG. GLIDE PROGRAM
+1013 : 4c0310           		jmp	LOOP		;LOOP TO CONTINUE
+                        ;
+                        ;FIRST THE TIMER IS TESTED AND IF NOT TIME FOR THE NEX
+                        ;PROCESSED THE STACCATO CONTROL BIT IS CHECKED AND IF 
+                        ;(STACCATO) BRANCH IS TAKEN TO DE-TRIGGER NOTE IN OUTP
+                        ;BUFFER. IF LEGATO MODE, EXIT IS IMMEDIATE
+                        ;
+1016 : 24e7             STAR	bit	KTBL+7		;ARE THERE ANY AGO KEYS DOWN?
+1018 : 501e             		bvc	SINT		;NO KEYS, BRANCH TO RE-INIT ARP. POINTER
+101a : c672             		dec	<TIMR		;OTHERWISE, DECREMENT THE TIMER
+101c : 3005             		bmi	ADVA		;IF EVENT TIME, BRANCH
+101e : 2474             		bit	<SCTL		;OTHERWISE CHECK FOR STACCATO AND IF TRUE
+1020 : 5046             		bvc	CLRN		;BRANCH TO CLEAR TRIGGER FROM OUTPUT NOTE
+1022 : 60               		rts				;OTHERWISE, RETURN WITHOUT CLEARING TRIGGER
+                        ;
+                        ;IF IT'S TIME FOR A NOTE TO BE PROCESSED, THE POINTER 
+                        ;BUFFER IS ADVANCED (EITHER FORWARD OR BACKWARD) AND I
+                        ;MORE BUFFER LEFT WE DROP THROUGH TO ADVANCE THE POINT
+                        ;BUFFER TO GET THE NEXT SET OF GLIDE PARAMETERS.  IF W
+                        ;TO THE END OF THE IN BUFFER, WE BRANCH OUT TO RESET T
+                        ;
+1023 : a673             ADVA	ldx	<PNTR		;GET POINTER TO INPUT BUFFER
+1025 : 2474             		bit	<SCTL		;CURRENTLY flRPEGGIATING UP?
+1027 : 1005             		bpl	DOWN		;NO, BRANCH TO DO DOWN
+1029 : ca               		dex				;TO GO UP-SCALE, DECREMENT POINTER
+102a : 3007             		bmi	SADV		;IF POINTER NOW <0, BRANCH
+102c : 1026             		bpl	STIM		;STILL IN RANGE. BRANCH ALWAYS
+102e : e8               DOWN	inx				;DOWN-SCALE. INCREMENT POINTER
+102f : e008             		cpx	#$08		;OUT OF RANGE?
+1031 : d021             		bne	STIM		;STILL IN RANGE. BRANCH
+                        ;
+                        ;IF WE GET HERE (SADV) IT MEANS THAT WE HAVE PLAYED AL
+                        ;THAT WERE DOWN AND HAVE REACHED THE END OF THE INPUT 
+                        ;NOW IT'S TIME TO GET THE NEXT ENTRY FROM THE CONTROL 
+                        ;WE TEST TO SEE IF WE ARE AT THE END OF THE SEQUENCE A
+                        ;POINTER IS RE-INITIALIZED. OTHERWISE, THE COMMAND IS 
+                        ;ZERO IT MERNS THAT IT IS THE END OF THE SEQUENCE AND 
+                        ;IS ALSO REINITIALIZED
+                        ;
+1033 : a676             SADV	ldx	<SPNT		;GET CONTROL SEQUENCE POINTER
+1035 : ca               		dex				;POINT TO NEXT SEQUENCE ENTRY
+1036 : 1002             		bpl	GSEQ		;IF NOT TO END. BRANCH
+1038 : a207             SINT	ldx	#$07		;RE-INIT SEQUENCE POINTER
+103a : 8676             GSEQ	stx	<SPNT		;SAVE SEQUENCE POINTER
+103c : b577             		lda	<CSEQ,x		;GET COMMAND FROM CONTROL SEO.
+103e : f0f8             		beq	SINT		;ZERO ENDS THE SEQUENCE. BRANCH
+                        ;
+                        ;A NEW COMMAND FROM THE SEQUENCE. FIRST USE IT TO SET 
+                        ;THE GLIDE CONTROL BIT FROM THE TRANSPOSE BUFFER. IN T
+                        ;THE NEW COMMAND IS SHIFTED ONE BIT TO THE LEFT; WHICH
+                        ;THE TEMPO VARIABLE BY 2 AND SHIFTS THE UP/DOWN AND LE
+                        ;INTO MORE EASILY TESTED POSITIONS.
+                        ;
+1040 : 8574             GLID	sta	<SCTL		;SAVE SEQUENCE ENTRY IN CONTROL BUFFER
+1042 : b9c000           		lda	<lo TTBL,y	;GET THE CURRENT TRANSOSE BUFFER ENTR
+1045 : 2a               		rol	a			;ROTATE GLIDE BIT TO CARRY
+1046 : 0674             		asl	<SCTL		;ROTATE CONTROL WORD GLIDE TO CARRY
+1048 : 6a               		ror	a			;ROTATE CARRY TO GLIDE BIT
+1049 : 99c000           		sta	<lo TTBL,y	;THEN RETURN TO TRANSPOSE BUFFER
+                        ;
+                        ;THIS LITTLE ROUTINE DETERMINES WHETHER SCAN IS UP OR 
+                        ;INITIALIZES THE POINTER TO THE PROPER VALUE
+                        ;SKVP-SET KEY POINTER
+                        ;
+104c : a207             SKYP	ldx	#$07		;PREPARE FOR ARP. UP INITIAL POINTER
+104e : 2474             		bit	<SCTL		;CHECK COMMAND BUFFER - ARP. UP?
+1050 : 3002             		bmi	STIM		;YES. BRANCH
+1052 : a200             		ldx	#$00		;NO, ARP. DOWN INTIAL POINTER
+                        ;
+                        ;NOW THE ROUTINE TO RESET THE TIMER. SINCE ALL KEY POI
+                        ;WIND UP AT THIS POINT. THE FIRST INSTRUCTION IS TO SA
+                        ;THE TIMER VALUE IS EXTRACTED FROM THE CONTROL WORD SC
+                        ;STIM-SET TIMER
+                        ;
+1054 : 8673             STIM	stx	<PNTR		;SAVE INPUT BUFFER POINTER
+1056 : a91f             		lda	#$1F		;PREPARE MASK AND
+1058 : 2574             		and	<SCTL		;GET THE TIMER (TEMPO) VALUE
+105a : 8572             		sta	<TIMR		;AND SAVE IN THE TIMER VARIABLE
+                        ;
+                        ;NOW WE GET THE CURRENT NOTE OF INTEREST FROM THE INPU
+                        ;AND IF THE KEY IS NOT DOWN, A CHECK IS MADE TO SEE IF
+                        ;ARE DOWN. IF NONE ARE, THE TIMER IS TRICKED INTO TIMI
+                        ;NEXT TIME THROUGH WHICH WILL THEN RESULT IN THE WHOLE
+                        ;SEQUENCE FOLLOWING SYSTEM BEING RESET
+                        ;
+105c : b5e0             		lda	<KTBL,x		;GET THE CURRENT KEY FROM INPUT BUFFER
+105e : d00d             		bne	BOUT		;IF ZERO, NO KEY - BRANCH
+1060 : 24e7             		bit	<KTBL+7		;ARE ANY KEYS DOWN?
+1062 : 70bf             		bvs	ADVA		;YES, BRANCH
+1064 : a901             		lda	#$01		;NO, PREPARE TO MAKE TIMER RUN OUT
+1066 : 8572             		sta	<TIMR		;NEXT PASS THROUGH
+1068 : b9d000           CLRN	lda	<lo NTBL,y	;GET THE CURRENT OUTPUT NOTE
+106b : 29bf             		and	#$BF		;CLEAR THE TRIGGER FLAG
+106d : 99d000           BOUT	sta	<lo NTBL,y	;AND REPLACE IN OUTPUT BUFFER
+1070 : 60               		rts				;RETURN
+                        ;NOW SOME TEMPORARY LOCATIONS AND THEIR INITIAL STATES
+                        ;
+1071 : 00               TEMP	db	$00
+1072 : 01               TIMR	db	$01
+1073 : 08               PNTR	db	$08
+1074 : c4               SCTL	db	$C4
+1075 : 07               PPNT	db	$07
+1076 : 07               SPNT	db	$07
+1077 : 000000000000e404 CSEQ	db	$00, $00, $00, $00, $00, $00, $E4, $04
+                        ;
+                        ;RAM Contents start-----------------------------------
+                        ;
+                        ;
+                        ;part of Pink Music that happened to be in RAM
+                        ;
+00ac =                  BYT1		= $00AC
+00ad =                  BYT2		= $00AD
+00ae =                  BYT3		= $00AE
+00af =                  BYT4		= $00AF
+00b0 =                  SHREG		= $00B0
+1061 =                  TEMPLOOP	= $1061
+                        
+107f : dd               		db	$DD
+1080 : d0df             		bne TEMPLOOP	;DONE TEMPO DELAY? IF NO, DO IT ALL AG
+1082 : 60               		rts				;RETURN
+                        		
+1083 : 98               RNDGEN	tya				;SAVE
+1084 : 48               		pha				;Y.
+1085 : a4ac             		ldy BYT1
+1087 : a5ad             		lda BYT2
+1089 : 84ad             		sty BYT2		;BYT2=OLD BYT1.
+108b : a4ae             		ldy BYT3
+108d : 85ae             		sta BYT3		;BYT3=OLD BYT2.
+108f : a5af             		lda BYT4		;ACCUM.=OLD BYT4.
+1091 : 84af             		sty BYT4		;BYT4=OLD BYT3.
+1093 : 84b0             		sty SHREG		;SHREG=OLD BYT3.
+1095 : 06b0             		asl SHREG		;SHIFTED ONCE
+1097 : 2a               		rol a			;INTO A.
+1098 : 81ac             		db	$81, $AC
+109a : 06b0             		asl SHREG		;TWICE.
+109c : 2a               		rol a
+109d : 06b0             		asl SHREG		;THRICE.
+109f : 2a               		rol a
+10a0 : 06b0             		asl SHREG		;FOURCE (FOURCE?).
+10a2 : 2a               		rol a
+10a3 : 45ac             		eor BYT1		;EXOR WITH ONCE-SHIFTED BITS.
+10a5 : 85ac             		sta BYT1		;BACK INTO BYT1 AS NEW RANDOM #.
+10a7 : 68               		pla				;GET Y
+10a8 : a8               		tay				;BACK.
+10a9 : a5               		db	$A5
+                        ;
+                        ;MUS1
+                        ;
+10aa : 8080808080808080 LAST	db	$80, $80, $80, $80, $80, $80, $80, $80
+10b2 : 80808080808080a0 		db	$80, $80, $80, $80, $80, $80, $80, $A0 
+10ba : f0               ATCK	db	$F0
+10bb : ed               DCY		db	$ED 
+10bc : c9               SUST	db	$C9
+10bd : 04               RLS		db	$04
+10be : 06               CWRD	db	$06
+10bf : 27               CLCK	db	$27
+10c0 : 0000000000000000 TTBL	db	$00, $00, $00, $00, $00, $00, $00, $00
+10c8 : 0000000000000000 		db	$00, $00, $00, $00, $00, $00, $00, $00
+10d0 : 0000000000000000 NTBL	db	$00, $00, $00, $00, $00, $00, $00, $00
+10d8 : 0000000000000020 		db	$00, $00, $00, $00, $00, $00, $00, $20
+10e0 : 0000000000000000 KTBL	db	$00, $00, $00, $00, $00, $00, $00, $00
+                        ;
+                        ;RAM Contents end-------------------------------------
+                        ;
+10e8 =                  	org $10E8
+                        	
+10e8 :                  STUP
+10e8 : 40               CTRL	db	$40			;MUS1
+10e9 : 20               ODLY	db	$20			;MUS1
+10ea : 01               OUTS	db	$01			;MUS1
+                        ;
+                        ;RAM Contents start-----------------------------------
+10eb : dc               OUTT	db	$DC
+10ec : 34               		db	$34	;?
+10ed : ff               MSTACK	db	$FF 		;PIEBUG
+                        ;
+                        ;POTSHOT
+                        ;
+10ee : 93               CHKSUM	db	$93
+10ef : ff               STATUS	db	$FF
+10f0 : dd               COMAND	db	$DD
+10f1 : 03               IDENT	db	$03
+10f2 : 6f01             ENDADR	db	$6F, $01
+10f4 : 0000             BEGADR	db	$00, $00
+10f6 : f600             PNTER	db	$F6, $00
+                        ;
+                        ;PIEBUG
+                        ;
+10f8 : 16               LASTKE	db	$16
+10f9 : 00               ACC		db	$00
+10fa : 3a               YREG	db	$3A
+10fb : f2               XREG	db	$F2
+10fc : 3675             PC		db	$36, $75
+10fe : ff               STACKP	db	$FF
+10ff : 00               PREG	db	$00
+                        ;RAM Contents end-------------------------------------
+                        ;
+1100 =                  	org $1100
+                        	
+                        ;THIS IS THE COMMAND KEY DECODING AND SEQUENCE EDITING
+                        ;# OF COMMAND KEY IS IN Y REGISTER
+                        ;
+1100 : a675             CMND	ldx	<lo PPNT	;GET THE EDITORS POINTER TO COMMAND 
+1102 : b577             		lda	<lo CSEQ,x	;GET THE COMMAND POINTED TO (IN ACC, 
+1104 : c010             		cpy	#$10		;IS KEY 10 - CLEAR COMMAND SEQUENCE
+1106 : f00f             		beq	CLR			;YES, BRANCH
+1108 : 901f             		bcc	CNXT		;NO, IT'S LESS THAN "F", BRANCH
+                        ;
+                        ;THE KEY IS 11 OR GREfiTER.  EXCHANGE THE COMMRND POIN
+                        ;TEMPORARY STORAGE LOCATION TEMP. NOTE THAT THIS CAN B
+                        ;EXCHANGE TWO OR MORE COMMANDS IN THE SEQUENCE
+                        ;
+110a : a471             		ldy	<lo TEMP	;GET THE COMMAND IN THE TEMPORARY BUFFE
+110c : d004             		bne	ELP0		;IS THE COMMAND FROM TEMP A 0? NO, BRANCH
+110e : e007             		cpx	#$07		;POINTING TO FIRST COMMAND?
+1110 : f02b             		beq	RTN			;YES, BRANCH. DON'T WRITE ZERO AS FIRST CO
+1112 : 9477             ELP0	sty	<lo CSEQ,x	;PUT COMMRND IN THE SEQUENCE SLOT 
+1114 : 8571             		sta	<lo TEMP	;AND THEN SAVE OLD COMMAND IN THE TEMP 
+1116 : 60               		rts				;THEN RETURN
+                        ;
+                        ;THE KEY IS "10", CLEAR THE COMMAND SEQUENCE. NOTE THA
+                        ;ENTRY IN THE SEQUENCE IS NOT CHANGED.
+                        ;
+1117 : a207             CLR		ldx	#$07		;SET POINT TO FIRST SEQUENCE ENTRY
+1119 : 8675             		stx	<lo PPNT	;AND SAVE IT
+111b : ca               		dex				;DECREMENT THE POINTER(SKIP FIRST ENTRY)
+111c : a900             		lda	#$00		;AND GET READY
+111e : 8d2018           		sta	DISP		;ZERO THE DISPLAYED EDITOR POINTER
+1121 : 8571             		sta	<lo TEMP	;AND THE EXCHANGE REGISTER
+1123 : 9577             CLLP	sta	<lo CSEQ,x	;ZERO THE SEQUENCE ENTRY
+1125 : ca               		dex				;AND POINT TO NEXT ENTRY
+1126 : 10fb             		bpl	CLLP		;SOME LEFT, LOOP
+1128 : 60               		rts				;RETURN
+                        ;
+                        ;NOW WE TEST FOR "E" OR "F", BACKSPACE OR ADVANCE THE 
+                        ;EDITOR'S POINTER TO THE COMMAND SEQUENCE. NOTE THAT I
+                        ;POINTER PRODUCES A BACKSPACE.
+                        ;
+1129 : c00e             CNXT	cpy	#$0E		;IS KEY "E" OR "F"?
+112b : 9018             		bcc	STMP		;NEITHER AND LESS THAN "E", BRANCH FOR NEX
+112d : f00f             		beq	BACK		;IT'S "E", BRANCH TO BACKSPACE
+112f : ca               		dex				;IT'S "F", ADVANCE THE POINTER
+1130 : 300b             		bmi	RTN			;AND IF OUT OF RANGE, BRANCH TO LEAVE IMME
+1132 : 8675             COUT	stx	<lo PPNT	;SAVE NEW POINTER
+                        ;
+                        ;IN THIS SECTION THE POINTER (WiCH IS 07 FOR THE START
+                        ;AND 00 AT THE END) IS CONVERTED TO AN INCREASING NUMB
+                        ;DISPLAY PURPOSES.
+                        ;
+1134 : 8a               		txa				;POINTER TO THE ACCUM. FOR A CALCULATION
+1135 : 38               		sec				;PREPARE FOR A SUBTRACTION
+1136 : e908             		sbc	#$08		;TWO'SD COMPLEMENT
+1138 : 49ff             		eor	#$FF		;COMPLEMENT OF THAT
+113a : 8d2018           		sta	DISP		;SHOW VALUE IN THE DISPLAYS
+113d : 60               RTN	rts					;RETURN
+                        ;
+                        ;BACKSPRCE POINTER AND MAKE SURE IT IS STILL IN RANGE,
+                        ;
+113e : e8               BACK	inx				;BACKSPACE THE POINTER
+113f : e008             		cpx	#$08		;OUT OF RANGE?
+1141 : f0fa             		beq	RTN			;YES, BRANCH TO LEAVE IMMEDIATELY
+1143 : d0ed             		bne	COUT		;NO, BRANCH ALWAYS TO SAVE POINTER, ETC.
+                        ;
+                        ;IF THE KEY IS ONE OF THE TEMPOS, ADD 1 (0 TEMPO NOT A
+                        ;FIT IT INTO THE CONTROL SEQUENCE ENTRY POINTED TO
+                        ;
+1145 : c008             STMP	cpy	#$08		;TEMPO KEY?
+1147 : b00a             		bcs	SGLD		;NO, BRANCH
+1149 : c8               		iny				;YES, ADD 1 TO KEY #
+114a : 29f0             		and	#$F0		;MASK PRESENT TEMPO IN COMMAND TO ERO
+114c : 9577             		sta	<lo CSEQ,x	;SAVE CONTROL FLAGS IN CSEQ TEMPORARI
+114e : 98               		tya				;BRING NEW TEMPO TO ACC
+114f : 1577             		ora	<lo CSEQ,x	;COMBINE WITH OLD CONTROL FLAGS
+1151 : d01a             		bne	SAVA		;BRANCH ALWAYS
+                        ;
+                        ;NOW A SERIES OF TESTS WHICH RESULT IN THE CARRY BIT B
+                        ;CLEAR. A SERIES OF ROTATES BRINGS THE CARRY TO THE AP
+                        ;IN THE COMMAND WORD
+                        ;
+1153 : 2a               SGLD	rol	a			;ROTATE THE GLIDE COMMAND BIT TO CARRY
+1154 : 08               		php				;AND SAVE THE CARRY ON THE STACK
+1155 : c009             		cpy	#$09		;IS KEY GLIDE ON OR OFF?
+1157 : f012             		beq	ROT1		;9-GLIDE ON, BRANCH
+1159 : 9010             		bcc	ROT1		;8-GLIDE OFF, BRANCH
+                        ;
+                        ;THE KEY HAS NEITHER GLIDE ON NOR OFF, TEST FOR DIRECT
+                        ;
+115b : 28               SMOD	plp				;GET THE OLD GLIDE BIT FROM THE STACK
+115c : 2a               		rol	a			;ROTATE DIRECTION BIT TO CARRY
+115d : 08               		php				;SAVE IT ON STACK
+115e : c00b             		cpy	#$0B		;IS KEV UP OR DOWN?
+1160 : f008             		beq	ROT2		;B-UP, BRANCH
+1162 : 9006             		bcc	ROT2		;A-DOWN, BRANCH
+                        ;
+                        ;THE KEV HAS TO BE C OR D (STACCATO OR LEGATO)
+                        ;
+1164 : 28               SDIR	plp				;GET THE OLD DIRECTION BIT
+1165 : 2a               		rol	a			;STAC/LEGA BIT TO CARRY
+1166 : 08               		php				;SAVE IT
+1167 : c00d             		cpy	#$0D		;CARRY SETS IF KEY IS "D" - LEGATO
+1169 : 6a               		ror	a			;ROTATE COMMAND HORD BACK INTO PLACE
+116a : 6a               ROT2	ror	a
+116b : 6a               ROT1	ror	a
+116c : 28               		plp				;WASTE A STACK SLOT TO COMPENSATE
+116d : 9577             SAVA	sta	<lo CSEQ,x	;SAVE THE COMMAND HORD IN THE SEQU
+116f : 60               		rts				;RETURN
+                        ;
+                        	end
+                        
 
-;--------------------------------------------------------------
-Symbol table
-============
+-------------------------------- Symbol Table --------------------------------
 
-Value	Type	Name
------	----	----
-0000	 04	L0000
-0004	 04	X0004
-0007	 04	X0007
-0008	 04	X0008
-0027	 04	X0027
-0071	 04	X0071
-0072	 04	X0072
-0073	 04	X0073
-0074	 04	X0074
-0075	 04	X0075
-0076	 04	X0076
-0077	 04	X0077
-0080	 04	X0080
-00AC	 04	X00AC
-00AD	 04	X00AD
-00AE	 04	X00AE
-00AF	 04	X00AF
-00B0	 04	X00B0
-00C0	 04	X00C0
-00D0	 04	X00D0
-00E0	 04	X00E0
-00E7	 04	X00E7
-04C9	 04	X04C9
-1003	 04	L1003
-100E	 04	L100E
-1016	 04	L1016
-1023	 04	L1023
-102E	 04	L102E
-1033	 04	L1033
-1038	 04	L1038
-103A	 04	L103A
-1054	 04	L1054
-1068	 04	L1068
-106D	 04	L106D
-1100	 04	L1100
-1112	 04	L1112
-1117	 04	L1117
-1123	 04	L1123
-1129	 04	L1129
-1132	 04	L1132
-113D	 04	L113D
-113E	 04	L113E
-1145	 04	L1145
-1153	 04	L1153
-116A	 04	L116A
-116B	 04	L116B
-116D	 04	L116D
-1820	 04	X1820
-1D21	 04	L1D21
-1D2B	 04	L1D2B
-1F00	 04	L1F00
-6F03	 04	X6F03
-DC01	 04	LDC01
-DFD0	 04	XDFD0
+              Symbol   Value        Decimal
 
-Number of symbols:			54
-
-;--------------------------------------------------------------
+                 ACC : $10f9           4345
+                ADVA : $1023           4131
+                ATCK : $10ba           4282
+                BACK : $113e           4414
+              BEGADR : $10f4           4340
+                BOUT : $106d           4205
+                BYT1 : $00ac            172   *
+                BYT2 : $00ad            173   *
+                BYT3 : $00ae            174   *
+                BYT4 : $00af            175   *
+              CHKSUM : $10ee           4334
+                CLCK : $10bf           4287
+                CLLP : $1123           4387
+                 CLR : $1117           4375
+                CLRN : $1068           4200
+                CMND : $1100           4352
+                CNXT : $1129           4393
+              COMAND : $10f0           4336
+                COUT : $1132           4402
+                CSEQ : $1077           4215
+                CTRL : $10e8           4328
+                CWRD : $10be           4286
+                 DCY : $10bb           4283
+                DECD : $1f00           7936   *
+                DISP : $1820           6176   *
+                DOWN : $102e           4142
+                ELP0 : $1112           4370
+              ENDADR : $10f2           4338
+                GLID : $1040           4160
+                GSEQ : $103a           4154
+                HERE : $100e           4110
+               IDENT : $10f1           4337
+                INIT : $1d21           7457   *
+                KTBL : $10e0           4320
+                LAST : $10aa           4266
+              LASTKE : $10f8           4344
+                LOOP : $1003           4099
+              MSTACK : $10ed           4333
+                NOTE : $1d2b           7467   *
+                NTBL : $10d0           4304
+                ODLY : $10e9           4329
+                OUTS : $10ea           4330
+                OUTT : $10eb           4331
+                  PC : $10fc           4348
+               PNTER : $10f6           4342
+                PNTR : $1073           4211
+                PPNT : $1075           4213
+                PREG : $10ff           4351
+                 RLS : $10bd           4285
+              RNDGEN : $1083           4227
+                ROT1 : $116b           4459
+                ROT2 : $116a           4458
+                 RTN : $113d           4413
+                SADV : $1033           4147
+                SAVA : $116d           4461
+                SCTL : $1074           4212
+                SDIR : $1164           4452
+                SGLD : $1153           4435
+               SHREG : $00b0            176   *
+                SINT : $1038           4152
+                SKYP : $104c           4172
+                SMOD : $115b           4443
+                SPNT : $1076           4214
+              STACKP : $10fe           4350
+                STAR : $1016           4118
+              STATUS : $10ef           4335
+                STIM : $1054           4180
+                STMP : $1145           4421
+                STUP : $10e8           4328
+                SUST : $10bc           4284
+                TEMP : $1071           4209
+            TEMPLOOP : $1061           4193   *
+                TIMR : $1072           4210
+                TTBL : $10c0           4288
+                XREG : $10fb           4347
+                YREG : $10fa           4346
+				
