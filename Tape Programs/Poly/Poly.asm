@@ -3,21 +3,21 @@
 ;(c) 1978 PAiA Electronics, Inc.
 ;All rights reserved.
 
-DECODE	=$FF00 	;PIEBUG
+DECODE	= $FF00 ;PIEBUG function
 
-SH		=$09F7
-DAC		=$0900 	;8780/8781 DAC
-KBD		=$0810 	;8782 or EK-3 Keyboard
-DISP	=$0820 	;Hex Display
+SH		= $09F7	;QuASH
+DAC		= $0900 ;8780/8781 DAC
+KBD		= $0810 ;8782 or EK-3 Keyboard
+DISP	= $0820 ;hex display
 
-KTABLE	=$D0	;INPUT BUFFER D0-D7 (KTABLE)
-NTABLE 	=$D8	;OUTPUT BUFFER D8-DF (NTABLE)
-TTABLE	=$E0	;Transpose Table (TTABLE)
+KTABLE	= $D0	;input buffer D0-D7
+NTABLE 	= $D8	;output buffer D8-DF
+TTABLE	= $E0	;transpose table E0-E7
 
-CLK		=$E8
-TEMP1	=$E9
-OUTS	=$EA 	;number of synth chans (max 8)
-OUTTEMP	=$EB
+CLK		= $E8
+TEMP1	= $E9
+OUTS	= $EA 	;number of synth chans (max 8)
+OUTTEMP	= $EB
 
 	org $0006
 ;
@@ -25,7 +25,7 @@ OUTTEMP	=$EB
 ;buffer NTABLE and traspose BUFFER
 ;TTABLE
 ;
-INIT	lda #$00			;prepare
+INIT	lda #$00		;prepare
 INIT1	ldx #$18
 INIT0	sta KTABLE-1,x	;clear everything
 		dex
@@ -38,7 +38,7 @@ INIT0	sta KTABLE-1,x	;clear everything
 ;in descending order.  Also takes care
 ;of timing to D/A
 ;
-NOTEOUT	ldx #$08			;initialize pointer
+NOTEOUT	ldx #$08		;initialize pointer
 LOOP	lda NTABLE-1,x	;get note
 		clc				;prepare
 		adc TTABLE-1,x	;add transpose

@@ -3,21 +3,21 @@
                         ;(c) 1978 PAiA Electronics, Inc.
                         ;All rights reserved.
                         
-ff00 =                  DECODE	=$FF00 	;PIEBUG
+ff00 =                  DECODE	= $FF00 ;PIEBUG function
                         
-09f7 =                  SH		=$09F7
-0900 =                  DAC		=$0900 	;8780/8781 DAC
-0810 =                  KBD		=$0810 	;8782 or EK-3 Keyboard
-0820 =                  DISP	=$0820 	;Hex Display
+09f7 =                  SH		= $09F7	;QuASH
+0900 =                  DAC		= $0900 ;8780/8781 DAC
+0810 =                  KBD		= $0810 ;8782 or EK-3 Keyboard
+0820 =                  DISP	= $0820 ;hex display
                         
-00d0 =                  KTABLE	=$D0	;INPUT BUFFER D0-D7 (KTABLE)
-00d8 =                  NTABLE 	=$D8	;OUTPUT BUFFER D8-DF (NTABLE)
-00e0 =                  TTABLE	=$E0	;Transpose Table (TTABLE)
+00d0 =                  KTABLE	= $D0	;input buffer D0-D7
+00d8 =                  NTABLE 	= $D8	;output buffer D8-DF
+00e0 =                  TTABLE	= $E0	;transpose table E0-E7
                         
-00e8 =                  CLK		=$E8
-00e9 =                  TEMP1	=$E9
-00ea =                  OUTS	=$EA 	;number of synth chans (max 8)
-00eb =                  OUTTEMP	=$EB
+00e8 =                  CLK		= $E8
+00e9 =                  TEMP1	= $E9
+00ea =                  OUTS	= $EA 	;number of synth chans (max 8)
+00eb =                  OUTTEMP	= $EB
                         
 0006 =                  	org $0006
                         ;
@@ -25,7 +25,7 @@ ff00 =                  DECODE	=$FF00 	;PIEBUG
                         ;buffer NTABLE and traspose BUFFER
                         ;TTABLE
                         ;
-0006 : a900             INIT	lda #$00			;prepare
+0006 : a900             INIT	lda #$00		;prepare
 0008 : a218             INIT1	ldx #$18
 000a : 95cf             INIT0	sta KTABLE-1,x	;clear everything
 000c : ca               		dex
@@ -38,7 +38,7 @@ ff00 =                  DECODE	=$FF00 	;PIEBUG
                         ;in descending order.  Also takes care
                         ;of timing to D/A
                         ;
-000f : a208             NOTEOUT	ldx #$08			;initialize pointer
+000f : a208             NOTEOUT	ldx #$08		;initialize pointer
 0011 : b5d7             LOOP	lda NTABLE-1,x	;get note
 0013 : 18               		clc				;prepare
 0014 : 75df             		adc TTABLE-1,x	;add transpose
