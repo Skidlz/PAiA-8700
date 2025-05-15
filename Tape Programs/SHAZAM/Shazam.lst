@@ -1,156 +1,175 @@
-					org	$0100
-				;
-0100 : A2 FF 		"  "		ldx	#$FF
-0102 : 9A 			" "			txs
-0103 : A9 DF 		"  "		lda	#$DF
-0105 : 38 			"8"			sec
-0106 : E5 EA 		"  "		sbc	OUTS
-0108 : 85 99 		"  "		sta	NTS
-010A : A9 00 		"  "		lda	#$00
-010C : 85 9A 		"  "		sta	NTS+1
-010E				OPTN:
-010E : 20 21 0D 	" ! "		jsr	INIT
-0111				PLOOP:
-0111 : 20 71 0D 	" q "		jsr	POLY
-0114 : 20 C3 0D 	"   "		jsr	TRNGN
-0117 : 20 2B 0D 	" + "		jsr	NOTE
-011A : A5 BF 		"  "		lda	CLK
-011C : 8D 20 08 	"   "		sta	DISPLAY
-011F : 20 00 0F 	"   "		jsr	DECODE
-0122 : C9 01 		"  "		cmp	#$01
-0124 : 90 E8 		"  "		bcc	OPTN
-0126 : D0 07 		"  "		bne	MORE
-0128 : A0 5C 		" \"		ldy	#$5C
-012A : 20 52 0D 	" R "		jsr	FILL
-012D : F0 E2 		"  "		beq	PLOOP
-012F				MORE:
-012F : C9 14 		"  "		cmp	#$14
-0131 : F0 06 		"  "		beq	CHORUS
-0133 : C9 15 		"  "		cmp	#$15
-0135 : F0 32 		" 2"		beq	SPLITZ
-0137 : D0 D8 		"  "		bne	PLOOP
-0139				CHORUS:
-0139 : A5 EA 		"  "		lda	OUTS
-013B : 85 98 		"  "		sta	COUNT
-013D				IN:
-013D : 20 BC 01 	"   "		jsr	CLEAR
-0140 : A5 E7 		"  "		lda	KTBLMAX
-0142 : F0 0C 		"  "		beq	OUT
-0144 : C5 97 		"  "		cmp	OLDKEY
-0146 : F0 04 		"  "		beq	SAME
-0148 : C6 98 		"  "		dec	COUNT
-014A : F0 04 		"  "		beq	OUT
-014C				SAME:
-014C : A4 98 		"  "		ldy	COUNT
-014E : 91 99 		"  "		sta	(NTS),y
-0150				OUT:
-0150 : 85 97 		"  "		sta	OLDKEY
-0152 : 20 2B 0D 	" + "		jsr	NOTE
-0155 : 20 00 0F 	"   "		jsr	DECODE
-0158 : C9 15 		"  "		cmp	#$15
-015A : F0 0D 		"  "		beq	SPLITZ
-015C : C9 16 		"  "		cmp	#$16
-015E : F0 B1 		"  "		beq	PLOOP
-0160 : A5 98 		"  "		lda	COUNT
-0162 : F0 D5 		"  "		beq	CHORUS
-0164 : 8D 20 08 	"   "		sta	DISPLAY
-0167 : D0 D4 		"  "		bne	IN
-0169				SPLITZ:
-0169 : A5 EA 		"  "		lda	OUTS
-016B : 85 97 		"  "		sta	OLDKEY
-016D				SELECT:
-016D : 85 97 		"  "		sta	OLDKEY
-016F : 20 2B 0D 	" + "		jsr	NOTE
-0172 : A5 E7 		"  "		lda	KTBLMAX
-0174 : F0 F7 		"  "		beq	SELECT
-0176 : A4 97 		"  "		ldy	OLDKEY
-0178 : D0 F3 		"  "		bne	SELECT
-017A : A4 98 		"  "		ldy	COUNT
-017C : 8C 20 08 	"   "		sty	DISPLAY
-017F : 99 9C 00 	"   "		sta	SPLIT,y
-0182 : C6 98 		"  "		dec	COUNT
-0184 : D0 E7 		"  "		bne	SELECT
-0186 : A9 FF 		"  "		lda	#$FF
-0188 : 85 9B 		"  "		sta	SPLITMIN
-018A				PERF:
-018A : 20 BC 01 	"   "		jsr	CLEAR
-018D : A2 08 		"  "		ldx	#$08
-018F				NXTNOT:
-018F : B5 DF 		"  "		lda	KTBL,x
-0191 : F0 0C 		"  "		beq	NXT2
-0193 : A4 EA 		"  "		ldy	OUTS
-0195				NXT0:
-0195 : D9 9C 00 	"   "		cmp	SPLIT,y
-0198 : 90 03 		"  "		bcc	NXT1
-019A : 88 			" "			dey
-019B : D0 F8 		"  "		bne	NXT0
-019D				NXT1:
-019D : 91 99 		"  "		sta	(NTS),y
-019F				NXT2:
-019F : CA 			" "			dex
-01A0 : D0 ED 		"  "		bne	NXTNOT
-01A2 : 20 2B 0D 	" + "		jsr	NOTE
-01A5 : A5 BF 		"  "		lda	CLK
-01A7 : 8D 20 08 	"   "		sta	DISPLAY
-01AA : 20 00 0F 	"   "		jsr	DECODE
-01AD : C9 14 		"  "		cmp	#$14
-01AF : F0 88 		"  "		beq	CHORUS
-01B1 : C9 13 		"  "		cmp	#$13
-01B3 : F0 B4 		"  "		beq	SPLITZ
-01B5 : C9 16 		"  "		cmp	#$16
-01B7 : D0 D1 		"  "		bne	PERF
-01B9 : 4C 11 01 	"L  "		jmp	PLOOP
-				;
-01BC				CLEAR:
-01BC : A4 EA 		"  "		ldy	OUTS
-01BE				NANO:
-01BE : B1 99 		"  "		lda	(NTS),y
-01C0 : 29 3F 		")?"		and	#$3F
-01C2 : 91 99 		"  "		sta	(NTS),y
-01C4 : 88 			" "			dey
-01C5 : D0 F7 		"  "		bne	NANO
-01C7 : 60 			"`"			rts
+                        ;SHAZAM 0.1
+                        ;A keyboard operating system for the PAiA 8700 compute
+                        ;By: Bob Yannes October 1978
+                        
+0f00 =                  DECODE		= $0F00 ;PIEBUG function
+0d21 =                  INIT		= $0D21 ;MUS-1 function
+0d2b =                  NOTE		= $0D2B ;MUS-1 function
+0d52 =                  FILL		= $0D52 ;MUS-1 function
+0d71 =                  POLY		= $0D71 ;MUS-1 function
+0dc3 =                  TRNGN		= $0DC3 ;MUS-1 function
+                        
+0820 =                  DISPLAY		= $0820
+                        
+00ea =                  OUTS		= $EA
+00e7 =                  KTBLMAX		= $E7
+0097 =                  OLDKEY		= $97	;CONTAINS PREVIOUS NOTE FOR COMPATISON W
+0098 =                  COUNT		= $98	;VOICE COUNTER/POINTER
+0099 =                  NTS 		= $99	;START OF NTABLE FOR GIVEN NUMBER OF VOICE
+                        ;NTS+1 				(=0) SPECIFIES ZERO PAGE FOR INDIRECT ADDRE
+009b =                  SPLITMIN	= $9B	;DUMMY SPLIT POINT, ASSURES HIGHEST NOT
+                        					;TO LAST CHANNEL.
+009c =                  SPLIT		= $9C	;09C-0A2 TABLE OF SPLIT POINTS.
+                        
+00bf =                  CLK			= $BF	;MUS-1 clock
+00df =                  KTBL		= $DF	;MUS-1
+                        
+                        ;Keyboard command constants
+0013 =                  ENT			= $13
+0014 =                  PCH			= $14
+0015 =                  PCL			= $15
+0016 =                  TAPE		= $16
+                        ;2nd C note
+005c =                  CNOTE		= $5C
+                        
+0100 =                  	org $0100
+                        	
+0100 : a2ff             		ldx #$FF		;GET THE STACK
+0102 : 9a               		txs				;OUT OF THE WAY.
+0103 : a9df             		lda #$DF		;GET NTABLEMAX POSITION...
+0105 : 38               		sec				;PREPARE TO SUBTRACT...
+0106 : e5ea             		sbc OUTS		;WELL, SUBTRACT THE NUMBER OF VOICES
+0108 : 8599             		sta NTS			;THIS IT EH START OF NTABLE NOW.
+010a : a900             		lda #0			;ASSURE ADDR HIGH IS ZERO (PAGE)
+010c : 859a             		sta NTS+1		;FOR USE AS INDIRECT ADDR.
+010e : 20210d           OPTN	jsr INIT		;WIPE'EM OUT!
+0111 : 20710d           PLOOP	jsr POLY		;ASSIGN NOTES ACCORDING TO POLY.
+0114 : 20c30d           		jsr TRNGN		;DO TRANSIENTS IF SELECTED.
+0117 : 202b0d           		jsr NOTE		;PLAY THE NOTES.
+011a : a5bf             		lda CLK			;BELLS AND
+011c : 8d2008           		sta DISPLAY		;WHISTLES.
+011f : 20000f           		jsr DECODE		;SCAN 8700 KYBD.
+0122 : c901             		cmp #1			;IS IT TUNE?
+0124 : 90e8             		bcc OPTN		;NO, IT'S LESS--MUST BE CLEAR.
+0126 : d007             		bne MORE		;NO, GO SEE WHAT IT WAS.
+0128 : a05c             		ldy #CNOTE		;YES, GET NOTE TO TUNE WITH...
+012a : 20520d           		jsr FILL		;PUT IN ALL CHANNELS...
+012d : f0e2             		beq PLOOP		;AND PLAY IT.
+012f : c914             MORE	cmp #PCH		;IS IT PCH?
+0131 : f006             		beq CHORUS		;YES, GO TO CHORUS,
+0133 : c915             		cmp #PCL		;OKAY, THEN IS IT PCL?
+0135 : f032             		beq SPLITZ		;YES, GO TO SPLITZ.
+0137 : d0d8             		bne PLOOP		;NO, TWAS NONE OF THEM, KEEP ON POLY.
+                        	
+0139 : a5ea             CHORUS	lda OUTS		;GET THE NUMBER OF AVAILABLE VOICES.
+013b : 8598             		sta COUNT		;USE AS COUNTER/POINTER
+013d : 20bc01           IN		jsr CLEAR		;TURN OFF ALL GATES.
+0140 : a5e7             		lda KTBLMAX		;GET LOWEST NOTE.
+0142 : f00c             		beq OUT			;IF ZERO, SKIP ASSIGNMENT.
+0144 : c597             		cmp OLDKEY		;IS IT THE SAME KEY YOU JUST HAD?
+0146 : f004             		beq SAME		;YES, KEEP OLD CHANNEL ASSIGNMENT.
+0148 : c698             		dec COUNT		;NO, GET NEW CHANNEL ASSIGNMENT.
+014a : f004             		beq OUT			;IF ZERO, SKIP ASSIGNMENT.
+014c : a498             SAME	ldy COUNT		;GET POINT.
+014e : 9199             		sta (NTS),y		;ASSIGN VOICE TO CHANNEL Y.
+0150 : 8597             OUT		sta OLDKEY		;ALSO, STOE IT FOR LATER.
+0152 : 202b0d           		jsr NOTE		;PLAY THE NOTE.
+0155 : 20000f           		jsr DECODE		;SCAN 8700 KYBD.
+0158 : c915             		cmp #PCL		;IS IT PCL?
+015a : f00d             		beq SPLITZ		;YES, GO TO SPLITZ.
+015c : c916             		cmp #TAPE		;IS IT TAPE?
+015e : f0b1             		beq PLOOP		;YES, GO TO POLY.
+0160 : a598             		lda COUNT		;GET COUNT.
+0162 : f0d5             		beq CHORUS		;IF ZERO, START OVER.
+0164 : 8d2008           		sta DISPLAY		;IF NOT, GIVE US A LOOK...
+0167 : d0d4             		bne IN			;AND KEEP ON CHORUS.
+0169 : a5ea             SPLITZ	lda OUTS		;GET THE NUMBER OF AVAILABLE VOICES.
+016b : 8597             		sta OLDKEY		;USE AS COUNTER/POINTER.
+016d : 8597             SELECT	sta OLDKEY		;STORE THE PRESENT NOTE FOR LATER.
+016f : 202b0d           		jsr NOTE		;REFRESH QUASH AND LOAD KTABLE.
+0172 : a5e7             		lda KTBLMAX		;GET LOWEST NOTE.
+0174 : f0f7             		beq SELECT		;IF ZERO, TRY AGAIN.
+0176 : a497             		ldy OLDKEY		;GET LAST NOTE.
+0178 : d0f3             		bne SELECT		;IF NOT ZERO, YOU'RE STILL HOLDING IT.
+017a : a498             		ldy COUNT		;IT'S A NEW NOTE--GET COUNTER/POINTER
+017c : 8c2008           		sty DISPLAY		;SHOW THE COUNT.
+017f : 999c00           		sta SPLIT,y		;STORE THE NOTE AS SPLIT POINT Y.
+0182 : c698             		dec COUNT		;NEXT SPLIT POINT.
+0184 : d0e7             		bne SELECT		;GO BACK UNTIL ALL SPLIT POINTS ARE IN.
+0186 : a9ff             		lda #$FF		;DUMMY SPLIT POINT...
+0188 : 859b             		sta SPLITMIN	;STORED AT END OF TABLE.
+018a : 20bc01           PERF	jsr CLEAR		;ALL SPLITS ARE IN, TURN OFF ALL GATES
+018d : a208             		ldx #8			;PREPARE TO TEST KTABLE.
+018f : b5df             NXTNOT	lda KTBL,x		;GET NOTE X FROM IT.
+0191 : f00c             		beq NXT2		;IF ZERO, DO NEXT.
+0193 : a4ea             		ldy OUTS		;GET COUNTER/POINTER.
+0195 : d99c00           NXT0	cmp SPLIT,y		;COMPARE NOTE TO SPLIT POINT Y.
+0198 : 9003             		bcc NXT1		;IF LESS THAN, GO ASSIGN IT.
+019a : 88               		dey				;NEXT SPLIT POINT.
+019b : d0f8             		bne NXT0		;KEEP ON UNTIL YOU'VE CHECKED ALL.
+019d : 9199             NXT1	sta (NTS),y		;ASSIGN NOTE TO CHANNEL Y.
+019f : ca               NXT2	dex				;NEXT KEYBOARD ENTRY.
+01a0 : d0ed             		bne NXTNOT		;KEEP ON UNTIL ALL KEYBOARD DONE.
+01a2 : 202b0d           		jsr NOTE		;PLAY THE NOTES.
+01a5 : a5bf             		lda CLK			;MORE BELLS AND
+01a7 : 8d2008           		sta DISPLAY		;WHISTLES.
+01aa : 20000f           		jsr DECODE		;SCAN 8700 KYBD.
+01ad : c914             		cmp #PCH		;IS IT PCH?
+01af : f088             		beq CHORUS		;YES, GO TO CHORUS.
+01b1 : c913             		cmp #ENT		;IS IT ENT?
+01b3 : f0b4             		beq SPLITZ		;YES, GO GET NEW SPLIT POINTS.
+01b5 : c916             		cmp #TAPE		;IS IT TAPE?
+01b7 : d0d1             		bne PERF		;NO, KEEP ON PLAYING SPLITZ.
+01b9 : 4c1101           		jmp PLOOP		;YES, GO TO POLY.
+                        
+01bc : a4ea             CLEAR	ldy OUTS		;GET POINTER/COUNTER.
+01be : b199             NANO	lda (NTS),y		;GET NOTE BEING PLAYED ON CHANNEL Y.
+01c0 : 293f             		and #$3F		;TURN OFF ITS GATE...
+01c2 : 9199             		sta (NTS),y		;AND PUT IT BACK.
+01c4 : 88               		dey				;NEXT CHANNEL.
+01c5 : d0f7             		bne NANO		;GO BACK UNTIL DONE.
+01c7 : 60               		rts				;RETURN.
+                        	
 
-;--------------------------------------------------------------
-Symbol table
-============
+-------------------------------- Symbol Table --------------------------------
 
-Value	Type	Name
------	----	----
-0097	 04	OLDKEY
-0098	 04	COUNT
-0099	 04	NTS
-009A	 04	NTS+1
-009B	 04	SPLITMIN
-009C	 04	SPLIT
-00BF	 04	CLK
-00DF	 04	KTBL
-00E7	 04	KTBLMAX
-00EA	 04	OUTS
-010E	 04	OPTN
-0111	 04	PLOOP
-012F	 04	MORE
-0139	 04	CHORUS
-013D	 04	IN
-014C	 04	SAME
-0150	 04	OUT
-0169	 04	SPLITZ
-016D	 04	SELECT
-018A	 04	PERF
-018F	 04	NXTNOT
-0195	 04	NXT0
-019D	 04	NXT1
-019F	 04	NXT2
-01BC	 04	CLEAR
-01BE	 04	NANO
-0820	 04	DISPLAY
-0D21	 04	INIT
-0D2B	 04	NOTE
-0D52	 04	FILL
-0D71	 04	POLY
-0DC3	 04	TRNGN
-0F00	 04	DECODE
+              Symbol   Value        Decimal
 
-Number of symbols:			33
-
-;--------------------------------------------------------------
+              CHORUS : $0139            313
+               CLEAR : $01bc            444
+                 CLK : $00bf            191   *
+               CNOTE : $005c             92   *
+               COUNT : $0098            152   *
+              DECODE : $0f00           3840   *
+             DISPLAY : $0820           2080   *
+                 ENT : $0013             19   *
+                FILL : $0d52           3410   *
+                  IN : $013d            317
+                INIT : $0d21           3361   *
+                KTBL : $00df            223   *
+             KTBLMAX : $00e7            231   *
+                MORE : $012f            303
+                NANO : $01be            446
+                NOTE : $0d2b           3371   *
+                 NTS : $0099            153   *
+              NXTNOT : $018f            399
+                NXT0 : $0195            405
+                NXT1 : $019d            413
+                NXT2 : $019f            415
+              OLDKEY : $0097            151   *
+                OPTN : $010e            270
+                 OUT : $0150            336
+                OUTS : $00ea            234   *
+                 PCH : $0014             20   *
+                 PCL : $0015             21   *
+                PERF : $018a            394
+               PLOOP : $0111            273
+                POLY : $0d71           3441   *
+                SAME : $014c            332
+              SELECT : $016d            365
+               SPLIT : $009c            156   *
+            SPLITMIN : $009b            155   *
+              SPLITZ : $0169            361
+                TAPE : $0016             22   *
+               TRNGN : $0dc3           3523   *
+			   
