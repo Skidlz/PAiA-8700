@@ -14,19 +14,7 @@ DISP	= $0820
 INIT	= $0D21
 NOTE	= $0D2B
 DECD	= $0F00
-BRAK	= $FFC0	;BREAK ROUTINE IN PIEBUG
-
-TIME	= $0087
-MASK	= $008B
-CLCK	= $00BF
-NTB7	= $00BF
-NTBB	= $00C3
-NTMP	= $00CF
-NT0B	= $00db
-KTBL	= $00DF
-OUTS	= $00EA
-OUTT	= $00EB
-TEMP	= $00EC	;TEMPORARY STORAGE
+BRAK	= $FFC0		;BREAK ROUTINE IN PIEBUG
 
 	org	$0000
 ;
@@ -93,54 +81,62 @@ TST4    cmp #$02		;COMMAND 2, STOP
         jsr SET			;CALL TO ZERO OUT-BUFFS
         jsr NOTE		;THEN MUTE SYNTHESIZER
         brk				;AND RETURN TO PIEBUG
-
-        org     $0088
-TIMED   db      $02		;$0088
-TIMEC   db      $04
-TIMEB   db      $01
-TIMEA   db      $01
-
-MASKD   db      $F2		;$008C
-MASKC   db      $F0
-MASKB   db      $F3
-MASKA   db      $F3
-
-NBUF	db      $5A		;$0090 - CANDIDATE ARRAY
-		db      $5D
-        db      $5F
-        db      $62
-        db      $64
-        db      $62
-        db      $5F
-        db      $5D
-        db      $5A
-        db      $58
-        db      $56
-        db      $53
-		db		$51
-		db		$53
-        db      $56
-        db      $58
+;
+;RAM contents start----------------------------------------
+;
+		db	$08, $3A, $BF, $0C, $0C, $BF, $BF, $0C
+		db	$08, $BF, $BF, $0C, $18, $BF, $BF, $20
+		db	$08, $B7, $C9, $D0, $F1, $85, $A0, $EA
+		db	$EA
+TIME	db	$02, $04, $01, $01
+MASK	db	$F2, $F0, $F3, $F3
+NBUF	db	$5A, $5D, $5F, $62, $64, $62, $5F, $5D
+		db	$5A, $58, $56, $53, $51, $53, $56, $58
 		
-RND0    db      $00		;$00A0 - 5 DICE/RANDOM NUMBERS
-        db      $00		;$00A1
-        db      $00		;$00A2
-        db      $00		;$00A3
-NOIS    db      $00		;$00A4
-
-		db      $00		;$00A5
-        db      $00
-        db      $00
-
-LNTH    db      $00		;$00A8 - CYCLE LENGTH
-
-TMPO    db      $FA
-
-        org     $00E8
-CTRL	db		$00		;MUS-1 VARIABLES
-ODLY	db		$20
-
-        org     $0100
+RND0	db	$00, $00, $00, $00
+NOIS	db	$00, $00, $00, $00
+LNTH	db	$FA
+TMPO	db	$FA
+;MUS-1-----------------------------------------------------
+LAST	db	$80, $80, $80, $80, $80, $80, $80, $80
+		db	$80, $80, $80, $80, $80, $80, $80, $80
+ATCK	db	$A2
+DCY		db	$3F
+SUST	db	$20
+RLS		db	$21
+PEAK	db	$01
+NTB7
+CLCK	db	$AE
+TTBL	db 	$00, $00, $00
+NTBB	db	$00, $00, $00, $00, $00, $00, $00, $00
+		db	$00, $00, $00, $00
+NTMP	db	$00, $00, $00, $00, $00, $00, $00, $00
+		db	$00, $00, $00, $00
+NT0B	db	$00, $00, $00, $00
+KTBL	db	$00, $00, $00, $00, $00, $00, $00, $00
+		db	$00
+CTRL	db	$00
+ODLY	db	$20
+OUTS	db	$04
+OUTT	db	$04
+TEMP	db	$00
+MSTACK	db	$FF
+;POTSHOT---------------------------------------------------
+CHKSUM	db	$B3
+STATUS	db	$FF
+COMAND	db	$DD
+IDENT	db	$02
+ENDADR	db	$FF, $01
+BEGADR	db	$00, $00
+PNTER	db	$F6, $00
+;PIEBUG----------------------------------------------------
+LASTKE	db	$16
+ACC		db	$82
+YREG	db	$00
+XREG	db	$00
+PC		db	$6E, $00	;Program counter
+STACKP	db	$FF			;Stack pointer (user)
+PREG	db	$00			;Stack register
 ;
 ;      RANDOM NUMBER GENERATOR
 ;
@@ -195,10 +191,10 @@ NW2     adc <RND0-1,x	;ADD VALUE OF DIE
         lda <NBUF,x		;GET CANDIDATE
         beq DURA		;ZERO, DO NOTE CHANGE
         sta NTB7,y		;PLACE IN TEMP BUFFER
-DURA    lda <NOIS+01	;A CHEAP RANDOM NO.
+DURA    lda <NOIS+01	;A CHEAP RANDOM NUMBER
         clc				;PREPARE
-        and MASK,y		;MASK DURATION VAL.
-        adc TIME,y		;ADD MINIMUM VAL.
+        and MASK-1,y	;MASK DURATION VAL.
+        adc TIME-1,y	;ADD MINIMUM VAL.
         and #$0F		;AND MASK RESULT
         tax				;USE AS COUNTER AND
         lda #$01		;DO DURATIONS AS
@@ -208,13 +204,12 @@ NT2     rol a			;POWERS OF 2. CARRY
         sta NTBB,y		;PUT RESULT IN NOTES
         rts				;TIMER AND RETURN
 ;
-;ALLOCATION 0151
-;
+;      ALLOCATION 0151
 ;SEES IF NEW NOTES ARE NEED AND IF
 ;SO GETS THEM.  ALSO CLEARS TRIGGER
 ;OF NOTE OUTPUT ONCE IT is PLAYED.
 ;
-ALOC    ldx #$04		;DO 4 NOTE CHANNELS
+ALOC	ldx #$04		;DO 4 NOTE CHANNELS
 LP6     dec <NTBB,x		;DECREMENT NOTE TIMER
         bne LP5			;AND IF TIME OUT
         txa				;TRANSFER X REG. TO
@@ -254,6 +249,23 @@ LP10    sta <NT0B,x		;ZERO OUT-BUFFERS
         sta <RND0		;ZERO 5TH DIE
         sta <OUTS		;ZERO PINKING COUNTER
         rts				;AND RETURN
-
+;
+;RAM contents start----------------------------------------
+		db	$04, $B7, $B7, $04, $04, $B7, $B7, $04
+		db	$04, $B7, $B7, $04, $04, $B7, $B7, $04
+		db	$04, $B7, $B7, $04, $04, $B7, $00, $B5
+		db	$F7, $00, $B5, $F7, $00, $B5, $F7, $00
+		db	$B5, $F7, $00, $B5, $F7, $00, $B5, $F7
+		db	$00, $B5, $F7, $00, $B5, $F7, $00, $B5
+		db	$F7, $00, $B5, $F7, $00, $B5, $F7, $00
+		db	$B5, $F7, $00, $B5, $F7, $00, $B5, $F7
+		db	$00, $B5, $F7, $00, $B5, $F7, $00, $B5
+		db	$F7, $00, $B5, $F7, $00, $B5, $F7, $00
+		db	$B5, $F7, $00, $B5, $F7, $00, $B5, $F7
+		db	$00, $B5, $F7, $00, $B5, $F7, $00, $B5
+		db	$F7, $00, $B5, $F7, $00, $B5, $00, $0B
+		db	$3D, $21, $0E, $41, $0E, $01, $01, $79
+		db	$0E, $C3, $0E, $14, $0E
+		
 		end
 		

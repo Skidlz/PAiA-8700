@@ -1,0 +1,349 @@
+                        ;*********************************
+                        ;*                               *
+                        ;*         PINK TUNES            *
+                        ;*                               *
+                        ;*     A COMPOSING PROGRAM       *
+                        ;*    FOR FOUR PART HARMONIES    *
+                        ;*                               *
+                        ;*     BY JOHN S SIMONTON, JR    *
+                        ;*(C) 1978 PAIA ELECTRONICS, INC *
+                        ;*********************************
+                        ;
+0810 =                  KBD		= $0810
+0820 =                  DISP	= $0820
+0d21 =                  INIT	= $0D21
+0d2b =                  NOTE	= $0D2B
+0f00 =                  DECD	= $0F00
+ffc0 =                  BRAK	= $FFC0		;BREAK ROUTINE IN PIEBUG
+                        
+0000 =                  	org	$0000
+                        ;
+                        ;FIRST ATTEND TO HOUSKEEPING--
+                        ;
+0000 : 4cc0ff           BEG		jmp BRAK		;BREAK VECTOR
+0003 : 20210d           STAR    jsr INIT		;SETUP SYNTH - MUS1
+0006 : ad1008                   lda KBD			;INITIALIZE RANDOM
+0009 : 85d0                     sta <NTMP+01	;NUMBER GENERATOR
+000b : 207101           LOOP    jsr SET			;INIT PINK TUNES
+000e : 202b0d           LP0     jsr NOTE		;PLAY NOTE, READ AGO
+                        ;
+                        ;CHECK FOR ADDITION TO CANDIDATE
+                        ;NOTE TABLE
+                        ;
+0011 : a5e7             MAIN    lda <KTBL+08	;ANY KEYS DOWN?
+0013 : f002                     beq OUT1		;NO-CHECK FOR TIME OUT
+0015 : c5ec                     cmp <TEMP		;YES-A NEW KEY?
+0017 : 85ec             OUT1    sta <TEMP		;SAVE FOR NEXT TIME
+0019 : f00a                     beq OUT			;BRANCH IS SAME KEY
+                        ;
+001b : a210                     ldx #$10		;IF NEW KEY SHIFT
+001d : b48f             LP3     ldy <NBUF-1,x	;ALL 16 CANDIDATES
+001f : 958f                     sta <NBUF-1,x	;DOWN BY ONE
+0021 : 98                       tya
+0022 : ca                       dex
+0023 : d0f8                     bne LP3			;NOT DONE-LOOP
+                        ;
+                        ;NOW CHECK FOR CLOCK TIME OUT
+                        ;
+0025 : a5bf             OUT     lda <CLCK		;GET MASTER CLOCK
+0027 : d01a                     bne TEST		;AND IF TIMES OUT
+0029 : a5a9                     lda <TMPO		;SET TO TEMPO VALUE
+002b : 85bf                     sta <CLCK		;CALL SUB FOR NEW
+002d : 205301                   jsr ALOC		;NOTES (IF NEEDED)
+0030 : a5a8                     lda <LNTH		;GET CYCLE STATUS
+0032 : 8d2008                   sta DISP		;SHOW IT AND IF ZERO
+0035 : f00c                     beq TEST		;CYCLE IS COMPLETE
+0037 : c6a8                     dec <LNTH		;IF NOT DONE, DCRMNT
+0039 : d008                     bne TEST		;IF NOT ZERO NOWLEAVE
+003b : 207101                   jsr SET			;IF ZERO, REINIT
+003e : 205301                   jsr ALOC		;GET FIRST NOTES AND
+0041 : f0cb                     beq LP0			;BRANCH ALWAYS TO PLAY
+0043 : 20000f           TEST    jsr DECD		;GET A COMMAND - MUS-1
+0046 : d00c                     bne TST2		;NOT ZERO, NEXT TEST
+0048 : a203                     ldx #$03		;COMMAND 0, NEW TUNE
+                                                ;SET POINTER/COUNTER
+004a : 200001           TST1    jsr RNDM		;GET RANDOM NUMBER
+004d : 95cf                     sta <NTMP,x		;NEW INITIAL RANDOM
+004f : ca                       dex				;POINT TO NEXT
+0050 : d0f8                     bne TST1		;NOT DONE - LOOP
+0052 : f0b7                     beq LOOP		;BRANCH ALWAYS
+0054 : c901             TST2    cmp #$01		;COMMAND 1, TUNEING
+0056 : d00c                     bne TST4		;NOT 1, TEST NEXT
+0058 : a204                     ldx #$04		;4 OUTPUT BUFFERS
+005a : a95c                     lda #$5C		;PUT MIDDLE C IN ALL
+005c :                  TST3    ;sta NT0B,x  	;OUTPUT BUFFERS
+005c : 9ddb00           		db $9D, $DB, $00 ;force addressing mode
+005f : ca                       dex
+0060 : d0fa                     bne TST3		;NOT DONE-LOOP
+0062 : f0aa                     beq LP0			;BRANCH ALWAYS
+0064 : c902             TST4    cmp #$02		;COMMAND 2, STOP
+0066 : d0a6                     bne LP0			;NO COMMAND - LOOP
+0068 : 207101                   jsr SET			;CALL TO ZERO OUT-BUFFS
+006b : 202b0d                   jsr NOTE		;THEN MUTE SYNTHESIZER
+006e : 00                       brk				;AND RETURN TO PIEBUG
+                        ;
+                        ;RAM contents start-----------------------------------
+                        ;
+006f : 083abf0c0cbfbf0c 		db	$08, $3A, $BF, $0C, $0C, $BF, $BF, $0C
+0077 : 08bfbf0c18bfbf20 		db	$08, $BF, $BF, $0C, $18, $BF, $BF, $20
+007f : 08b7c9d0f185a0ea 		db	$08, $B7, $C9, $D0, $F1, $85, $A0, $EA
+0087 : ea               		db	$EA
+0088 : 02040101         TIME	db	$02, $04, $01, $01
+008c : f2f0f3f3         MASK	db	$F2, $F0, $F3, $F3
+0090 : 5a5d5f6264625f5d NBUF	db	$5A, $5D, $5F, $62, $64, $62, $5F, $5D
+0098 : 5a58565351535658 		db	$5A, $58, $56, $53, $51, $53, $56, $58
+                        		
+00a0 : 00000000         RND0	db	$00, $00, $00, $00
+00a4 : 00000000         NOIS	db	$00, $00, $00, $00
+00a8 : fa               LNTH	db	$FA
+00a9 : fa               TMPO	db	$FA
+                        ;MUS-1------------------------------------------------
+00aa : 8080808080808080 LAST	db	$80, $80, $80, $80, $80, $80, $80, $80
+00b2 : 8080808080808080 		db	$80, $80, $80, $80, $80, $80, $80, $80
+00ba : a2               ATCK	db	$A2
+00bb : 3f               DCY		db	$3F
+00bc : 20               SUST	db	$20
+00bd : 21               RLS		db	$21
+00be : 01               PEAK	db	$01
+00bf :                  NTB7
+00bf : ae               CLCK	db	$AE
+00c0 : 000000           TTBL	db 	$00, $00, $00
+00c3 : 0000000000000000 NTBB	db	$00, $00, $00, $00, $00, $00, $00, $00
+00cb : 00000000         		db	$00, $00, $00, $00
+00cf : 0000000000000000 NTMP	db	$00, $00, $00, $00, $00, $00, $00, $00
+00d7 : 00000000         		db	$00, $00, $00, $00
+00db : 00000000         NT0B	db	$00, $00, $00, $00
+00df : 0000000000000000 KTBL	db	$00, $00, $00, $00, $00, $00, $00, $00
+00e7 : 00               		db	$00
+00e8 : 00               CTRL	db	$00
+00e9 : 20               ODLY	db	$20
+00ea : 04               OUTS	db	$04
+00eb : 04               OUTT	db	$04
+00ec : 00               TEMP	db	$00
+00ed : ff               MSTACK	db	$FF
+                        ;POTSHOT----------------------------------------------
+00ee : b3               CHKSUM	db	$B3
+00ef : ff               STATUS	db	$FF
+00f0 : dd               COMAND	db	$DD
+00f1 : 02               IDENT	db	$02
+00f2 : ff01             ENDADR	db	$FF, $01
+00f4 : 0000             BEGADR	db	$00, $00
+00f6 : f600             PNTER	db	$F6, $00
+                        ;PIEBUG-----------------------------------------------
+00f8 : 16               LASTKE	db	$16
+00f9 : 82               ACC		db	$82
+00fa : 00               YREG	db	$00
+00fb : 00               XREG	db	$00
+00fc : 6e00             PC		db	$6E, $00	;Program counter
+00fe : ff               STACKP	db	$FF			;Stack pointer (user)
+00ff : 00               PREG	db	$00			;Stack register
+                        ;
+                        ;      RANDOM NUMBER GENERATOR
+                        ;
+                        ;ESSENTIALLY A 22 BIT LONG SHIFT
+                        ;REGISTER WITH EX-0R TAPS AT
+                        ;STAGES 22 AND 21 FED BACK TO
+                        ;INPUT.
+                        ;
+0100 : 8a               RNDM    txa				;SAVE X
+0101 : 48                       pha
+0102 : a5a5                     lda <NOIS+1		;LAST BYTE S/R
+0104 : 0a                       asl a			;ALIGN BITS 22 &
+0105 : 45a5                     eor <NOIS+1		;21 AND DO EX-OR
+0107 : 0a                       asl a			;THEN SHIFT RE-
+0108 : 0a                       asl a			;SULT TO CARRY
+0109 : 0a                       asl a
+010a : a203                     ldx #$03		;SET UP PNT/CNT
+010c : 36a4             LP1     rol <NOIS,x		;AND SHIFT 3 BYTE
+010e : ca                       dex				;SHIFT REGISTER
+010f : d0fb                     bne LP1			;BY ONE BIT LEFT
+0111 : 68                       pla				;WHEN DONE RE-
+0112 : aa                       tax				;STORE X REG.
+0113 : a5a7                     lda <NOIS+03	;AND LEAVE WITH
+0115 : 60                       rts				;WITH NO. IN ACC.
+                        ;
+                        ;      NEW NOTE
+                        ;
+                        ;TAKES CARE OF PICKING PINK NOTE
+                        ;FROM CANDIDATE NOTE TABLE AND
+                        ;CALCULATES AND UPDATES NOTE TIMERS
+                        ;NOTE THAT Y POINTS TO CHANNEL FOR
+                        ;UPDATE
+                        ;
+0116 : a205             NWNT    ldx #$05		;SET UP PNT/CNT
+0118 : a5ea                     lda <OUTS		;GET COPY PINKING
+011a : c6ea                     dec <OUTS		;COUNTER,DEC ORIGINAL
+011c : 45ea                     eor <OUTS		;PATTERN OF CHANGED
+011e : 85eb                     sta <OUTT		;BITS - SAVE CHANGES
+0120 : a900                     lda #$00		;PREPARE TO SUM DICE
+0122 : 46eb             NW1     lsr <OUTT		;CHECK FOR CHANGED
+0124 : 900a                     bcc NW2			;BIT - IF CHANGED
+0126 : 48                       pha				;SAVE CURRENT TOTAL
+0127 : 200001                   jsr RNDM		;GET RANDOM NUBMER
+012a : 2903                     and #$03		;MAKE RANGE FROM 0 T0 3
+012c : 959f                     sta <RND0-1,x	;SAVE VALUE FOR NEXT
+012e : 68                       pla				;RECOVER TOTAL
+012f : 18                       clc				;PREPARE ADDITION
+0130 : 759f             NW2     adc <RND0-1,x	;ADD VALUE OF DIE
+0132 : ca                       dex				;POINT TO NEXT
+0133 : d0ed                     bne NW1			;LOOP IF NOT DONE
+0135 : aa                       tax				;USE TOTAL AS POINTER
+0136 : b590                     lda <NBUF,x		;GET CANDIDATE
+0138 : f003                     beq DURA		;ZERO, DO NOTE CHANGE
+013a : 99bf00                   sta NTB7,y		;PLACE IN TEMP BUFFER
+013d : a5a5             DURA    lda <NOIS+01	;A CHEAP RANDOM NUMBER
+013f : 18                       clc				;PREPARE
+0140 : 398b00                   and MASK-1,y	;MASK DURATION VAL.
+0143 : 798700                   adc TIME-1,y	;ADD MINIMUM VAL.
+0146 : 290f                     and #$0F		;AND MASK RESULT
+0148 : aa                       tax				;USE AS COUNTER AND
+0149 : a901                     lda #$01		;DO DURATIONS AS
+014b : 2a               NT2     rol a			;POWERS OF 2. CARRY
+014c : ca                       dex				;SET DOTS NOTE
+014d : d0fc                     bne NT2			;NOT DONE - LOOP
+014f : 99c300                   sta NTBB,y		;PUT RESULT IN NOTES
+0152 : 60                       rts				;TIMER AND RETURN
+                        ;
+                        ;      ALLOCATION 0151
+                        ;SEES IF NEW NOTES ARE NEED AND IF
+                        ;SO GETS THEM.  ALSO CLEARS TRIGGER
+                        ;OF NOTE OUTPUT ONCE IT is PLAYED.
+                        ;
+0153 : a204             ALOC	ldx #$04		;DO 4 NOTE CHANNELS
+0155 : d6c3             LP6     dec <NTBB,x		;DECREMENT NOTE TIMER
+0157 : d007                     bne LP5			;AND IF TIME OUT
+0159 : 8a                       txa				;TRANSFER X REG. TO
+015a : a8                       tay				;TO Y
+015b : 201601                   jsr NWNT		;AND GET NEW NOTE
+015e : 98                       tya				;AND DURATION AND
+015f : aa                       tax				;RESTORE X
+0160 : ca               LP5     dex				;DECRIMENT COUNTER
+0161 : d0f2                     bne LP6			;IF NOT DONE - LOOP
+0163 : a204                     ldx #$04		;AGAIN, FOUR CHANNELS
+0165 : b5bf             AL1     lda <NTB7,x		;GET NOTE FROM TEMP
+0167 : 95db                     sta <NT0B,x		;BUFFER, SAVE IN OUT
+0169 : 293f                     and #$3F		;BUFFER, CLEAR FLAG
+016b : 95bf                     sta <NTB7,x		;PUT BACK IN TEMP.
+016d : ca                       dex				;POINT TO NEXT
+016e : d0f5                     bne AL1			;NOT DONE - LOOP
+0170 : 60                       rts				;DONE, RETURN
+                        ;
+                        ;            SET
+                        ;
+                        ;PREPARES KNOWN START POINT FOR
+                        ;CYCLIC TUNES.
+                        ;
+                        ;
+0171 : a900             SET		lda #$00		;TO ZERO THINGS WITH
+0173 : a001                     ldy #$01		;PRESET FOR NOTE CNTRS
+0175 : a204                     ldx #$04		;DO 4 CHANNLES
+0177 : 95db             LP10    sta <NT0B,x		;ZERO OUT-BUFFERS
+0179 : 95a0                     sta <RND0,x		;ZERO 4 DICE
+017b : 94c3                     sty <NTBB,x		;PRESET NOTE TIMERS
+017d : 48                       pha				;SAVE THE ZERO
+017e : b5cf                     lda <NTMP,x		;SET UP RNDM'S S/R
+0180 : 95a4                     sta <NOIS,x		;AND CYCLE COUNTER
+0182 : 68                       pla				;RECOVER ZERO
+0183 : ca                       dex				;POINT TO NEXT
+0184 : d0f1                     bne LP10		;NOT DONE - LOOP
+0186 : 85a0                     sta <RND0		;ZERO 5TH DIE
+0188 : 85ea                     sta <OUTS		;ZERO PINKING COUNTER
+018a : 60                       rts				;AND RETURN
+                        ;
+                        ;RAM contents start-----------------------------------
+018b : 04b7b70404b7b704 		db	$04, $B7, $B7, $04, $04, $B7, $B7, $04
+0193 : 04b7b70404b7b704 		db	$04, $B7, $B7, $04, $04, $B7, $B7, $04
+019b : 04b7b70404b700b5 		db	$04, $B7, $B7, $04, $04, $B7, $00, $B5
+01a3 : f700b5f700b5f700 		db	$F7, $00, $B5, $F7, $00, $B5, $F7, $00
+01ab : b5f700b5f700b5f7 		db	$B5, $F7, $00, $B5, $F7, $00, $B5, $F7
+01b3 : 00b5f700b5f700b5 		db	$00, $B5, $F7, $00, $B5, $F7, $00, $B5
+01bb : f700b5f700b5f700 		db	$F7, $00, $B5, $F7, $00, $B5, $F7, $00
+01c3 : b5f700b5f700b5f7 		db	$B5, $F7, $00, $B5, $F7, $00, $B5, $F7
+01cb : 00b5f700b5f700b5 		db	$00, $B5, $F7, $00, $B5, $F7, $00, $B5
+01d3 : f700b5f700b5f700 		db	$F7, $00, $B5, $F7, $00, $B5, $F7, $00
+01db : b5f700b5f700b5f7 		db	$B5, $F7, $00, $B5, $F7, $00, $B5, $F7
+01e3 : 00b5f700b5f700b5 		db	$00, $B5, $F7, $00, $B5, $F7, $00, $B5
+01eb : f700b5f700b5000b 		db	$F7, $00, $B5, $F7, $00, $B5, $00, $0B
+01f3 : 3d210e410e010179 		db	$3D, $21, $0E, $41, $0E, $01, $01, $79
+01fb : 0ec30e140e       		db	$0E, $C3, $0E, $14, $0E
+                        		
+                        		end
+                        		
+
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                 ACC : $00f9            249
+                ALOC : $0153            339
+                 AL1 : $0165            357
+                ATCK : $00ba            186
+                 BEG : $0000              0
+              BEGADR : $00f4            244
+                BRAK : $ffc0          65472   *
+              CHKSUM : $00ee            238
+                CLCK : $00bf            191
+              COMAND : $00f0            240
+                CTRL : $00e8            232
+                 DCY : $00bb            187
+                DECD : $0f00           3840   *
+                DISP : $0820           2080   *
+                DURA : $013d            317
+              ENDADR : $00f2            242
+               IDENT : $00f1            241
+                INIT : $0d21           3361   *
+                 KBD : $0810           2064   *
+                KTBL : $00df            223
+                LAST : $00aa            170
+              LASTKE : $00f8            248
+                LNTH : $00a8            168
+                LOOP : $000b             11
+                 LP0 : $000e             14
+                 LP1 : $010c            268
+                LP10 : $0177            375
+                 LP3 : $001d             29
+                 LP5 : $0160            352
+                 LP6 : $0155            341
+                MAIN : $0011             17
+                MASK : $008c            140
+              MSTACK : $00ed            237
+                NBUF : $0090            144
+                NOIS : $00a4            164
+                NOTE : $0d2b           3371   *
+                NTBB : $00c3            195
+                NTB7 : $00bf            191
+                NTMP : $00cf            207
+                NT0B : $00db            219
+                 NT2 : $014b            331
+                NWNT : $0116            278
+                 NW1 : $0122            290
+                 NW2 : $0130            304
+                ODLY : $00e9            233
+                 OUT : $0025             37
+                OUTS : $00ea            234
+                OUTT : $00eb            235
+                OUT1 : $0017             23
+                  PC : $00fc            252
+                PEAK : $00be            190
+               PNTER : $00f6            246
+                PREG : $00ff            255
+                 RLS : $00bd            189
+                RNDM : $0100            256
+                RND0 : $00a0            160
+                 SET : $0171            369
+              STACKP : $00fe            254
+                STAR : $0003              3
+              STATUS : $00ef            239
+                SUST : $00bc            188
+                TEMP : $00ec            236
+                TEST : $0043             67
+                TIME : $0088            136
+                TMPO : $00a9            169
+                TST1 : $004a             74
+                TST2 : $0054             84
+                TST3 : $005c             92
+                TST4 : $0064            100
+                TTBL : $00c0            192
+                XREG : $00fb            251
+                YREG : $00fa            250
+				

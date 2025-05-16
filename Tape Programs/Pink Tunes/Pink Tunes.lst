@@ -9,24 +9,24 @@
                         ;*(C) 1978 PAIA ELECTRONICS, INC *
                         ;*********************************
                         ;
-0810 =                  KBD		=$0810
-0820 =                  DISP	=$0820
-0d21 =                  INIT	=$0D21
-0d2b =                  NOTE	=$0D2B
-0f00 =                  DECD	=$0F00
-ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
+0810 =                  KBD		= $0810
+0820 =                  DISP	= $0820
+0d21 =                  INIT	= $0D21
+0d2b =                  NOTE	= $0D2B
+0f00 =                  DECD	= $0F00
+ffc0 =                  BRAK	= $FFC0	;BREAK ROUTINE IN PIEBUG
                         
-0087 =                  TIME	=$0087
-008b =                  MASK	=$008B
-00bf =                  CLCK	=$00BF
-00bf =                  NTB7	=$00BF
-00c3 =                  NTBB	=$00C3
-00cf =                  NTMP	=$00CF
-00db =                  NT0B	=$00db
-00df =                  KTBL	=$00DF
-00ea =                  OUTS	=$00EA
-00eb =                  OUTT	=$00EB
-00ec =                  TEMP	=$00EC		;TEMPORARY STORAGE
+0087 =                  TIME	= $0087
+008b =                  MASK	= $008B
+00bf =                  CLCK	= $00BF
+00bf =                  NTB7	= $00BF
+00c3 =                  NTBB	= $00C3
+00cf =                  NTMP	= $00CF
+00db =                  NT0B	= $00db
+00df =                  KTBL	= $00DF
+00ea =                  OUTS	= $00EA
+00eb =                  OUTT	= $00EB
+00ec =                  TEMP	= $00EC	;TEMPORARY STORAGE
                         
 0000 =                  	org	$0000
                         ;
@@ -35,17 +35,17 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
 0000 : 4cc0ff           BEG		jmp BRAK		;BREAK VECTOR
 0003 : 20210d           STAR    jsr INIT		;SETUP SYNTH - MUS1
 0006 : ad1008                   lda KBD			;INITIALIZE RANDOM
-0009 : 85d0                     sta NTMP+01		;NUMBER GENERATOR
-000b : 207101           LOOP    jsr SET1		;INIT PINK TUNES
+0009 : 85d0                     sta <NTMP+01	;NUMBER GENERATOR
+000b : 207101           LOOP    jsr SET			;INIT PINK TUNES
 000e : 202b0d           LP0     jsr NOTE		;PLAY NOTE, READ AGO
                         ;
                         ;CHECK FOR ADDITION TO CANDIDATE
                         ;NOTE TABLE
                         ;
-0011 : a5e7             MAIN    lda KTBL+08		;ANY KEYS DOWN?
+0011 : a5e7             MAIN    lda <KTBL+08	;ANY KEYS DOWN?
 0013 : f002                     beq OUT1		;NO-CHECK FOR TIME OUT
-0015 : c5ec                     cmp TEMP		;YES-A NEW KEY?
-0017 : 85ec             OUT1    sta TEMP		;SAVE FOR NEXT TIME
+0015 : c5ec                     cmp <TEMP		;YES-A NEW KEY?
+0017 : 85ec             OUT1    sta <TEMP		;SAVE FOR NEXT TIME
 0019 : f00a                     beq OUT			;BRANCH IS SAME KEY
                         ;
 001b : a210                     ldx #$10		;IF NEW KEY SHIFT
@@ -67,7 +67,7 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
 0035 : f00c                     beq TEST		;CYCLE IS COMPLETE
 0037 : c6a8                     dec <LNTH		;IF NOT DONE, DCRMNT
 0039 : d008                     bne TEST		;IF NOT ZERO NOWLEAVE
-003b : 207101                   jsr SET1		;IF ZERO, REINIT
+003b : 207101                   jsr SET			;IF ZERO, REINIT
 003e : 205301                   jsr ALOC		;GET FIRST NOTES AND
 0041 : f0cb                     beq LP0			;BRANCH ALWAYS TO PLAY
 0043 : 20000f           TEST    jsr DECD		;GET A COMMAND - MUS-1
@@ -80,19 +80,19 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
 0050 : d0f8                     bne TST1		;NOT DONE - LOOP
 0052 : f0b7                     beq LOOP		;BRANCH ALWAYS
 0054 : c901             TST2    cmp #$01		;COMMAND 1, TUNEING
-0056 : d00b                     bne TST4		;NOT 1, TEST NEXT
+0056 : d00c                     bne TST4		;NOT 1, TEST NEXT
 0058 : a204                     ldx #$04		;4 OUTPUT BUFFERS
 005a : a95c                     lda #$5C		;PUT MIDDLE C IN ALL
-005c : 95db             TST3    sta NT0B,x  	;OUTPUT BUFFERS
-                        		;db $9D, $db, $00 ;STA     >NT0B,x
-005e : ca                       dex
-005f : d0fb                     bne TST3		;NOT DONE-LOOP
-0061 : f0ab                     beq LP0			;BRANCH ALWAYS
-0063 : c902             TST4    cmp #$02		;COMMAND 2, STOP
-0065 : d0a7                     bne LP0			;NO COMMAND - LOOP
-0067 : 207101                   jsr SET1		;CALL TO ZERO OUT-BUFFS
-006a : 202b0d                   jsr NOTE		;THEN MUTE SYNTHESIZER
-006d : 00                       brk				;AND RETURN TO PIEBUG
+005c :                  TST3    ;sta NT0B,x  	;OUTPUT BUFFERS
+005c : 9ddb00           		db $9D, $DB, $00 ;force addressing mode
+005f : ca                       dex
+0060 : d0fa                     bne TST3		;NOT DONE-LOOP
+0062 : f0aa                     beq LP0			;BRANCH ALWAYS
+0064 : c902             TST4    cmp #$02		;COMMAND 2, STOP
+0066 : d0a6                     bne LP0			;NO COMMAND - LOOP
+0068 : 207101                   jsr SET			;CALL TO ZERO OUT-BUFFS
+006b : 202b0d                   jsr NOTE		;THEN MUTE SYNTHESIZER
+006e : 00                       brk				;AND RETURN TO PIEBUG
                         
 0088 =                          org     $0088
 0088 : 02               TIMED   db      $02		;$0088
@@ -175,8 +175,8 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
                         ;UPDATE
                         ;
 0116 : a205             NWNT    ldx #$05		;SET UP PNT/CNT
-0118 : a5ea                     lda <OUTS		;GET COPY OF PINKING
-011a : c6ea                     dec <OUTS		;COUNTER, DEC ORIGINAL
+0118 : a5ea                     lda <OUTS		;GET COPY PINKING
+011a : c6ea                     dec <OUTS		;COUNTER,DEC ORIGINAL
 011c : 45ea                     eor <OUTS		;PATTERN OF CHANGED
 011e : 85eb                     sta <OUTT		;BITS - SAVE CHANGES
 0120 : a900                     lda #$00		;PREPARE TO SUM DICE
@@ -195,7 +195,7 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
 0136 : b590                     lda <NBUF,x		;GET CANDIDATE
 0138 : f003                     beq DURA		;ZERO, DO NOTE CHANGE
 013a : 99bf00                   sta NTB7,y		;PLACE IN TEMP BUFFER
-013d : a5a5             DURA    lda <NOIS+01	;A CHEAP RANDOM NUMBER
+013d : a5a5             DURA    lda <NOIS+01	;A CHEAP RANDOM NO.
 013f : 18                       clc				;PREPARE
 0140 : 398b00                   and MASK,y		;MASK DURATION VAL.
 0143 : 798700                   adc TIME,y		;ADD MINIMUM VAL.
@@ -208,7 +208,8 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
 014f : 99c300                   sta NTBB,y		;PUT RESULT IN NOTES
 0152 : 60                       rts				;TIMER AND RETURN
                         ;
-                        ;      ALLOCATION 0151
+                        ;ALLOCATION 0151
+                        ;
                         ;SEES IF NEW NOTES ARE NEED AND IF
                         ;SO GETS THEM.  ALSO CLEARS TRIGGER
                         ;OF NOTE OUTPUT ONCE IT is PLAYED.
@@ -232,13 +233,13 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
 016e : d0f5                     bne AL1			;NOT DONE - LOOP
 0170 : 60                       rts				;DONE, RETURN
                         ;
-                        ;            SET1
+                        ;            SET
                         ;
                         ;PREPARES KNOWN START POINT FOR
                         ;CYCLIC TUNES.
                         ;
                         ;
-0171 : a900             SET1    lda #$00		;TO ZERO THINGS WITH
+0171 : a900             SET		lda #$00		;TO ZERO THINGS WITH
 0173 : a001                     ldy #$01		;PRESET FOR NOTE CNTRS
 0175 : a204                     ldx #$04		;DO 4 CHANNLES
 0177 : 95db             LP10    sta <NT0B,x		;ZERO OUT-BUFFERS
@@ -255,6 +256,7 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
 018a : 60                       rts				;AND RETURN
                         
                         		end
+                        		
 
 -------------------------------- Symbol Table --------------------------------
 
@@ -304,7 +306,7 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
                 OUT1 : $0017             23
                 RNDM : $0100            256
                 RND0 : $00a0            160
-                SET1 : $0171            369
+                 SET : $0171            369
                 STAR : $0003              3
                 TEMP : $00ec            236   *
                 TEST : $0043             67
@@ -317,5 +319,5 @@ ffc0 =                  BRAK	=$FFC0		;BREAK ROUTINE IN PIEBUG
                 TST1 : $004a             74
                 TST2 : $0054             84
                 TST3 : $005c             92
-                TST4 : $0063             99
+                TST4 : $0064            100
 				
