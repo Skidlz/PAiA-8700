@@ -1,208 +1,210 @@
-				;*******************************
-				;*                             *
-				;*         POLY-SPLIT          *
-				;*                             *
-				;*  A PROGRAM FOR POLYPHONIC   *
-				;*      SPLIT KEYBOARD         *				
-				;*                             *
-				;*            BY               *				
-				;*      JOHN SIMONTON          *				
-				;*                             *
-				;* (C) 1979 - PAIA ELECTRONICS *				
-				;*                             *
-				;*******************************
+                        	;*******************************
+                        	;*                             *
+                        	;*         POLY-SPLIT          *
+                        	;*                             *
+                        	;*  A PROGRAM FOR POLYPHONIC   *
+                        	;*      SPLIT KEYBOARD         *				
+                        	;*                             *
+                        	;*            BY               *				
+                        	;*      JOHN SIMONTON          *				
+                        	;*                             *
+                        	;* (C) 1979 - PAIA ELECTRONICS *				
+                        	;*                             *
+                        	;*******************************
+                        	
+00e0 =                  KTBL	= $00E0
+00d8 =                  NTBL	= $00D8
+00a2 =                  HKEY	= $00A2
+00a1 =                  SPLT	= $00A1
+00ec =                  OUT2	= $00EC
+00eb =                  OUTT	= $00EB
+00ea =                  OUTS	= $00EA
+                        ;functions
+0dc3 =                  TRGN	= $0DC3	;MUS-1 unused
+0d21 =                  INIT	= $0D21	;MUS-1
+0d2b =                  NOTE	= $0D2B	;MUS-1
+0d71 =                  POLY	= $0D71	;MUS-1
+0f00 =                  DECD	= $0F00	;PIEBUG
+                        ;
+                        ;FIRST, SYSTEM THINGS ARE DISPOSED OF.  THE SYSTEM IS
+                        ;INITIALIZED USING MUS 1.0'S "INIT" ROUTINE, THEN THE
+                        ;QUASH CHANNELS ARE REFRESHED AND THE AGO KEYBOARD
+                        ;SCANNED ALSO USING ROUTINES FROM MUS 1.0
+                        ;FINNALLY, THE PIEBUG ROUTINE "DECODE" IS USED TO READ
+                        ;COMMAND KEYBOARD AND ANY COMMANDS ARE EXECUTED.
+                        ;0-SYSTEM CLEAR AND RE-INIT; 1-TUNE ALL CHANNELS;
+                        ;2-SET SPLIT POINT, AND AGO KEY PRESSES BECOMES SPLIT
+                        ;
+0000 =                  	org	$0000
+                        ;
+0000 : a5eb             STAR	lda	OUTT	;GET THE # OF RESERVED LOW CHANS
+0002 : 85ec             		sta	OUT2	;SAVE PERMANENTLY
+0004 : a207             POSP	ldx	#$07	;SET UP A POINTER/COUNTER
+0006 : a900             SLP9	lda	#$00	;AND GET READY TO ZERO STUFF
+0008 : 95a2             		sta	HKEY,x	;ZERO THE TEMPORARY BUFFER
+000a : ca               		dex			;AND POINT TO THE NEXT
+000b : 10f9             		bpl	SLP9	;IF SOME ARE LEFT, LOOP
+000d : 20210d           		jsr	INIT	;MUS 1.0 - INITIALIZE SYSTEM
+0010 : 202b0d           SLP6	jsr	NOTE	;MUS 1.0 - REFRESH AND READ AGO KBD
+0013 : 20000f           		jsr	DECD	;PIEBUG - READ COMMAND KEYBOARD
+0016 : f0ec             		beq	POSP	;IF COMMAND = 0, BRANCH TO RE-INIT
+0018 : c901             		cmp	#$01	;IS COMMAND = 1?
+001a : d007             		bne	NTST	;NO, BRANCH TO NEXT TEST
+001c : a92e             		lda	#$2E	;WILL BECOME MIDDLE C
+001e : 20230d           		jsr	INIT+2	;USE PART OF MUS 1.0 INITIALIZE
+0021 : f0ed             		beq	SLP6	;BRANCH ALWAYS
+0023 : c902             NTST	cmp	#$02	;IS COMMAND = 2?
+0025 : d008             		bne	SPLI	;NO, BRANCH TO POLY-SPLIT PROGRAM
+0027 : a5e7             		lda	KTBL+7	;GET THE LOWEST KEY DOWN
+0029 : f0e5             		beq	SLP6	;IF NONE ARE DOWN, LOOP
+002b : 85a1             		sta	SPLT	;SAVE THE KEY AS THE SPLIT POINT
+002d : d0e1             		bne	SLP6	;BRANCH ALWAYS
+                        ;
+                        ;NOW THE SPLIT PROGRAM. AT THIS POINT A LIST OF THE
+                        ;AGO KEYS WHICH THE MUS 1.0 SUBROUTINE "LOOK" FOUND TO
+                        ;BE PRESSED HAS BEEN COMPILED AND SAVED IN THE INPUT B
+                        ;AREA "KTBL".  WE BEGIN BY REMOVING FROM THE INPUT BUF
+                        ;ALL THOSE KEYS WHICH ARE ABOVE THE SPLIT POINT AND
+                        ;TRANSFERING THEM TO THE TEMPORARY BUFFER AREA "HKEY"
+                        ;
+002f : a007             SPLI	ldy	#$07	;SET UP POINTER TO HIGH BUFFER
+0031 : a207             		ldx	#$07	;AND ONE TO INPUT BY
+0033 : b5e0             SLP0	lda	KTBL,x	;GET THE KEY
+0035 : f00f             		beq	SNX1	;IF ZERO, GO TO NEXT
+0037 : c5a1             		cmp	SPLT	;GREATER THAN SPLIT POINT?
+0039 : 9008             		bcc	SNX0	;IF NOT GREATER, BRANCH
+003b : 99a200           		sta	HKEY,y	;GREATER, SAVE IN HIGH BUFFER
+003e : 88               		dey			;POINT TO NEXT HIGH KEY BUFFER
+003f : a900             		lda	#$00	;PREPARE AND
+0041 : 95e0             		sta	KTBL,x	;ZERO THIS KEY
+0043 : ca               SNX0	dex			;POINT TO NEXT KEY
+0044 : 10ed             		bpl	SLP0	;IF SOME LEFT, LOOP
+                        ;
+                        ;NEXT THE NUMBER OF CHANNELS AVAILABLE FOR LOW KEY USE
+                        ;IS TRANSFERED TO THE TEMPORARY COUNTER "OUTT" AND THE
+                        ;MUS 1.0 ALLOCATION PROGRAM POLY IS CALLED TO ASSIGN L
+                        ;KEYS TO LOW CHANNELS
+                        ;
+0046 : a5ec             SNX1	lda	OUT2	;GET THE NUMBER OF LOW CHANS AVAILABLE
+0048 : 85eb             		sta	OUTT	;AND PUT IT IN THE TEMPORARY COUNTER
+004a : 20750d           		jsr	POLY+4	;AND CALL THE MAIN PORTION OF POLY
+                        ;
+                        ;NOW THAT THE LOW KEYS HAVE BEEN ALLOCATED TO LOW CHAN
+                        ;THE HIGH KEYS ARE TAKEN FROM "HKEY" AND PLACED BACK I
+                        ;INPUT BUFFER (KEYS ALREADY ALLOCATED ARE REMOVED FROM
+                        ;INPUT BUFFER). SIMULTANEOUSLY THE LOW CHANNELS ARE MO
+                        ;TO HKEY AND ALL LOW CHANNELS IN THE OUTPUT BUFFER
+                        ;ARE MARKED AS "IN USE" SO THAT THEY WILL BE IGNORED
+                        ;WHEN HIGH KEYS ARE ALLOCATED.
+                        ;
+004d : a4ec             		ldy	OUT2	;A COUNTER TO MOVE ONLY THE LOW CHANNELS
+004f : a207             		ldx	#$07	;AND A POINTER/COUNTER
+0051 : b5a2             SPL1	lda	HKEY,x	;GET THE HIGH KEY FROM TEMP BUFFER
+0053 : 95e0             		sta	KTBL,x	;PUT IT IN THE INPUT BUFFER
+0055 : 88               		dey			;ONE LESS LOW CHANNEL  TO DO
+0056 : 3008             		bmi	SNX2	;ALL LOW CHANNELS DONE, BRANCH
+0058 : b5d8             		lda	NTBL,x	;GET THE LOW NOTE
+005a : 95a2             		sta	HKEY,x	;PUT IT IN TEMPORARY BUFFER
+005c : 0940             		ora	#$40	;THEN SET THE TRIGGER TO MARK NOTE
+005e : 95d8             		sta	NTBL,x	;AND REPLACE THE NOTE
+0060 : ca               SNX2	dex			;ONE LESS CHANNEL, POINT TO NEXT
+0061 : 10ee             		bpl	SPL1	;IF SOME LEFT, LOOP
+                        ;
+                        ;NOW POLY IS CALLED AGAIN, THIS TIME TO ALLOCATE HIGH 
+                        ;
+0063 : 38               		sec			;PREPARE FOR SUBTRACTION
+0064 : a910             		lda	#$10	;16 CHANNELS SUPPORTED BY MUS1
+0066 : e5ec             		sbc	OUT2	;LESS THE LOW RESERVED CHANNELS
+0068 : aa               		tax			;RESULT IS POINTER
+0069 : 38               		sec			;ANOTHER SUBTRACTION - PREPARE
+006a : a5ea             		lda	OUTS	;TOTAL HARDWARE CHANNELS
+006c : e5ec             		sbc	OUT2	;LESS LOW RESERVED CHANNELS
+006e : 85eb             		sta	OUTT	;BECOMES CHANNELS LEFT TO ALLOCATE
+0070 : 20770d           		jsr	POLY+6	;CALL MAJOR PORTION OF POLY
+                        ;
+                        ;FINALLY, THE REAL STATE OF THE LOW CHANNELS IS RESPOR
+                        ;TO THE OUTPUT BUFFER. SIMULTANEOUSLY THE TEMPORARY BU
+                        ;IS ZERO'D FOR THE NEXT PASS.
+                        ;
+0073 : a4ec             		ldy	OUT2	;NUMBER OF LOW CHANNELS FOR COUNTER
+0075 : a207             		ldx	#$07	;POINTER/COUNTER
+0077 : 88               SLP2	dey			;ONE LESS LOW CHANNEL
+0078 : 3004             		bmi	SNX3	;AND IF ALL DONE, SKIP NEXT TRANSFER
+007a : b5a2             		lda	HKEY,x	;GET THE REAL CHANNEL STATE
+007c : 95d8             		sta	NTBL,x	;PLACE IN OUTPUT BUFFER
+007e : a900             SNX3	lda	#$00	;NOW GET READY AND
+0080 : 95a2             		sta	HKEY,x	;ZERO THIS TEMPORARY BUFFER LOCATION
+0082 : ca               		dex			;ONE LESS TEMP BUFFER LOCATION
+0083 : 10f2             		bpl	SLP2	;IF SOME REMAIN. LOOP
+0085 : 3089             		bmi	SLP6	;BRANCH ALWAYS TO CONTINUE
+                        ;
+                        	end
+                        
+                        ;********************************
+                        ;*            NOTES:            *
+                        ;*  DUMP PROGRAM FROM 0000-0090 *
+                        ;*                              *
+                        ;*  SET THESE LOCATION:         *
+                        ;*                              *
+                        ;*     $0E8 CTRL $40 DYNAMIC    *
+                        ;*     $0E9 ODLY $20 DELAY      *
+                        ;*     $0EA OUTS $XX TOT CHANS  *
+                        ;*     $0EB OUTT $XX LOW CHANS  *
+                        ;*                              *
+                        ;*  COLD START - $0000          *
+                        ;*  WARM START = $0004          *
+                        ;*                              *
+                        ;*  NOTE THE FOLLOWING THINGS:  *
+                        ;*                              *
+                        ;*1) THE PROGRAM IS RELOCATABLE;*
+                        ;*   IT MAY BE LOADED AND RUN IN*
+                        ;*   ANY NON-CONFLICTING MEMRORY*
+                        ;*   SPACE                      *
+                        ;*                              *
+                        ;*2) CALLING POLY TWICE IS NOT  *
+                        ;*   EXTRA EFFICIENT.  TIME RE- *
+                        ;*   QUIREMENTS DICTATE MEDIUM  *
+                        ;*   TEMP KNOB SETTING - ABOUT  *
+                        ;*   10 MS/SCAN                 *
+                        ;*                              *
+                        ;*3) AS SOON AS THE PROGRAM IS  *
+                        ;*   RUNNING, TOUCH COMMAND PAD *
+                        ;*   2 AND THE KEY WHICH IS TO  *
+                        ;*   BE THE SPLIT POINT. THEN 1 *
+                        ;*   TO TUNE AND FINALLY 0      *
+                        ;*   BEFORE PLAYING             *
+                        ;*                              *
+                        ;********************************
+                        ;POLY-SPLIT 8.8
+                        		
+
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                DECD : $0f00           3840   *
+                HKEY : $00a2            162   *
+                INIT : $0d21           3361   *
+                KTBL : $00e0            224   *
+                NOTE : $0d2b           3371   *
+                NTBL : $00d8            216   *
+                NTST : $0023             35
+                OUTS : $00ea            234   *
+                OUTT : $00eb            235   *
+                OUT2 : $00ec            236   *
+                POLY : $0d71           3441   *
+                POSP : $0004              4
+                SLP0 : $0033             51
+                SLP2 : $0077            119
+                SLP6 : $0010             16
+                SLP9 : $0006              6
+                SNX0 : $0043             67
+                SNX1 : $0046             70
+                SNX2 : $0060             96
+                SNX3 : $007e            126
+                SPLI : $002f             47
+                SPLT : $00a1            161   *
+                SPL1 : $0051             81
+                STAR : $0000              0
+                TRGN : $0dc3           3523   *
 				
-				;FIRST, SYSTEM THINGS ARE DISPOSED OF.  THE SYSTEM IS
-				;INITIALIZED USING MUS 1.0'S "INIT" ROUTINE, THEN THE
-				;QUASH CHANNELS ARE REFRESHED AND THE AGO KEYBOARD
-				;SCANNED ALSO USING ROUTINES FROM MUS 1.0
-				;FINNALLY, THE PIEBUG ROUTINE "DECODE" IS USED TO READ THE
-				;COMMAND KEYBOARD AND ANY COMMANDS ARE EXECUTED.
-				;0-SYSTEM CLEAR AND RE-INIT; 1-TUNE ALL CHANNELS;
-				;2-SET SPLIT POINT, AND AGO KEY PRESSES BECOMES SPLIT
-				;
-					org	$0000
-				;
-				STAR:
-0000 : A5 EB 		"  "		lda	OUTT	;GET THE # OF RESERVED LOW CHANS
-0002 : 85 EC 		"  "		sta	OUT2	;SAVE PERMANENTLY
-0004				POSP:
-0004 : A2 07 		"  "		ldx	#$07	;SET UP A POINTER/COUNTER
-0006				SLP9:
-0006 : A9 00 		"  "		lda	#$00	;AND GET READY TO ZERO STUFF
-0008 : 95 A2 		"  "		sta	HKEY,x	;ZERO THE TEMPORARY BUFFER
-000A : CA 		" "		dex		;AND POINT TO THE NEXT
-000B : 10 F9 		"  "		bpl	SLP9	;IF SOME ARE LEFT, LOOP
-000D : 20 21 0D 	" ! "		jsr	INIT	;MUS 1.0 - INITIALIZE SYSTEM
-0010				SLP6:
-0010 : 20 2B 0D 	" + "		jsr	NOTE	;MUS 1.0 - REFRESH AND READ AGO KBD
-0013 : 20 00 0F 	"   "		jsr	DECD	;PIEBUG - READ COMMAND KEYBOARD
-0016 : F0 EC 		"  "		beq	POSP	;IF COMMAND = 0, BRANCH TO RE-INIT
-0018 : C9 01 		"  "		cmp	#$01	;IS COMMAND = 1?
-001A : D0 07 		"  "		bne	NTST	;NO, BRANCH TO NEXT TEST
-001C : A9 2E 		" ."		lda	#$2E	;WILL BECOME MIDDLE C
-001E : 20 23 0D 	" # "		jsr	INIT+2	;USE PART OF MUS 1.0 INITIALIZE
-0021 : F0 ED 		"  "		beq	SLP6	;BRANCH ALWAYS
-0023				NTST:
-0023 : C9 02 		"  "		cmp	#$02	;IS COMMAND = 2?
-0025 : D0 08 		"  "		bne	SPLI	;NO, BRANCH TO POLY-SPLIT PROGRAM
-0027 : A5 E7 		"  "		lda	KTBL+7	;GET THE LOWEST KEY DOWN
-0029 : F0 E5 		"  "		beq	SLP6	;IF NONE ARE DOWN, LOOP
-002B : 85 A1 		"  "		sta	SPLT	;SAVE THE KEY AS THE SPLIT POINT
-002D : D0 E1 		"  "		bne	SLP6	;BRANCH ALWAYS
-				;
-				;NOW THE SPLIT PROGRAM. AT THIS POINT A LIST OF THE
-				;AGO KEYS WHICH THE MUS 1.0 SUBROUTINE "LOOK" FOUND TO
-				;BE PRESSED HAS BEEN COMPILED AND SAVED IN THE INPUT BUFFER
-				;AREA "KTBL".  WE BEGIN BY REMOVING FROM THE INPUT BUFFER
-				;ALL THOSE KEYS WHICH ARE ABOVE THE SPLIT POINT AND
-				;TRANSFERING THEM TO THE TEMPORARY BUFFER AREA "HKEY"
-				;
-002F				SPLI:
-002F : A0 07 		"  "		ldy	#$07	;SET UP POINTER TO HIGH BUFFER
-0031 : A2 07 		"  "		ldx	#$07	;AND ONE TO INPUT BY
-0033				SLP0:
-0033 : B5 E0 		"  "		lda	KTBL,x	;GET THE KEY
-0035 : F0 0F 		"  "		beq	SNX1	;IF ZERO, GO TO NEXT
-0037 : C5 A1 		"  "		cmp	SPLT	;GREATER THAN SPLIT POINT?
-0039 : 90 08 		"  "		bcc	SNX0	;IF NOT GREATER, BRANCH
-003B : 99 A2 00 	"   "		sta	HKEY,y	;GREATER, SAVE IN HIGH BUFFER
-003E : 88 		" "		dey		;POINT TO NEXT HIGH KEY BUFFER
-003F : A9 00 		"  "		lda	#$00	;PREPARE AND
-0041 : 95 E0 		"  "		sta	KTBL,x	;ZERO THIS KEY
-0043				SNX0:
-0043 : CA 		" "		dex		;POINT TO NEXT KEY
-0044 : 10 ED 		"  "		bpl	SLP0	;IF SOME LEFT, LOOP
-				;
-				;NEXT THE NUMBER OF CHANNELS AVAILABLE FOR LOW KEY USE
-				;IS TRANSFERED TO THE TEMPORARY COUNTER "OUTT" AND THE
-				;MUS 1.0 ALLOCATION PROGRAM POLY IS CALLED TO ASSIGN LOW
-				;KEYS TO LOW CHANNELS
-				;
-0046				SNX1:
-0046 : A5 EC 		"  "		lda	OUT2	;GET THE NUMBER OF LOW CHANS AVAILABLE
-0048 : 85 EB 		"  "		sta	OUTT	;AND PUT IT IN THE TEMPORARY COUNTER
-004A : 20 75 0D 	" u "		jsr	POLY+4	;AND CALL THE MAIN PORTION OF POLY
-				;
-				;NOW THAT THE LOW KEYS HAVE BEEN ALLOCATED TO LOW CHANNELS,
-				;THE HIGH KEYS ARE TAKEN FROM "HKEY" AND PLACED BACK IN THE
-				;INPUT BUFFER (KEYS ALREADY ALLOCATED ARE REMOVED FROM THE
-				;INPUT BUFFER). SIMULTANEOUSLY THE LOW CHANNELS ARE MOVED
-				;TO HKEY AND ALL LOW CHANNELS IN THE OUTPUT BUFFER
-				;ARE MARKED AS "IN USE" SO THAT THEY WILL BE IGNORED
-				;WHEN HIGH KEYS ARE ALLOCATED.
-				;
-004D : A4 EC 		"  "		ldy	OUT2	;A COUNTER TO MOVE ONLY THE LOW CHANNELS
-004F : A2 07 		"  "		ldx	#$07	;AND A POINTER/COUNTER
-0051				SPL1:
-0051 : B5 A2 		"  "		lda	HKEY,x	;GET THE HIGH KEY FROM TEMP BUFFER
-0053 : 95 E0 		"  "		sta	KTBL,x	;PUT IT IN THE INPUT BUFFER
-0055 : 88 		" "		dey		;ONE LESS LOW CHANNEL  TO DO
-0056 : 30 08 		"0 "		bmi	SNX2	;ALL LOW CHANNELS DONE, BRANCH
-0058 : B5 D8 		"  "		lda	NTBL,x	;GET THE LOW NOTE
-005A : 95 A2 		"  "		sta	HKEY,x	;PUT IT IN TEMPORARY BUFFER
-005C : 09 40 		" @"		ora	#$40	;THEN SET THE TRIGGER TO MARK NOTE
-005E : 95 D8 		"  "		sta	NTBL,x	;AND REPLACE THE NOTE
-0060				SNX2:
-0060 : CA 		" "		dex		;ONE LESS CHANNEL, POINT TO NEXT
-0061 : 10 EE 		"  "		bpl	SPL1	;IF SOME LEFT, LOOP
-				;
-				;NOW POLY IS CALLED AGAIN, THIS TIME TO ALLOCATE HIGH CHANNELS
-				;
-0063 : 38 		"8"		sec		;PREPARE FOR SUBTRACTION
-0064 : A9 10 		"  "		lda	#$10	;16 CHANNELS SUPPORTED BY MUS1
-0066 : E5 EC 		"  "		sbc	OUT2	;LESS THE LOW RESERVED CHANNELS
-0068 : AA 		" "		tax		;RESULT IS POINTER
-0069 : 38 		"8"		sec		;ANOTHER SUBTRACTION - PREPARE
-006A : A5 EA 		"  "		lda	OUTS	;TOTAL HARDWARE CHANNELS
-006C : E5 EC 		"  "		sbc	OUT2	;LESS LOW RESERVED CHANNELS
-006E : 85 EB 		"  "		sta	OUTT	;BECOMES CHANNELS LEFT TO ALLOCATE
-0070 : 20 77 0D 	" w "		jsr	POLY+6	;CALL MAJOR PORTION OF POLY
-				;
-				;FINALLY, THE REAL STATE OF THE LOW CHANNELS IS RESPORED
-				;TO THE OUTPUT BUFFER. SIMULTANEOUSLY THE TEMPORARY BUFFER
-				;IS ZERO'D FOR THE NEXT PASS.
-				;
-0073 : A4 EC 		"  "		ldy	OUT2	;NUMBER OF LOW CHANNELS FOR COUNTER
-0075 : A2 07 		"  "		ldx	#$07	;POINTER/COUNTER
-0077				SLP2:
-0077 : 88 		" "		dey		;ONE LESS LOW CHANNEL
-0078 : 30 04 		"0 "		bmi	SNX3	;AND IF ALL DONE, SKIP NEXT TRANSFER
-007A : B5 A2 		"  "		lda	HKEY,x	;GET THE REAL CHANNEL STATE
-007C : 95 D8 		"  "		sta	NTBL,x	;PLACE IN OUTPUT BUFFER
-007E				SNX3:
-007E : A9 00 		"  "		lda	#$00	;NOW GET READY AND
-0080 : 95 A2 		"  "		sta	HKEY,x	;ZERO THIS TEMPORARY BUFFER LOCATION
-0082 : CA 		" "		dex		;ONE LESS TEMP BUFFER LOCATION
-0083 : 10 F2 		"  "		bpl	SLP2	;IF SOME REMAIN. LOOP
-0085 : 30 89 		"0 "		bmi	SLP6	;BRANCH ALWAYS TO CONTINUE
-				;*******************************
-				;*            NOTES:            *
-				;*  DUMP PROGRAM FROM 0000-0090 *
-				;*                              *
-				;*  SET THESE LOCATION:         *
-				;*                              *
-				;*     $0E8 CTRL $40 DYNAMIC    *
-				;*     $0E9 ODLY $20 DELAY      *
-				;*     $0EA OUTS $XX TOT CHANS  *
-				;*     $0EB OUTT $XX LOW CHANS  *
-				;*                              *
-				;*  COLD START - $0000          *
-				;*  WARM START = $0004          *
-				;*                              *
-				;*  NOTE THE FOLLOWING THINGS:  *
-				;*                              *
-				;*1) THE PROGRAM IS RELOCATABLE;*
-				;*   IT MAY BE LOADED AND RUN IN*
-				;*   ANY NON-CONFLICTING MEMRORY*
-				;*   SPACE                      *
-				;*                              *
-				;*2) CALLING POLY TWICE IS NOT  *
-				;*   EXTRA EFFICIENT.  TIME RE- *
-				;*   QUIREMENTS DICTATE MEDIUM  *
-				;*   TEMP KNOB SETTING - ABOUT  *
-				;*   10 MS/SCAN                 *
-				;*                              *
-				;*3) AS SOON AS THE PROGRAM IS  *
-				;*   RUNNING, TOUCH COMMAND PAD *
-				;*   2 AND THE KEY WHICH IS TO  *
-				;*   BE THE SPLIT POINT. THEN 1 *
-				;*   TO TUNE AND FINALLY 0      *
-				;*   BEFORE PLAYING             *
-				;*                              *
-				;********************************
-				;POLY-SPLIT 8.8
-				
-;--------------------------------------------------------------
-Symbol table
-============
-
-Value	Type	Name
------	----	----
-0004	 04	POSP
-0006	 04	SLP9
-0010	 04	SLP6
-0023	 04	NTST
-002F	 04	SPLI
-0033	 04	SLP0
-0043	 04	SNX0
-0046	 04	SNX1
-0051	 04	SPL1
-0060	 04	SNX2
-0077	 04	SLP2
-007E	 04	SNX3
-00A1	 04	SPLT
-00A2	 04	HKEY
-00D8	 04	NTBL
-00E0	 04	KTBL
-00EA	 04	OUTS
-00EB	 04	OUTT
-00EC	 04	OUT2
-0D21	 04	INIT
-0D2B	 04	NOTE
-0D71	 04	POLY
-0F00	 04	DECD
-
-Number of symbols:			23
-
-;--------------------------------------------------------------
