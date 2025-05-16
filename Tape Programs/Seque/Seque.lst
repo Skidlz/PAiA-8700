@@ -1,116 +1,3 @@
-AS65 Assembler for R6502 [1.42].                                     Page    1
-- C:\Users\zacka\My Drive\Schematics\PAiA 8700\Tape Programs\Seque\Seque.as --
-
--------------------------------- Symbol Table --------------------------------
-
-              Symbol   Value        Decimal
-
-                ACTN : $117a           4474
-                BEEP : $1f22           7970   *
-                BUFF : $00f0            240   *
-                CASS : $1eaa           7850   *
-                CLIK : $10cf           4303
-                CNCL : $10c8           4296
-                CNTR : $00e5            229   *
-                CNTU : $1045           4165
-                 COM : $1118           4376
-                COM0 : $1140           4416
-                COM1 : $1147           4423
-                CONT : $11b6           4534
-                COUT : $114a           4426
-                CTRL : $116d           4461
-                DBIT : $1e49           7753   *
-                DECD : $1f00           7936   *
-                  DO : $1178           4472
-                DOTP : $1246           4678
-                 DSP : $0820           2080   *
-                DTMP : $1080           4224
-                DUMY : $0003              3   *
-                EOUT : $10b3           4275
-                ESAV : $10a3           4259
-                 ES1 : $10a7           4263
-                ITAP : $10da           4314
-                 KBD : $0810           2064   *
-                KBUF : $00ec            236   *
-                KRED : $1157           4439
-                KRTN : $116b           4459
-                 KR2 : $115c           4444
-                 KR3 : $1161           4449
-                 LP1 : $11b0           4528
-                 LP2 : $11b2           4530
-                LSTL : $00e3            227   *
-                MCOM : $10ca           4298
-                MEND : $00e8            232   *
-                 MET : $10bc           4284
-                METF : $00e0            224   *
-                MET1 : $113d           4413
-                MPNT : $00ea            234   *
-                MSAV : $103f           4159
-                MSV1 : $1184           4484
-                 MS1 : $118f           4495
-                MTBL : $0300            768   *
-               MTBL1 : $0301            769   *
-               MTBL2 : $0302            770   *
-               MTBL3 : $0303            771   *
-                MTRC : $00df            223   *
-                NRML : $100c           4108
-                NRM1 : $1013           4115
-                OLDK : $105c           4188
-                OTAP : $10d7           4311
-                 OUT : $11ab           4523
-                OUTP : $0840           2112   *
-                PBUF : $00eb            235   *
-                PLAC : $1206           4614
-                PLA1 : $11ac           4524
-                 PL1 : $11d6           4566
-                REST : $1085           4229
-                ROUT : $1060           4192
-                RPLA : $1046           4166
-                RPL1 : $1052           4178
-                SBIT : $1e25           7717   *
-                SING : $1063           4195
-                SNG1 : $1069           4201
-                SRTN : $107b           4219
-                STAR : $1000           4096
-                STBL : $1100           4352
-                STEP : $1092           4242
-                STOR : $101b           4123
-                 STP : $1217           4631
-                STP1 : $10a2           4258
-                STTP : $1215           4629
-                STUS : $00e2            226   *
-                SYNC : $10c2           4290
-                TAPE : $11e1           4577
-                TBLM : $10b4           4276
-                 TCH : $1254           4692
-                TCHG : $10d4           4308
-                TCHR : $125c           4700
-                TCM1 : $120f           4623
-                TCOM : $1200           4608
-                TEND : $00e7            231   *
-                 TIN : $1233           4659
-                TLOD : $101e           4126
-                 TLP : $1205           4613
-                 TL1 : $102a           4138
-                 TL2 : $1039           4153
-                TOUT : $1220           4640
-                TPNT : $00e9            233   *
-                 TPO : $00e1            225   *
-                TRAN : $1144           4420
-                TRNS : $00e6            230   *
-                TRTN : $103c           4156
-                TTBL : $02c0            704   *
-                TTRN : $00e4            228   *
-                UTMP : $107c           4220
-                 U_D : $1082           4226
-            __6502__ : $0001              1
-
-99 labels used
-
-423 lines read, no errors in pass 1.
-AS65 Assembler for R6502 [1.42].                                     Page    2
-- C:\Users\zacka\My Drive\Schematics\PAiA 8700\Tape Programs\Seque\Seque.as --
-
                         ;********************************
                         ;*                              *
                         ;*          SEQUE 1.0           *
@@ -182,7 +69,7 @@ AS65 Assembler for R6502 [1.42].                                     Page    1
 101b : 85eb             STOR	sta	PBUF	;SAVE AGAIN
 101d : 60                		rts			;AND RETURN
                         ;
-                        ;PROGRAM TRANSPOE MODE - NOTE PLAYED
+                        ;PROGRAM TRANSPOSE MODE - NOTE PLAYED
                         ;IS "KILLED" WHEN KEY IS RELEASED
                         ;
 101e : b00a             TLOD	bcs	TL1		;FIRST PASS, INITIALIZE
@@ -464,7 +351,7 @@ AS65 Assembler for R6502 [1.42].                                     Page    1
 11de : 85e6             		sta	TRNS	;TO TRANSPOSE BUFFER
 11e0 : 60               		rts			;RETURN
                         ;
-                        ;TAPE TRASNFER PARAMETER TABLE
+                        ;TAPE TRANSFER PARAMETER TABLE
                         ;
 11e1 : ff00ff03c002c002 TAPE	db	$FF, $00, $FF, $03, $C0, $02, $C0, $02
                         ;
@@ -486,7 +373,7 @@ AS65 Assembler for R6502 [1.42].                                     Page    1
 1211 : 8d7b11           		sta	ACTN+01	;SET UP FOR PREVIOUS MODE
 1214 : 60               		rts			;THEN RETURN
                         ;
-                        ;SET UP PROCEDURE FOR TAPE TRASNFER
+                        ;SET UP PROCEDURE FOR TAPE TRANSFER
                         ;
 1215 : a207             STTP	ldx	#$07	;TRANSFER 7 BYTES
 1217 : bde111           STP		lda	TAPE,x	;GET PARAMETER FROM TABLE
@@ -535,7 +422,107 @@ AS65 Assembler for R6502 [1.42].                                     Page    1
 125c : d0b1             TCHR	bne TCM1	;GO SET UP PREVIOUS MODE
                         ;
                         	end
-No errors in pass 2.
-Wrote binary from address $1000 through $125d.
-Total size 606 bytes.
-
+
+-------------------------------- Symbol Table --------------------------------
+
+              Symbol   Value        Decimal
+
+                ACTN : $117a           4474
+                BEEP : $1f22           7970   *
+                BUFF : $00f0            240   *
+                CASS : $1eaa           7850   *
+                CLIK : $10cf           4303
+                CNCL : $10c8           4296
+                CNTR : $00e5            229   *
+                CNTU : $1045           4165
+                 COM : $1118           4376
+                COM0 : $1140           4416
+                COM1 : $1147           4423
+                CONT : $11b6           4534
+                COUT : $114a           4426
+                CTRL : $116d           4461
+                DBIT : $1e49           7753   *
+                DECD : $1f00           7936   *
+                  DO : $1178           4472
+                DOTP : $1246           4678
+                 DSP : $0820           2080   *
+                DTMP : $1080           4224
+                DUMY : $0003              3   *
+                EOUT : $10b3           4275
+                ESAV : $10a3           4259
+                 ES1 : $10a7           4263
+                ITAP : $10da           4314
+                 KBD : $0810           2064   *
+                KBUF : $00ec            236   *
+                KRED : $1157           4439
+                KRTN : $116b           4459
+                 KR2 : $115c           4444
+                 KR3 : $1161           4449
+                 LP1 : $11b0           4528
+                 LP2 : $11b2           4530
+                LSTL : $00e3            227   *
+                MCOM : $10ca           4298
+                MEND : $00e8            232   *
+                 MET : $10bc           4284
+                METF : $00e0            224   *
+                MET1 : $113d           4413
+                MPNT : $00ea            234   *
+                MSAV : $103f           4159
+                MSV1 : $1184           4484
+                 MS1 : $118f           4495
+                MTBL : $0300            768   *
+               MTBL1 : $0301            769   *
+               MTBL2 : $0302            770   *
+               MTBL3 : $0303            771   *
+                MTRC : $00df            223   *
+                NRML : $100c           4108
+                NRM1 : $1013           4115
+                OLDK : $105c           4188
+                OTAP : $10d7           4311
+                 OUT : $11ab           4523
+                OUTP : $0840           2112   *
+                PBUF : $00eb            235   *
+                PLAC : $1206           4614
+                PLA1 : $11ac           4524
+                 PL1 : $11d6           4566
+                REST : $1085           4229
+                ROUT : $1060           4192
+                RPLA : $1046           4166
+                RPL1 : $1052           4178
+                SBIT : $1e25           7717   *
+                SING : $1063           4195
+                SNG1 : $1069           4201
+                SRTN : $107b           4219
+                STAR : $1000           4096
+                STBL : $1100           4352
+                STEP : $1092           4242
+                STOR : $101b           4123
+                 STP : $1217           4631
+                STP1 : $10a2           4258
+                STTP : $1215           4629
+                STUS : $00e2            226   *
+                SYNC : $10c2           4290
+                TAPE : $11e1           4577
+                TBLM : $10b4           4276
+                 TCH : $1254           4692
+                TCHG : $10d4           4308
+                TCHR : $125c           4700
+                TCM1 : $120f           4623
+                TCOM : $1200           4608
+                TEND : $00e7            231   *
+                 TIN : $1233           4659
+                TLOD : $101e           4126
+                 TLP : $1205           4613
+                 TL1 : $102a           4138
+                 TL2 : $1039           4153
+                TOUT : $1220           4640
+                TPNT : $00e9            233   *
+                 TPO : $00e1            225   *
+                TRAN : $1144           4420
+                TRNS : $00e6            230   *
+                TRTN : $103c           4156
+                TTBL : $02c0            704   *
+                TTRN : $00e4            228   *
+                UTMP : $107c           4220
+                 U_D : $1082           4226
+				 

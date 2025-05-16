@@ -1,591 +1,592 @@
-					org	$0000
-				;
-0000				X0000:
-0000 : A9 00 		"  "		lda	#$00
-				;
-0002 : 85 		" "		db	$85
-0003				L0003:
-0003 : E2 		" "		db	$E2
-				;
-0004 : A9 0C 		"  "		lda	#$0C
-0006 : 8D 7B 11 	" { "		sta	X117B
-0009 : 4C 18 11 	"L  "		jmp	L1118
-				;
-000C : B0 05 		"  "		bcs	L0013
-000E				X000E:
-000E : 85 E6 		"  "		sta	X00E6
-0010 : 8D 20 08 	"   "		sta	X0820
-0013				L0013:
-0013 : A5 EC 		"  "		lda	X00EC
-0015 : D0 04 		"  "		bne	L001B
-0017 : A5 EB 		"  "		lda	X00EB
-0019 : 29 3F 		")?"		and	#$3F
-001B				L001B:
-001B : 85 EB 		"  "		sta	X00EB
-001D : 60 		"`"		rts
-				;
-001E : B0 0A 		"  "		bcs	L002A
-0020 : 85 E6 		"  "		sta	X00E6
-0022 : 85 EB 		"  "		sta	X00EB
-0024 : 85 E7 		"  "		sta	X00E7
-0026 : A9 80 		"  "		lda	#$80
-0028 : 85 E2 		"  "		sta	X00E2
-002A				L002A:
-002A : A6 E7 		"  "		ldx	X00E7
-002C : 8E 20 08 	"   "		stx	X0820
-002F : A5 EC 		"  "		lda	X00EC
-0031 : F0 06 		"  "		beq	L0039
-0033 : C5 EB 		"  "		cmp	X00EB
-0035 : F0 05 		"  "		beq	L003C
-0037 : E6 E7 		"  "		inc	X00E7
-0039				L0039:
-0039 : 9D C0 02 	"   "		sta	X02C0,x
-003C				L003C:
-003C : 85 EB 		"  "		sta	X00EB
-003E : 60 		"`"		rts
-				;
-003F				X003F:
-003F : 20 84 11 	"   "		jsr	L1184
-0042 : E6 E5 		"  "		inc	X00E5
-0044 : 60 		"`"		rts
-				;
-0045 : 38 		"8"		sec
-0046				L0046:
-0046 : 20 AC 11 	"   "		jsr	L11AC
-0049 : AD 14 11 	"   "		lda	X1114
-004C : C5 E3 		"  "		cmp	X00E3
-004E : D0 02 		"  "		bne	L0052
-0050 : E6 E9 		"  "		inc	X00E9
-0052				L0052:
-0052 : 24 E2 		"$ "		bit	X00E2
-0054 : 30 0A 		"0 "		bmi	L0060
-0056 : A5 EC 		"  "		lda	X00EC
-0058 : F0 02 		"  "		beq	L005C
-005A : 85 E4 		"  "		sta	X00E4
-005C				L005C:
-005C : A5 E4 		"  "		lda	X00E4
-005E : 85 E6 		"  "		sta	X00E6
-0060				L0060:
-0060 : E6 E5 		"  "		inc	X00E5
-0062 : 60 		"`"		rts
-				;
-0063				X0063:
-0063 : 90 04 		"  "		bcc	L0069
-0065 : A5 EC 		"  "		lda	X00EC
-0067 : D0 DD 		"  "		bne	L0046
-0069				L0069:
-0069 : 20 46 10 	" F "		jsr	L1046
-006C : A5 EA 		"  "		lda	X00EA
-006E : D0 0B 		"  "		bne	L007B
-0070 : A9 00 		"  "		lda	#$00
-0072 : 85 E5 		"  "		sta	X00E5
-0074 : A6 E8 		"  "		ldx	X00E8
-0076 : BD 01 03 	"   "		lda	X0301,x
-0079 : 85 EB 		"  "		sta	X00EB
-007B				L007B:
-007B : 60 		"`"		rts
-				;
-007C : A9 7E 		" ~"		lda	#$7E
-007E : D0 02 		"  "		bne	L0082
-0080 : A9 3E 		" >"		lda	#$3E
-0082				L0082:
-0082 : 4C 00 12 	"L  "		jmp	L1200
-				;
-0085				X0085:
-0085 : 18 		" "		clc
-0086 : A5 E5 		"  "		lda	X00E5
-0088 : 65 E1 		"e "		adc	X00E1
-008A : 85 E5 		"  "		sta	X00E5
-008C : A5 E3 		"  "		lda	X00E3
-008E : 8D 7B 11 	" { "		sta	X117B
-0091 : 60 		"`"		rts
-				;
-0092				X0092:
-0092 : B0 0E 		"  "		bcs	L00A2
-0094 : A9 FF 		"  "		lda	#$FF
-0096 : 85 E5 		"  "		sta	X00E5
-0098 : 20 B6 11 	"   "		jsr	L11B6
-009B : 8E 20 08 	"   "		stx	X0820
-009E : A9 00 		"  "		lda	#$00
-00A0 : 85 E6 		"  "		sta	X00E6
-00A2				L00A2:
-00A2 : 60 		"`"		rts
-				;
-00A3 : B0 02 		"  "		bcs	L00A7
-00A5 : 85 E5 		"  "		sta	X00E5
-00A7				L00A7:
-00A7 : 20 84 11 	"   "		jsr	L1184
-00AA : A5 E5 		"  "		lda	X00E5
-00AC : D0 05 		"  "		bne	L00B3
-00AE : 18 		" "		clc
-00AF : 65 E1 		"e "		adc	X00E1
-00B1 : 85 E5 		"  "		sta	X00E5
-00B3				L00B3:
-00B3 : 60 		"`"		rts
-				;
-00B4 : 85 E9 		"  "		sta	X00E9
-00B6 : A5 E2 		"  "		lda	X00E2
-00B8 : 09 80 		"  "		ora	#$80
-00BA : D0 0E 		"  "		bne	L00CA
-00BC : A5 E2 		"  "		lda	X00E2
-00BE : 09 40 		" @"		ora	#$40
-00C0 : D0 08 		"  "		bne	L00CA
-00C2 : A5 E2 		"  "		lda	X00E2
-00C4 : 09 01 		"  "		ora	#$01
-00C6 : D0 02 		"  "		bne	L00CA
-00C8 : A9 00 		"  "		lda	#$00
-00CA				L00CA:
-00CA : 85 E2 		"  "		sta	X00E2
-00CC : 4C 0F 12 	"L  "		jmp	L120F
-				;
-00CF : 18 		" "		clc
-00D0 : 20 25 1E 	" % "		jsr	L1E25
-00D3 : 60 		"`"		rts
-00D4 : 4C 54 12 	"LT "		jmp	L1254
-00D7 : 4C 20 12 	"L  "		jmp	L1220
-00DA : 4C 33 12 	"L3 "		jmp	L1233
-				;
-00DD : FF 		" "		db	$FF
-00DE : FF 		" "		db	$FF
-				;
-00DF				X00DF:
-00DF : 00 		" "		brk
-00E0				X00E0:
-00E0 : 00 		" "		brk
-				;
-00E1				X00E1:
-00E1 : 80 		" "		db	$80
-00E2				X00E2:
-00E2 : 80 		" "		db	$80
-				;
-00E3				X00E3:
-00E3 : 46 00 		"F "		lsr	X0000
-00E5				X00E5:
-00E5 : 01 63 		" c"		ora	(X0063,x)
-00E7				X00E7:
-00E7 : 08 		" "		php
-00E8				X00E8:
-00E8 : 4A 		"J"		lsr	a
-				;
-00E9				X00E9:
-00E9 : 04 		" "		db	$04
-				;
-00EA				X00EA:
-00EA : 0A 		" "		asl	a
-00EB				X00EB:
-00EB : 68 		"h"		pla
-00EC				X00EC:
-00EC : 00 		" "		brk
-				;
-00ED : FF 		" "		db	$FF
-				;
-00EE : 49 FF 		"I "		eor	#$FF
-00F0				X00F0:
-00F0 : DD 01 80 	"   "		cmp	X8001,x
-				;
-00F3 : 02 		" "		db	$02
-				;
-00F4 : 00 		" "		brk
-00F5 : 00 		" "		brk
-00F6 : F6 00 		"  "		inc	X0000,x
-00F8 : 16 77 		" w"		asl	X0077,x
-				;
-00FA : 0F 		" "		db	$0F
-				;
-00FB : FE 0F F6 	"   "		inc	XF60F,x
-				;
-00FE : FF 		" "		db	$FF
-				;
-00FF : 00 		" "		brk
-0100 : 85 85 		"  "		sta	X0085
-0102 : 85 85 		"  "		sta	X0085
-				;
-0104 : C2 		" "		db	$C2
-				;
-0105 : BC B4 C8 	"   "		ldy	XC8B4,x
-				;
-0108 : CF 		" "		db	$CF
-0109 : D4 		" "		db	$D4
-010A : 80 		" "		db	$80
-010B : 7C 		"|"		db	$7C
-010C : DA 		" "		db	$DA
-010D : D7 		" "		db	$D7
-010E : 0C 		" "		db	$0C
-010F : 0C 		" "		db	$0C
-				;
-0110 : 45 92 		"E "		eor	X0092
-				;
-0112 : 63 		"c"		db	$63
-				;
-0113 : 46 3F 		"F?"		lsr	X003F
-				;
-0115 : A3 		" "		db	$A3
-0116 : 1E 		" "		db	$1E
-0117 : 46 		"F"		db	$46
-				;
-0118				L0118:
-0118 : A5 E2 		"  "		lda	X00E2
-011A : 48 		"H"		pha
-011B : 0A 		" "		asl	a
-011C : 10 22 		" ""		bpl	L0140
-011E : C6 DF 		"  "		dec	X00DF
-0120 : 10 1E 		"  "		bpl	L0140
-0122 : A6 E1 		"  "		ldx	X00E1
-0124 : CA 		" "		dex
-0125 : 86 DF 		"  "		stx	X00DF
-0127 : A9 80 		"  "		lda	#$80
-0129 : AA 		" "		tax
-012A : 18 		" "		clc
-012B : 65 E0 		"e "		adc	X00E0
-012D : 85 E0 		"  "		sta	X00E0
-012F : 10 0C 		"  "		bpl	L013D
-0131 : A5 EB 		"  "		lda	X00EB
-0133 : 09 80 		"  "		ora	#$80
-0135 : 85 EB 		"  "		sta	X00EB
-0137 : 18 		" "		clc
-0138 : 20 25 1E 	" % "		jsr	L1E25
-013B : A2 08 		"  "		ldx	#$08
-013D				L013D:
-013D : 8E 20 08 	"   "		stx	X0820
-0140				L0140:
-0140 : A5 E6 		"  "		lda	X00E6
-0142 : F0 03 		"  "		beq	L0147
-0144 : 18 		" "		clc
-0145 : 69 A4 		"i "		adc	#$A4
-0147				L0147:
-0147 : 18 		" "		clc
-0148 : 65 EB 		"e "		adc	X00EB
-014A : 8D FF 09 	"   "		sta	X09FF
-014D : 68 		"h"		pla
-014E : 6A 		"j"		ror	a
-014F : 90 06 		"  "		bcc	L0157
-0151 : 20 49 1E 	" I "		jsr	L1E49
-0154 : 4C 6D 11 	"Lm "		jmp	L116D
-				;
-0157				L0157:
-0157 : 2C 10 08 	",  "		bit	X0810
-015A : 10 FB 		"  "		bpl	L0157
-015C				L015C:
-015C : AD 10 08 	"   "		lda	X0810
-015F : 30 FB 		"0 "		bmi	L015C
-0161				L0161:
-0161 : 2C 10 08 	",  "		bit	X0810
-0164 : 30 05 		"0 "		bmi	L016B
-0166 : 50 F9 		"P "		bvc	L0161
-0168 : AD 10 08 	"   "		lda	X0810
-016B				L016B:
-016B : 85 EC 		"  "		sta	X00EC
-016D : 20 00 1F 	"   "		jsr	L1F00
-0170 : B0 06 		"  "		bcs	L0178
-0172 : B9 00 11 	"   "		lda	X1100,y
-0175 : 8D 7B 11 	" { "		sta	X117B
-0178				L0178:
-0178 : A9 00 		"  "		lda	#$00
-017A : 20 03 00 	"   "		jsr	L0003
-017D : AD 7B 11 	" { "		lda	X117B
-0180 : 85 E3 		"  "		sta	X00E3
-0182 : D0 94 		"  "		bne	L0118
-0184 : B0 09 		"  "		bcs	L018F
-0186 : 8D 01 03 	"   "		sta	X0301
-0189 : 85 E8 		"  "		sta	X00E8
-018B : 85 E6 		"  "		sta	X00E6
-018D : 85 EB 		"  "		sta	X00EB
-018F				L018F:
-018F : A5 E5 		"  "		lda	X00E5
-0191 : A6 E8 		"  "		ldx	X00E8
-0193 : 9D 00 03 	"   "		sta	X0300,x
-0196 : 20 13 10 	"   "		jsr	L1013
-0199 : 29 7F 		") "		and	#$7F
-019B : DD 01 03 	"   "		cmp	X0301,x
-019E : F0 0B 		"  "		beq	L01AB
-01A0 : E8 		" "		inx
-01A1 : E8 		" "		inx
-01A2 : 86 E8 		"  "		stx	X00E8
-01A4 : 9D 01 03 	"   "		sta	X0301,x
-01A7 : A9 00 		"  "		lda	#$00
-01A9 : 85 E5 		"  "		sta	X00E5
-01AB				L01AB:
-01AB : 60 		"`"		rts
-				;
-01AC : B0 08 		"  "		bcs	L01B6
-01AE : 85 E4 		"  "		sta	X00E4
-01B0				L01B0:
-01B0 : 85 E9 		"  "		sta	X00E9
-01B2				L01B2:
-01B2 : 85 EA 		"  "		sta	X00EA
-01B4 : 85 E5 		"  "		sta	X00E5
-01B6				L01B6:
-01B6 : A5 E5 		"  "		lda	X00E5
-01B8 : A4 E9 		"  "		ldy	X00E9
-01BA : A6 EA 		"  "		ldx	X00EA
-01BC : DD 02 03 	"   "		cmp	X0302,x
-01BF : 90 15 		"  "		bcc	L01D6
-01C1 : A9 00 		"  "		lda	#$00
-01C3 : 85 E5 		"  "		sta	X00E5
-01C5 : E8 		" "		inx
-01C6 : E8 		" "		inx
-01C7 : 86 EA 		"  "		stx	X00EA
-01C9 : E4 E8 		"  "		cpx	X00E8
-01CB : D0 09 		"  "		bne	L01D6
-01CD : C8 		" "		iny
-01CE : C4 E7 		"  "		cpy	X00E7
-01D0 : B0 DE 		"  "		bcs	L01B0
-01D2 : 84 E9 		"  "		sty	X00E9
-01D4 : D0 DC 		"  "		bne	L01B2
-01D6				L01D6:
-01D6 : BD 03 03 	"   "		lda	X0303,x
-01D9 : 85 EB 		"  "		sta	X00EB
-01DB : B9 C0 02 	"   "		lda	X02C0,y
-01DE : 85 E6 		"  "		sta	X00E6
-01E0 : 60 		"`"		rts
-				;
-01E1 : FF 		" "		db	$FF
-				;
-01E2 : 00 		" "		brk
-				;
-01E3 : FF 		" "		db	$FF
-01E4 : 03 		" "		db	$03
-				;
-01E5 : C0 02 		"  "		cpy	#$02
-01E7 : C0 02 		"  "		cpy	#$02
-				;
-01E9 : FF 		" "		db	$FF
-01EA : FF 		" "		db	$FF
-01EB : FF 		" "		db	$FF
-01EC : FF 		" "		db	$FF
-01ED : FF 		" "		db	$FF
-01EE : FF 		" "		db	$FF
-01EF : FF 		" "		db	$FF
-				;
-01F0 : 11 34 		" 4"		ora	(X0034),y
-				;
-01F2 : 1A 		" "		db	$1A
-				;
-01F3 : 11 34 		" 4"		ora	(X0034),y
-				;
-01F5 : 1A 		" "		db	$1A
-				;
-01F6 : 41 0E 		"A "		eor	(X000E,x)
-01F8 : 01 01 		"  "		ora	(X0001,x)
-01FA : 79 0E C3 	"y  "		adc	XC30E,y
-01FD : 0E 14 0E 	"   "		asl	X0E14
-0200 : 8D 06 12 	"   "		sta	X1206
-0203 : A2 00 		"  "		ldx	#$00
-0205				L0205:
-0205 : 18 		" "		clc
-0206 : 7E 02 03 	"~  "		ror	X0302,x
-0209 : E8 		" "		inx
-020A : E8 		" "		inx
-020B : E4 E8 		"  "		cpx	X00E8
-020D : D0 F6 		"  "		bne	L0205
-020F				L020F:
-020F : A5 E3 		"  "		lda	X00E3
-0211 : 8D 7B 11 	" { "		sta	X117B
-0214 : 60 		"`"		rts
-				;
-0215 : A2 07 		"  "		ldx	#$07
-0217				L0217:
-0217 : BD E1 11 	"   "		lda	X11E1,x
-021A : 95 F0 		"  "		sta	X00F0,x
-021C : CA 		" "		dex
-021D : D0 F8 		"  "		bne	L0217
-021F : 60 		"`"		rts
-				;
-0220 : 20 15 12 	"   "		jsr	L1215
-0223				L0223:
-0223 : A5 E8 		"  "		lda	X00E8
-0225 : 8D 00 03 	"   "		sta	X0300
-0228 : A5 E7 		"  "		lda	X00E7
-022A : 8D 01 03 	"   "		sta	X0301
-022D : A9 DD 		"  "		lda	#$DD
-022F : 20 46 12 	" F "		jsr	L1246
-0232 : 60 		"`"		rts
-				;
-0233 : 20 15 12 	"   "		jsr	L1215
-0236 : A9 11 		"  "		lda	#$11
-0238 : 20 46 12 	" F "		jsr	L1246
-023B : AD 00 03 	"   "		lda	X0300
-023E : 85 E8 		"  "		sta	X00E8
-				;
-0240 : AD 		" "		db	$AD
-				;
-0241				L0241:
-0241 : 01 03 		"  "		ora	(L0003,x)
-0243 : 85 E7 		"  "		sta	X00E7
-0245 : 60 		"`"		rts
-				;
-0246 : 20 AA 1E 	"   "		jsr	L1EAA
-0249 : AD 0F 11 	"   "		lda	X110F
-024C : 8D 7B 11 	" { "		sta	X117B
-024F : 18 		" "		clc
-0250 : 20 22 1F 	" " "		jsr	L1F22
-0253 : 60 		"`"		rts
-				;
-0254 : 85 DF 		"  "		sta	X00DF
-0256 : 66 E1 		"f "		ror	X00E1
-0258 : 90 02 		"  "		bcc	L025C
-025A : 66 E1 		"f "		ror	X00E1
-				;
-025C				L025C:
-025C : D0 		" "		db	$D0
-				;
-025D				L025D:
-025D : B1 FF 		"  "		lda	($00FF),y
-				;
-025F : FF 		" "		db	$FF
-				;
-0260 : F0 DF 		"  "		beq	L0241
-				;
-0262 : F2 		" "		db	$F2
-0263 : 7F 		" "		db	$7F
-				;
-0264 : 70 9F 		"p "		bvs	L0205
-				;
-0266 : B2 		" "		db	$B2
-0267 : EF 		" "		db	$EF
-				;
-0268 : F1 DB 		"  "		sbc	(X00DB),y
-				;
-026A : D2 		" "		db	$D2
-026B : FB 		" "		db	$FB
-026C : 72 		"r"		db	$72
-026D : BF 		" "		db	$BF
-026E : E2 		" "		db	$E2
-026F : DF 		" "		db	$DF
-				;
-0270 : 10 3F 		" ?"		bpl	L02B1
-0272 : F0 AF 		"  "		beq	L0223
-0274 : 40 		"@"		rti
-				;
-0275 : DF 		" "		db	$DF
-				;
-0276 : C0 FF 		"  "		cpy	#$FF
-0278 : 00 		" "		brk
-				;
-0279 : EF 		" "		db	$EF
-027A : 70 		"p"		db	$70
-027B				L027B:
-027B : FF 		" "		db	$FF
-				;
-027C : F0 DF 		"  "		beq	L025D
-027E : 60 		"`"		rts
-				;
-027F : FF 		" "		db	$FF
-0280 : 30 00 		"0 "		db	$30, $00
+                        ;********************************
+                        ;*                              *
+                        ;*          SEQUE 1.0           *
+                        ;*                              *
+                        ;* MONOTONIC SEQUENCER PROGRAMS *
+                        ;*                              *
+                        ;*             BY               *
+                        ;*    JOHN S. SIMONTON, JR.     *
+                        ;*                              *
+                        ;*(C) 1978 PAIA ELECTRONICS, INC*
+                        ;*     ALL RGIHTS RESERVED      *
+                        ;*                              *
+                        ;********************************
+                        ;
+                        ;DEFINE ADDRESS OF LABELS
+                        ;
+1f22 =                  BEEP	=$1F22
+1f00 =                  DECD	=$1F00	
+1eaa =                  CASS	=$1EAA
+1e49 =                  DBIT	=$1E49
+1e25 =                  SBIT	=$1E25
+09ff =                  OUTP	=$09FF	;$0840 in listing
+0820 =                  DSP		=$0820
+0810 =                  KBD		=$0810
+                        ;
+0303 =                  MTBL3	=$0303
+0302 =                  MTBL2	=$0302
+0301 =                  MTBL1	=$0301
+0300 =                  MTBL	=$0300
+02c0 =                  TTBL	=$02C0
+                        ;
+00f0 =                  BUFF	=$00F0
+00ec =                  KBUF	=$00EC
+00eb =                  PBUF	=$00EB
+00ea =                  MPNT	=$00EA
+00e9 =                  TPNT	=$00E9
+00e8 =                  MEND	=$00E8
+00e7 =                  TEND	=$00E7
+00e6 =                  TRNS	=$00E6
+00e5 =                  CNTR	=$00E5
+00e4 =                  TTRN	=$00E4
+00e3 =                  LSTL	=$00E3
+00e2 =                  STUS	=$00E2
+00e1 =                  TPO		=$00E1
+00e0 =                  METF	=$00E0
+00df =                  MTRC	=$00DF
+0003 =                  DUMY	=$0003
+                        ;
+                        ;
+                        ;
+1000 =                  		org	$1000
+                        ;
+1000 : a900             STAR	lda	#$00	;START / RESTART
+1002 : 85e2             		sta	STUS	;CANCEL OPTIONS
+1004 : a90c             		lda	#$0C	;NRML COMMAND LINK
+1006 : 8d7b11           		sta	ACTN+01	;PLACE COMMAND LINK
+1009 : 4c1811           		jmp	COM		;JUMP TO COMMON
+                        ;
+                        ;NORMAL OPERATING MODE - DOES NOT ALTER
+                        ;T-SEQUENCE OR M-SEQUENCE
+                        ;
+100c : b005             NRML	bcs	NRM1	;FIRST PASS THROUGH
+100e : 85e6             		sta	TRNS	;ZERO TRANSPOSE
+1010 : 8d2008           		sta	DSP		;AND DISPLAYS
+1013 : a5ec             NRM1	lda	KBUF	;CHECK FOR NOTES
+1015 : d004             		bne	STOR	;ZERO- NO NEW KEY
+1017 : a5eb              		lda	PBUF	;SO GET OLD KEY
+1019 : 293f              		and	#$3F	;CLEAR BOTH FLAGS
+101b : 85eb             STOR	sta	PBUF	;SAVE AGAIN
+101d : 60                		rts			;AND RETURN
+                        ;
+                        ;PROGRAM TRANSPOSE MODE - NOTE PLAYED
+                        ;IS "KILLED" WHEN KEY IS RELEASED
+                        ;
+101e : b00a             TLOD	bcs	TL1		;FIRST PASS, INITIALIZE
+1020 : 85e6             		sta	TRNS	;ZERO TRANSPOSE FIGURE
+1022 : 85eb              		sta	PBUF	;ZERO OUTPUT NOTE
+1024 : 85e7              		sta	TEND	;ZERO TABLE END POINTER
+1026 : a980             		lda	#$80	;TURN T-SEQUE OPTION
+1028 : 85e2              		sta	STUS	;ON
+102a : a6e7             TL1		ldx	TEND	;GET TRANSPOSE POINTER
+102c : 8e2008           		stx	DSP		;SHOW IT
+102f : a5ec             		lda	KBUF	;GET THE NOTE
+1031 : f006             		beq	TL2		;ZERO- NO KEY, SAVE
+1033 : c5eb             		cmp	PBUF	;KEY SAME AS LAST?
+1035 : f005             		beq	TRTN	;YES - LEAVE
+1037 : e6e7             		inc	TEND	;POINT TO NEXT LOCATION
+1039 : 9dc002           TL2		sta	TTBL,x	;SAVE TRANSPOSE
+103c : 85eb             TRTN	sta	PBUF	;AND OUTPUT AS NOTE
+103e : 60               		rts			;THEN RETURN
+                        ;
+                        ;PROGRAM SCORE MODE - USES REAL-TIME CLOCK
+                        ;
+103f : 208411           MSAV	jsr	MSV1	;CALL SAVE MODULE
+1042 : e6e5              		inc	CNTR	;INCREMENT THE TEMPO
+1044 : 60                		rts			;COUNTER AND RETURN
+                        ;
+                        ;CONTINUE PLAY MODE - DOES NOT RESET
+                        ;M-SEQUENCE OR T-SEQUENCE POINTERS
+                        ;
+1045 : 38               CNTU	sec			;SKIP INITIALIZATION
+                        ;
+                        ;REPEAT PLAY MODE - WHEN FIRST ENTERED
+                        ;M-SEQ AND T-SEQ POINTERS ARE SET TO ZERO
+                        ;BY THE PLAY MODULE (PLA1)
+                        ;
+1046 : 20ac11           RPLA	jsr	PLA1	;CALL PLAY MODULE
+1049 : ad1411           		lda	STBL+$14;WAS THE PREVIOUS MODE
+104c : c5e3              		cmp	LSTL	;MSAV (PROG. SCORE)?
+104e : d002              		bne	RPL1	;NO-SKIP INCREMENT
+1050 : e6e9              		inc	TPNT	;INC. T-SEQ POINTER
+1052 : 24e2             RPL1	bit	STUS	;T-SEQ ASSERTED ?
+1054 : 300a              		bmi	ROUT	;OPTION ON - LEAVE
+1056 : a5ec              		lda	KBUF	;OPTION OFF- GET NOTE
+1058 : f002              		beq	OLDK	;AND IF NO NOTE, BRANCH
+105a : 85e4              		sta	TTRN	;SAVE NOTE FOR NEXT TIME
+105c : a5e4             OLDK	lda	TTRN	;GET LAST ACTIVE NOTE
+105e : 85e6              		sta	TRNS	;USE AS TRANSPOSE
+1060 : e6e5             ROUT	inc	CNTR	;INCREMENT TEMPO COUNTER
+1062 : 60                		rts			;AND RETURN
+                        ;
+                        ;SINGLE PLAY MODE - WAITS FOR AGO KEY
+                        ;THEN PLAYS SEQUENCE ONCE THROUGH
+                        ;TRANSPOSED TO INDICAtED KEY
+                        ;
+1063 : 9004             SING	bcc	SNG1	;FIRST PASS, BRANCH
+1065 : a5ec              		lda	KBUF	;AGO KEY DOWN?
+1067 : d0dd              		bne	RPLA	;YES - PLAY SEQUENCE
+1069 : 204610           SNG1	jsr	RPLA	;NO - "PLAY" THEN RETURN
+106c : a5ea              		lda	MPNT	;M-SEQ POINTER > 0 ?
+106e : d00b              		bne	SRTN	;YES - RETURN
+1070 : a900             		lda	#$00	;NO - PREPARE
+1072 : 85e5              		sta	CNTR	;ZERO TEMPO COUNTER
+1074 : a6e8              		ldx	MEND	;POINT TO LAST NOTE
+1076 : bd0103           		lda	MTBL1,x	;OF M-SEQ AND GET IT
+1079 : 85eb              		sta	PBUF	;PLACE IN PLAY BUFFER
+107b : 60               SRTN	rts			;THEN RETURN
+                        ;
+                        ;UP TEMPO AND DOWN TEMPO - COMMON PORTION
+                        ;OF BOTH PROGRAMS ON PAGE 2
+                        ;
+107c : a97e             UTMP	lda	#$7E	;THE OP-CODE FOR ROR
+107e : d002             		bne	U_D		;BRANCH ALWAYS
+1080 : a93e             DTMP	lda	#$3E	;THE OP-CODE FOR ROL
+1082 : 4c0012           U_D		jmp	TCOM	;JUMP FOR THE REST
+                        ;
+                        ;REST MODE - EXTENDS NOTES OR UN-NOTES
+                        ;WHEN IN PROGRAM EVENT MODE
+                        ;
+1085 : 18               REST	clc			;PREPARE FOR ADDITTION
+1086 : a5e5              		lda	CNTR	;GET TEMPO COUNTER
+1088 : 65e1              		adc	TPO		;ADD TEMPO VALUE
+108a : 85e5              		sta	CNTR	;PUT COUNTER BACK
+108c : a5e3              		lda	LSTL	;AND RETURN TO
+108e : 8d7b11           		sta	ACTN+01	;PREVIOUS OPERATING
+1091 : 60                		rts			;MODE
+                        ;
+                        ;STOP/STEP MODE - STOPS PLAY WITHOUT
+                        ;CHANGING POINTERS. SINGLE STEPS THROUGH
+                        ;SEQUENCE
+                        ;
+1092 : b00e             STEP	bcs	STP1	;NOT FIRST PASS=BRANCH
+1094 : a9ff             		lda	#$FF	;SET TEMPO COUNTER AT
+1096 : 85e5             		sta	CNTR	;"TIMED OUT" VALUE
+1098 : 20b611           		jsr	CONT	;CALL PART OF PLAY MODULE
+109b : 8e2008           		stx	DSP		;DISPLAY M-SEQ POINTER
+109e : a900             		lda	#$00	;MAKE TRANSPOSE VALUE
+10a0 : 85e6             		sta	TRNS	;EQUAL TO ZERO
+10a2 : 60               STP1	rts			;AND RETURN
+                        ;
+                        ;PROGRAM EVENT MODE - SAVES M-SEQUENCE
+                        ;BUT SUBSTITUTES EVENT CLOCK FOR REAL-TIME
+                        ;CLOCK
+                        ;
+10a3 : b002             ESAV	bcs	ES1		;FIRST PASS, INITIALIZE
+10a5 : 85e5             		sta	CNTR	;TEMPO COUNTER AS ZERO
+10a7 : 208411           ES1		jsr	MSV1	;CALL SAVE MODULE
+10aa : a5e5             		lda	CNTR	;GET TEMPO COUNTER
+10ac : d005             		bne	EOUT	;NO ENTRY-RETURN
+10ae : 18               		clc			;PREPARE
+10af : 65e1             		adc	TPO		;ADD TEMPO VALUE
+10b1 : 85e5             		sta	CNTR	;SAVE AS TEMPO COUNTER
+10b3 : 60               EOUT	rts			;TEHN RETURN
+                        ;
+                        ;OPTION MENU - RETURN TO PREVIOUS
+                        ;OPERATING MODE AFTER TURING ON OR
+                        ;CANCELLING OPTIONS
+                        ;
+10b4 : 85e9             TBLM	sta	TPNT	;T-SEQ POINTER TO BEG
+10b6 : a5e2             		lda	STUS	;ASSERT T-SEQ OPTION
+10b8 : 0980             		ora	#$80
+10ba : d00e             		bne	MCOM	;BRANCH ASLWAYS
+10bc : a5e2             MET		lda	STUS	;TURN METRONOME ON
+10be : 0940             		ora	#$40
+10c0 : d008             		bne	MCOM	;BRANCH ALWAYS
+10c2 : a5e2             SYNC	lda	STUS	;TURN ON SYNC TO
+10c4 : 0901             		ora	#$01	;CLICK TRACK OPTION
+10c6 : d002             		bne	MCOM	;BRANCH ALWAYS
+10c8 : a900             CNCL	lda	#$00	;PREPARE AND
+10ca : 85e2             MCOM	sta	STUS	;CANCEL ALL OPTIONS
+10cc : 4c0f12           		jmp	TCM1	;JUMP FOR THE REST
+                        ;
+                        ;CLICK MODE - SEND CLICK TRACK TO TAPE
+                        ;AGO KEYBOARD SCAN RATE IS TIME
+                        ;
+10cf : 18               CLIK	clc			;PREPARE TO SEND "0"
+10d0 : 20251e           		jsr	SBIT	;SEND IT
+10d3 : 60                		rts			;RETURN FOR KEYBOARD DELAY
+                        ;
+                        ;METRONOME TEMPO CHANGE - PROGRAM ON PAGE 2
+                        ;
+10d4 : 4c5412           TCHG	jmp	TCH		;JUMP TO PROGRAM
+                        ;
+                        ;DUMP M&T-SEQ TO TAPE - PROGRAM ON PAGE 2
+                        ;
+10d7 : 4c2012           OTAP	jmp	TOUT	;JUMP TO PROGRAM
+                        ;
+                        ;LOAD M&T-SEQ FROM TAPE - PROGRAM ON PAGE 2
+                        ;
+10da : 4c3312           ITAP	jmp	TIN		;JUMP TO PROGRAM
+                        ;
+                        ;
+                        ;COMMAND LINKS - LOW BYTE OF ADDRESS OF SUBS
+                        
+                        ;RAM contents start-----------------------------------
+                        ;ORG DD
+10dd : ffff             		db	$FF, $FF
+10df : 00               MTRC	db	$00
+10e0 : 00               METF	db	$00
+10e1 : 80               TPO		db	$80
+10e2 : 80               STUS	db	$80
+10e3 : 4600             LSTL	db	$46, $00
+10e5 : 0163             CNTR	db	$01, $63
+10e7 : 08               TEND	db	$08
+10e8 : 4a               MEND	db	$4A
+10e9 : 04               TPNT	db	$04
+10ea : 0a               MPNT	db	$0A
+10eb : 68               PBUF	db	$68
+10ec : 00               KBUF	db	$00
+                        ;
+                        ;PIEBUG
+                        ;
+10ed : ff               MSTACK	db	$FF
+                        ;
+                        ;POTSHOT
+                        ;
+10ee : 49               CHKSUM	db	$49
+10ef : ff               STATUS	db	$FF
+10f0 :                  COMAND
+10f0 : dd               BUFF	db	$DD
+                        
+10f1 : 01               IDENT	db	$01
+10f2 : 8002             ENDADR	db	$80, $02
+10f4 : 0000             BEGADR	db	$00, $00
+10f6 : f600             PNTER	db	$F6, $00
+                        ;
+                        ;PIEBUG
+                        ;
+10f8 : 16               LASTKE	db	$16
+10f9 : 77               ACC		db	$77		;Accumulator
+10fa : 0f               YREG	db	$0F		;Y-Register
+10fb : fe               XREG	db	$FE		;X-Register
+10fc : 0ff6             PC		db	$0F, $F6	;Program counter low
+10fe : ff               STACKP	db	$FF		;Stack pointer (user)
+10ff : 00               PREG	db	$00		;Stack register
+                        ;RAM contents end-------------------------------------
+                        ;
+                        ;
+                        ;COMMAND LINKS - LOW BYTE OF ADDRESS OF SUBS
+                        ;
+1100 : 85858585         STBL	db	lo REST, lo REST, lo REST, lo REST
+1104 : c2bcb4c8         		db	lo SYNC, lo MET,  lo TBLM, lo CNCL
+1108 : cfd4807c         		db	lo CLIK, lo TCHG, lo DTMP, lo UTMP
+110c : dad70c0c         		db	lo ITAP, lo OTAP, lo NRML, lo NRML
+1110 : 45926346         		db	lo CNTU, lo STEP, lo SING, lo RPLA
+1114 : 3fa31e46         		db	lo MSAV, lo ESAV, lo TLOD, lo RPLA
+                        ;
+                        ;COMMON PROGRAM - DOES METRONOME WHEN ON
+                        ;ADDS PLAY AND TRASNPOSE BUFFERS TO GET
+                        ;OUTPUT NOTE, PLAYS NOTE, READS COMMAND
+                        ;KEYBOARD AND JUMPS TO SELECTED MODE
+                        ;SUBSTITUES CLICK SYNCH FOR KEYBOARD
+                        ;TIMING LOOP WHEN SYNC OPTION IS ASSERTED
+                        ;
+1118 : a5e2             COM		lda <lo STUS	;CHECK OPTIONS
+111a : 48                		pha				;SAVE A COPY
+111b : 0a                		asl	a			;METRONOME ON ?
+111c : 1022              		bpl	COM0		;NO - BRANCH
+111e : c6df              		dec	<lo MTRC	;DECREMENT METRONOME COUNTER
+1120 : 101e             		bpl	COM0		;NOT <0 YET, BRANCH
+1122 : a6e1             		ldx	<lo TPO		;TIME UP, GET TEMPO VALUE
+1124 : ca               		dex				;DECREMENT ONCE
+1125 : 86df             		stx	<lo MTRC	;THEN SAVE AS COUNTER
+1127 : a980             		lda	#$80		;TO DETERMINE ALTERNATE DISPLAY
+1129 : aa               		tax				;CYCLE AND "PENDULUM" LEFT
+112a : 18               		clc				;PREPARE FOR ADDITTION
+112b : 65e0             		adc	<lo METF	;ADD FLIP-FLOP VALUE
+112d : 85e0             		sta	<lo METF	;SAVE NEW VALUE
+112f : 100c             		bpl	MET1		;ALTERNATE? - DISPLAY
+1131 : a5eb             		lda	<lo PBUF	;OTHERWISE, GET OUTPUT
+1133 : 0980             		ora	#$80		;SET D7
+1135 : 85eb             		sta	<lo PBUF	;SAVE IN PLAY BUFFER
+1137 : 18               		clc				;PREPARE AND
+1138 : 20251e           		jsr	SBIT		;CALL BEEP
+113b : a208             		ldx	#$08		;"PENDULUM" RIGHT
+113d : 8e2008           MET1	stx	DSP			;SHOW PENDULUM
+1140 : a5e6             COM0	lda	TRNS		;IS THERE A TRANSPOSE ?
+1142 : f003             		beq	COM1		;NO - BRANCH
+1144 : 18               TRAN	clc				;YES - PREPARE
+1145 : 69a4             		adc	#$A4		;CALCULATE TRANSPOSE VALUE
+1147 : 18               COM1	clc				;MORE PREPARATION
+1148 : 65eb             		adc	<lo PBUF	;CALCULATE NOTE
+114a : 8dff09           COUT	sta	OUTP		;PLAY NOTE
+114d : 68               		pla				;GET STUS (OPTION CODES)
+114e : 6a               		ror	a			;SYNC OPTION ON ?
+114f : 9006             		bcc	KRED		;NO - SKIP
+1151 : 20491e           		jsr	DBIT		;WAIT FOR CLIK
+1154 : 4c6d11           		jmp	CTRL		;SKIP READING AGO
+                        ;
+1157 : 2c1008           KRED	bit	KBD			;WAIT FOR DUMMY SCAN
+115a : 10fb             		bpl	KRED		;LOOP UNTIL STARTED
+115c : ad1008           KR2		lda	KBD			;WAIT FOR SCAN TO START
+115f : 30fb             		bmi	KR2			;LOOP UNTIL STARTED
+1161 : 2c1008           KR3		bit	KBD			;CHECK FOR KEYS DOWN
+1164 : 3005             		bmi	KRTN		;WHEN SCAN DONE, RETURN
+1166 : 50f9             		bvc	KR3			;CURRENT KEY NOT DOWN, LOOP
+1168 : ad1008           		lda	KBD			;KEY DOWN, GET IT
+116b : 85ec             KRTN	sta	<lo KBUF	;SAVE RESULT
+116d : 20001f           CTRL	jsr	DECD		;GET COMMAND
+1170 : b006             		bcs	DO			;OLD COMMAND - DO IT
+1172 : b90011           		lda	STBL,y		;NEW COMMADN - GET LINK
+1175 : 8d7b11           		sta	ACTN+01		;PLACE LINK
+1178 : a900             DO		lda	#$00		;THIS WILL BE HANDY
+117a : 200300           ACTN	jsr	DUMY		;CALL OPERATION MODE
+117d : ad7b11           		lda	ACTN+01		;SAVE CURRENT COMMAND
+1180 : 85e3             		sta	<lo LSTL	;LINK FOR LATER
+1182 : d094             		bne	COM			;AND LOOP ALWAYS
+                        ;
+                        ;SAVE MODULE - TAKES CARE OF ALTERNATELY
+                        ;STACKING DURATIONS AND NOTES IN M-SEQUENCE
+                        ;USES WHAT WILL BE "END OF SEQUENCE"
+                        ;INDICATOR IN PLAY MODES AS POINTER
+                        ;
+1184 : b009             MSV1	bcs	MS1			;FIRST PASS?
+1186 : 8d0103           		sta	MTBL1		;YES-ZERO PROGRAM NOTE
+1189 : 85e8             		sta	<lo MEND	;ZERO M-SEQ POINTER
+118b : 85e6             		sta	TRNS		;ZERO TRANSPOSE
+118d : 85eb             		sta	<lo PBUF	;ZERO OUTPUT NOTE
+118f : a5e5             MS1		lda	<lo CNTR	;GET TIME SINCE LAST NOTE
+1191 : a6e8             		ldx	<lo MEND	;AND M-SEQ END POINTER
+1193 : 9d0003           		sta	MTBL,x		;SAVE THE TIME
+1196 : 201310           		jsr	NRM1		;IN CASE NO KEYS DOWN
+1199 : 297f             		and	#$7F		;CLEAR D7 IN OUTPUT NOTE
+119b : dd0103           		cmp	MTBL1,x		;SAME AS LAST NOTE?
+119e : f00b             		beq	OUT			;YES, LEAVE
+11a0 : e8               		inx				;NO, SAVE BY INCREMENTING
+11a1 : e8               		inx				;M-SEQ POINTER TWICE
+11a2 : 86e8             		stx	<lo MEND	;AND SAVING AS END
+11a4 : 9d0103           		sta	MTBL1,x		;THEN SAVE NOTE
+11a7 : a900             		lda	#$00		;AND ZERO TIME SINCE
+11a9 : 85e5             		sta	<lo CNTR	;LAST NOTE
+11ab : 60               OUT		rts				;AND RETURN
+                        ;
+                        ;PLAY MODULE - MANAGES M-SEQ AND T-SEQ
+                        ;POINTERS AS WELL AS TEMPO CLOCK.
+                        ;DETERMINES WHEN NOTES ARE TO BE PLAYED
+                        ;
+11ac : b008             PLA1	bcs	CONT		;FIRST PASS ?
+11ae : 85e4             		sta	TTRN		;YES-ZERO TEMP. TRANSPOSE
+11b0 : 85e9             LP1		sta	<lo TPNT	;ZERO T-SEQ POINTER
+11b2 : 85ea             LP2		sta	<lo MPNT	;AND M-SEQ POINTER
+11b4 : 85e5             		sta	<lo CNTR	;AND CLOCK (TEMPO CONTER)
+11b6 : a5e5             CONT	lda	<lo CNTR	;GET CLOCK
+11b8 : a4e9             		ldy	<lo TPNT	;GET T-SEQ POINTER
+11ba : a6ea             		ldx	<lo MPNT	;GET M-SEQ POINTER
+11bc : dd0203           		cmp	MTBL2,x		;TIME UP?
+11bf : 9015             		bcc	PL1			;NO, BRANCH
+11c1 : a900             		lda	#$00		;YES, PREP. COUNTER, ETC.
+11c3 : 85e5             		sta	<lo CNTR	;FOR NEXT ACCUMULATION
+11c5 : e8               		inx				;INCREMENT M-SEQ POINTER
+11c6 : e8               		inx				;TWICE
+11c7 : 86ea             		stx	<lo MPNT	;AND SAVE NEW POINTER
+11c9 : e4e8             		cpx	<lo MEND	;END OF M-SEQ?
+11cb : d009             		bne	PL1			;NO - BRANCH
+11cd : c8               		iny				;YES, INC T-SEQ POINTER
+11ce : c4e7             		cpy	<lo TEND	;END OF T-SEQ ?
+11d0 : b0de             		bcs	LP1			;YES-START T&M-SEQ AGAIN
+11d2 : 84e9             		sty	<lo TPNT	;NO-SAVE T-SEQ POINTER
+11d4 : d0dc             		bne	LP2			;BRANCH-START M-SEQ AGAIN
+11d6 : bd0303           PL1		lda	MTBL3,x		;GET THE NOTE
+11d9 : 85eb             		sta	<lo PBUF	;SAVE IN PLAY BUFFER
+11db : b9c002           		lda	TTBL,y		;GET TRANSPOSE
+11de : 85e6             		sta	<lo TRNS	;TO TRANSPOSE BUFFER
+11e0 : 60               		rts				;RETURN
+                        ;
+                        ;TAPE TRANSFER PARAMETER TABLE
+                        ;
+11e1 : ff00ff03c002c002 TAPE	db	$FF, $00, $FF, $03, $C0, $02, $C0, $02
+                        ;
+11e9 : ffffffffffffff11 		db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $11
+11f1 : 341a11341a410e01 		db	$34, $1A, $11, $34, $1A, $41, $0E, $01
+11f9 : 01790ec30e140e   		db	$01, $79, $0E, $C3, $0E, $14, $0E
+                        ;
+                        ;COMMON PORTION OF TEMPO UP & DOWN -
+                        ;ROTATES RIGHT OR LEFT THE DURATIONS
+                        ;SAVED WITH M-SEQUENCE
+                        ;
+1200 : 8d0612           TCOM	sta	PLAC		;PLACE ROR OR ROL OP CODE
+1203 : a200             		ldx	#$00		;ZERO A COUNTER/POINTER
+1205 : 18               TLP		clc				;PREPARE
+1206 : 7e0203           PLAC	ror	MTBL2,x		;ROTATE SAVED TEMPO
+1209 : e8               		inx				;INCREMENT POINTER TWICE
+120a : e8               		inx				;TO POINT TO NEXT
+120b : e4e8             		cpx	<lo MEND	;END OF M-SEQ ?
+120d : d0f6             		bne	TLP			;NO - LOOP FOR MORE
+120f : a5e3             TCM1	lda	<lo LSTL	;DONE, GET LINK AND
+1211 : 8d7b11           		sta	ACTN+01		;SET UP FOR PREVIOUS MODE
+1214 : 60               		rts				;THEN RETURN
+                        ;
+                        ;SET UP PROCEDURE FOR TAPE TRANSFER
+                        ;
+1215 : a207             STTP	ldx	#$07		;TRANSFER 7 BYTES
+1217 : bde111           STP		lda	TAPE,x		;GET PARAMETER FROM TABLE
+121a : 95f0             		sta	<lo BUFF,x	;PLACE IN POT-SHOT BUFFER
+121c : ca               		dex				;POINT TO NEXT, MORE ?
+121d : d0f8             		bne	STP			;YES - LOOP
+121f : 60               		rts				;NO - RETURN
+                        ;
+                        ;DUMP M-SEQ AND T-SEQ TO TAPE
+                        ;
+1220 : 201512           TOUT	jsr	STTP		;SET UP FOR TRANSFER
+1223 : a5e8             		lda	<lo MEND	;SAVE M-SEQ END WITH
+1225 : 8d0003           		sta	MTBL		;M&T-SEQUENCE
+1228 : a5e7             		lda	<lo TEND	;ALSO T-SEQUENCE END
+122a : 8d0103           		sta	MTBL1
+122d : a9dd             		lda	#$DD		;SET UP FOR DUMP
+122f : 204612           		jsr	DOTP		;AND DO IT
+1232 : 60               		rts				;THEN RETURN
+                        ;
+                        ;LOAD M-SEQ AND T-SEQ FROM TAPE
+                        ;
+1233 : 201512           TIN		jsr	STTP		;SET UP FOR TRANSFER
+1236 : a911             		lda	#$11		;SET UP FOR LOAD
+1238 : 204612           		jsr	DOTP		;AND DO IT
+123b : ad0003           		lda	MTBL		;PLACE M-SEQUENCE END
+123e : 85e8             		sta	<lo MEND
+1240 : ad0103           		lda MTBL1		;AND T-SEQUENCE END
+1243 : 85e7             		sta	<lo TEND
+1245 : 60               		rts				;THEN RETURN
+                        ;
+                        ;PERFORM TAPE TRANSFER
+                        ;
+1246 : 20aa1e           DOTP	jsr	CASS		;CALL POT-SHOT
+1249 : ad0f11           		lda	STBL+$F		;SET UP TO RETURN
+124c : 8d7b11           		sta	ACTN+01		;IN NORMAL MODE
+124f : 18               		clc				;PREPARE
+1250 : 20221f           		jsr	BEEP		;SIGNAL DONE
+1253 : 60               		rts				;AND RETURN
+                        ;
+                        ;CHANGE METRONOME TEMPO
+                        ;
+1254 : 85df             TCH		sta	<lo MTRC	;ZERO METRONOME CLOCK
+1256 : 66e1             		ror	<lo TPO		;HALVE TEMPO VALUE
+1258 : 9002             		bcc	TCHR		;IF NOT ZERO, LEAVE
+125a : 66e1             		ror	<lo TPO		;ZERO, MAKE NOT ZERO
+125c : d0b1             TCHR	bne TCM1		;GO SET UP PREVIOUS MODE
+                        
+125e : fffff0dff27f709f 		db	$FF, $FF, $F0, $DF, $F2, $7F, $70, $9F
+1266 : b2eff1dbd2fb72bf 		db	$B2, $EF, $F1, $DB, $D2, $FB, $72, $BF
+126e : e2df103ff0af40df 		db	$E2, $DF, $10, $3F, $F0, $AF, $40, $DF
+1276 : c0ff00ef70fff0df 		db	$C0, $FF, $00, $EF, $70, $FF, $F0, $DF
+127e : 60ff30           		db	$60, $FF, $30
+                        		
 
-;--------------------------------------------------------------
-Symbol table
-============
+-------------------------------- Symbol Table --------------------------------
 
-Value	Type	Name
------	----	----
-0000	 04	X0000
-0001	 04	X0001
-0003	 04	L0003
-000E	 04	X000E
-0013	 04	L0013
-001B	 04	L001B
-002A	 04	L002A
-0034	 04	X0034
-0039	 04	L0039
-003C	 04	L003C
-003F	 04	X003F
-0046	 04	L0046
-0052	 04	L0052
-005C	 04	L005C
-0060	 04	L0060
-0063	 04	X0063
-0069	 04	L0069
-0077	 04	X0077
-007B	 04	L007B
-0082	 04	L0082
-0085	 04	X0085
-0092	 04	X0092
-00A2	 04	L00A2
-00A7	 04	L00A7
-00B3	 04	L00B3
-00CA	 04	L00CA
-00DB	 04	X00DB
-00DF	 04	X00DF
-00E0	 04	X00E0
-00E1	 04	X00E1
-00E2	 04	X00E2
-00E3	 04	X00E3
-00E4	 04	X00E4
-00E5	 04	X00E5
-00E6	 04	X00E6
-00E7	 04	X00E7
-00E8	 04	X00E8
-00E9	 04	X00E9
-00EA	 04	X00EA
-00EB	 04	X00EB
-00EC	 04	X00EC
-00F0	 04	X00F0
-0118	 04	L0118
-013D	 04	L013D
-0140	 04	L0140
-0147	 04	L0147
-0157	 04	L0157
-015C	 04	L015C
-0161	 04	L0161
-016B	 04	L016B
-0178	 04	L0178
-018F	 04	L018F
-01AB	 04	L01AB
-01B0	 04	L01B0
-01B2	 04	L01B2
-01B6	 04	L01B6
-01D6	 04	L01D6
-0205	 04	L0205
-020F	 04	L020F
-0217	 04	L0217
-0223	 04	L0223
-0241	 04	L0241
-025C	 04	L025C
-025D	 04	L025D
-027B	 04	L027B
-0284	 04	L0284
-02B1	 04	L02B1
-02C0	 04	X02C0
-0300	 04	X0300
-0301	 04	X0301
-0302	 04	X0302
-0303	 04	X0303
-0810	 04	X0810
-0820	 04	X0820
-09FF	 04	X09FF
-0E14	 04	X0E14
-1013	 04	L1013
-1046	 04	L1046
-1100	 04	X1100
-110F	 04	X110F
-1114	 04	X1114
-1118	 04	L1118
-116D	 04	L116D
-117B	 04	X117B
-1184	 04	L1184
-11AC	 04	L11AC
-11B6	 04	L11B6
-11E1	 04	X11E1
-1200	 04	L1200
-1206	 04	X1206
-120F	 04	L120F
-1215	 04	L1215
-1220	 04	L1220
-1233	 04	L1233
-1246	 04	L1246
-1254	 04	L1254
-1E25	 04	L1E25
-1E49	 04	L1E49
-1EAA	 04	L1EAA
-1F00	 04	L1F00
-1F22	 04	L1F22
-8001	 04	X8001
-A546	 04	XA546
-C30E	 04	XC30E
-C8B4	 04	XC8B4
-F60F	 04	XF60F
+              Symbol   Value        Decimal
 
-Number of symbols:			106
-
-;--------------------------------------------------------------
+                 ACC : $10f9           4345
+                ACTN : $117a           4474
+                BEEP : $1f22           7970   *
+              BEGADR : $10f4           4340
+                BUFF : $10f0           4336
+                CASS : $1eaa           7850   *
+              CHKSUM : $10ee           4334
+                CLIK : $10cf           4303
+                CNCL : $10c8           4296
+                CNTR : $10e5           4325
+                CNTU : $1045           4165
+                 COM : $1118           4376
+              COMAND : $10f0           4336
+                COM0 : $1140           4416
+                COM1 : $1147           4423
+                CONT : $11b6           4534
+                COUT : $114a           4426
+                CTRL : $116d           4461
+                DBIT : $1e49           7753   *
+                DECD : $1f00           7936   *
+                  DO : $1178           4472
+                DOTP : $1246           4678
+                 DSP : $0820           2080   *
+                DTMP : $1080           4224
+                DUMY : $0003              3   *
+              ENDADR : $10f2           4338
+                EOUT : $10b3           4275
+                ESAV : $10a3           4259
+                 ES1 : $10a7           4263
+               IDENT : $10f1           4337
+                ITAP : $10da           4314
+                 KBD : $0810           2064   *
+                KBUF : $10ec           4332
+                KRED : $1157           4439
+                KRTN : $116b           4459
+                 KR2 : $115c           4444
+                 KR3 : $1161           4449
+              LASTKE : $10f8           4344
+                 LP1 : $11b0           4528
+                 LP2 : $11b2           4530
+                LSTL : $10e3           4323
+                MCOM : $10ca           4298
+                MEND : $10e8           4328
+                 MET : $10bc           4284
+                METF : $10e0           4320
+                MET1 : $113d           4413
+                MPNT : $10ea           4330
+                MSAV : $103f           4159
+              MSTACK : $10ed           4333
+                MSV1 : $1184           4484
+                 MS1 : $118f           4495
+                MTBL : $0300            768   *
+               MTBL1 : $0301            769   *
+               MTBL2 : $0302            770   *
+               MTBL3 : $0303            771   *
+                MTRC : $10df           4319
+                NRML : $100c           4108
+                NRM1 : $1013           4115
+                OLDK : $105c           4188
+                OTAP : $10d7           4311
+                 OUT : $11ab           4523
+                OUTP : $09ff           2559   *
+                PBUF : $10eb           4331
+                  PC : $10fc           4348
+                PLAC : $1206           4614
+                PLA1 : $11ac           4524
+                 PL1 : $11d6           4566
+               PNTER : $10f6           4342
+                PREG : $10ff           4351
+                REST : $1085           4229
+                ROUT : $1060           4192
+                RPLA : $1046           4166
+                RPL1 : $1052           4178
+                SBIT : $1e25           7717   *
+                SING : $1063           4195
+                SNG1 : $1069           4201
+                SRTN : $107b           4219
+              STACKP : $10fe           4350
+                STAR : $1000           4096
+              STATUS : $10ef           4335
+                STBL : $1100           4352
+                STEP : $1092           4242
+                STOR : $101b           4123
+                 STP : $1217           4631
+                STP1 : $10a2           4258
+                STTP : $1215           4629
+                STUS : $10e2           4322
+                SYNC : $10c2           4290
+                TAPE : $11e1           4577
+                TBLM : $10b4           4276
+                 TCH : $1254           4692
+                TCHG : $10d4           4308
+                TCHR : $125c           4700
+                TCM1 : $120f           4623
+                TCOM : $1200           4608
+                TEND : $10e7           4327
+                 TIN : $1233           4659
+                TLOD : $101e           4126
+                 TLP : $1205           4613
+                 TL1 : $102a           4138
+                 TL2 : $1039           4153
+                TOUT : $1220           4640
+                TPNT : $10e9           4329
+                 TPO : $10e1           4321
+                TRAN : $1144           4420
+                TRNS : $00e6            230   *
+                TRTN : $103c           4156
+                TTBL : $02c0            704   *
+                TTRN : $00e4            228   *
+                UTMP : $107c           4220
+                 U_D : $1082           4226
+                XREG : $10fb           4347
+                YREG : $10fa           4346
+				
